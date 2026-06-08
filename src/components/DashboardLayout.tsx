@@ -39,6 +39,21 @@ export default function DashboardLayout() {
     setAdminUser(JSON.parse(sessionStr));
   }, [navigate]);
 
+  // Handle auto-collapse sidebar on tablet viewports
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+        setIsSidebarCollapsed(true);
+      } else if (window.innerWidth >= 1024) {
+        setIsSidebarCollapsed(false);
+      }
+    };
+
+    handleResize(); // Call on mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Auth logout routine
   const handleSystemLogout = () => {
     localStorage.removeItem('shukrana_session');

@@ -58,7 +58,7 @@ export default function HowWeWork() {
           {/* Connecting Line (Only visible on desktop) */}
           <div className="hidden lg:block absolute top-[28%] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-amber-200/50 via-sky-200/50 to-emerald-250/50 pointer-events-none" />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 relative z-10">
             {steps.map((step, idx) => {
               const IconComp = step.icon;
               return (
@@ -81,9 +81,9 @@ export default function HowWeWork() {
                     <IconComp className="h-8 w-8 stroke-[1.8]" />
                   </div>
 
-                  {/* Connecting Arrow for MD layouts */}
+                  {/* Connecting Arrow for LG layouts */}
                   {idx < 2 && (
-                    <div className="hidden md:block lg:hidden absolute top-[18%] -right-4 text-slate-350">
+                    <div className="hidden lg:block absolute top-[18%] -right-4 text-slate-350">
                       <ChevronRight className="h-6 w-6 text-slate-300" />
                     </div>
                   )}

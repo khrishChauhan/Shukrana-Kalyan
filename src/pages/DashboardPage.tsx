@@ -93,7 +93,7 @@ export default function DashboardPage() {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="space-y-8 select-none text-left"
+      className="space-y-8 select-none text-left w-full max-w-full overflow-hidden"
     >
       {/* 1. DYNAMIC SYSTEM NOTIFICATIONS */}
       <div className="p-4 bg-amber-55 border border-amber-250/20 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -285,29 +285,31 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="space-y-4 text-left">
-              {donations.slice(0, 4).map((record) => (
-                <div 
-                  key={record.id}
-                  className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-105 rounded-xl text-left"
-                >
-                  <div className="flex items-center gap-3 truncate text-left">
-                    <div className="w-10 h-10 rounded-full bg-amber-50 text-[#F4B400] flex items-center justify-center font-black shrink-0">
-                      $
+            <div className="overflow-x-auto w-full custom-scrollbar pb-1">
+              <div className="space-y-4 text-left min-w-[280px]">
+                {donations.slice(0, 4).map((record) => (
+                  <div 
+                    key={record.id}
+                    className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-105 rounded-xl text-left"
+                  >
+                    <div className="flex items-center gap-3 truncate text-left">
+                      <div className="w-10 h-10 rounded-full bg-amber-50 text-[#F4B400] flex items-center justify-center font-black shrink-0">
+                        $
+                      </div>
+                      <div className="text-left truncate">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">{record.donorName}</h4>
+                        <p className="text-[10px] font-mono text-slate-400 truncate">{record.program}</p>
+                      </div>
                     </div>
-                    <div className="text-left truncate">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">{record.donorName}</h4>
-                      <p className="text-[10px] font-mono text-slate-400 truncate">{record.program}</p>
+                    <div className="text-right shrink-0">
+                      <span className="block text-sm font-extrabold text-slate-900">+${record.amount.toLocaleString()}</span>
+                      <span className="inline-block px-1.5 py-0.5 bg-emerald-50 text-[9px] font-mono text-emerald-650 rounded-lg uppercase">
+                        {record.status}
+                      </span>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <span className="block text-sm font-extrabold text-slate-900">+${record.amount.toLocaleString()}</span>
-                    <span className="inline-block px-1.5 py-0.5 bg-emerald-50 text-[9px] font-mono text-emerald-650 rounded-lg uppercase">
-                      {record.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 

@@ -66,7 +66,7 @@ export default function Hero({ onOpenDonateModal }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6 font-display"
+              className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6 font-display"
             >
               Together We Build <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-amber-600">
@@ -78,7 +78,7 @@ export default function Hero({ onOpenDonateModal }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl"
+              className="text-sm sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl"
             >
               Shukrana Kalyan Sangh Foundation is a global welfare movement committed to scaling modern-driven grassroot developments. We implement actionable solutions across specialized education labs, pediatric dispensaries, and sustainable female micro-guilds.
             </motion.p>
@@ -87,11 +87,11 @@ export default function Hero({ onOpenDonateModal }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex flex-wrap gap-4"
+              className="flex flex-col sm:flex-row gap-4 w-full"
             >
               <button
                 onClick={onOpenDonateModal}
-                className="flex items-center gap-2.5 px-7 py-3.5 bg-brand-gold hover:bg-brand-gold-hover text-white rounded-xl font-bold hover:scale-[1.02] shadow-lg shadow-amber-400/20 active:scale-95 transition-all text-sm cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-7 py-3.5 bg-brand-gold hover:bg-brand-gold-hover text-white rounded-xl font-bold hover:scale-[1.02] shadow-lg shadow-amber-400/20 active:scale-95 transition-all text-sm cursor-pointer"
               >
                 <Heart className="h-4.5 w-4.5 fill-white stroke-none" />
                 <span>Donate Now</span>
@@ -99,7 +99,7 @@ export default function Hero({ onOpenDonateModal }: HeroProps) {
               
               <button
                 onClick={handleScrollToPrograms}
-                className="flex items-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:scale-[1.02] transition-all cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:scale-[1.02] transition-all cursor-pointer"
               >
                 <span>Learn More</span>
                 <ArrowRight className="h-4 w-4" />

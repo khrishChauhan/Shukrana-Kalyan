@@ -43,10 +43,10 @@ export default function VolunteerCTA({ onOpenVolunteerModal, onOpenContactModal 
             Join a powerful, civic-minded collective of field experts, advisors, and relief workers. No matter your skillset, there is an active village program that needs your heart and focus.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none">
             <button
               onClick={onOpenVolunteerModal}
-              className="flex items-center gap-2.5 px-8 py-4 bg-brand-gold hover:bg-brand-gold-hover text-slate-950 rounded-xl font-extrabold shadow-xl shadow-amber-400/5 hover:shadow-amber-400/15 text-sm transform hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 bg-brand-gold hover:bg-brand-gold-hover text-slate-950 rounded-xl font-extrabold shadow-xl shadow-amber-400/5 hover:shadow-amber-400/15 text-sm transform hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
             >
               <span>Join Us Now</span>
               <ArrowRight className="h-4.5 w-4.5 text-slate-950" />
@@ -54,7 +54,7 @@ export default function VolunteerCTA({ onOpenVolunteerModal, onOpenContactModal 
             
             <button
               onClick={onOpenContactModal}
-              className="flex items-center gap-2 px-7 py-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-white hover:text-white rounded-xl font-semibold text-sm transition-all cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-white hover:text-white rounded-xl font-semibold text-sm transition-all cursor-pointer"
             >
               <Mail className="h-4 w-4 text-slate-400" />
               <span>Contact Team</span>
