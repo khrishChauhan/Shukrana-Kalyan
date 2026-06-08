@@ -1,0 +1,6 @@
+{
+  "name": "Shukrana Kalyan Sangh Foundation",
+  "description": "A premium modern NGO website and dashboard system for empowering communities and accelerating social development.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
