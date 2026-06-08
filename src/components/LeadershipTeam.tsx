@@ -47,7 +47,11 @@ export default function LeadershipTeam() {
                       src={member.image}
                       alt={member.name}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full rounded-full object-cover"
+                      className={`w-full h-full rounded-full object-cover ${
+                        member.id === 'lead-4' 
+                          ? 'contrast-[1.08] saturate-[1.05] brightness-[1.02] filter hover:brightness-100 transition-all duration-300' 
+                          : ''
+                      }`}
                     />
                   </div>
                 </div>

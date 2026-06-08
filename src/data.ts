@@ -82,7 +82,7 @@ export const LEADERSHIP_TEAM: TeamMember[] = [
     id: "lead-4",
     name: "Dr. Shalini Prakash",
     role: "Chief Medical & Welfare Advisor",
-    image: "https://images.unsplash.com/photo-1594744803329-e58b31de215f?auto=format&fit=crop&q=80&w=300",
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
     linkedin: "https://linkedin.com/in/shalini-prakash-shukrana"
   }
 ];
