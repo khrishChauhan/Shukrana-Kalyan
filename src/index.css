@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Poppins:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -13,19 +13,74 @@
   --color-brand-dark: #232F46;
   --color-brand-charcoal: #232F46;
   --color-brand-gray: #FFF6EF;
+
+  /* 8px-based spacing scale (premium rhythm) */
+  --space-1: 0.5rem;   /* 8  */
+  --space-2: 1rem;     /* 16 */
+  --space-3: 1.5rem;   /* 24 */
+  --space-4: 2rem;     /* 32 */
+  --space-5: 2.5rem;   /* 40 */
+  --space-6: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-10: 5rem;    /* 80 */
+  --space-12: 6rem;    /* 96 */
+  --space-16: 8rem;    /* 128 */
+
+  /* Premium easing token */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     font-family: var(--font-sans);
-    background-color: var(--color-brand-gray);
+    background-color: #FFFFFF;
     color: var(--color-brand-charcoal);
     margin: 0;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+    letter-spacing: -0.011em;
+    line-height: 1.6;
+  }
+
+  /* Premium display typography rhythm */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: rgba(237, 140, 50, 0.22);
+    color: #232F46;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(237, 140, 50, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* Glassmorphism Styles */
+/* Glassmorphism Styles (kept for compatibility, refined) */
 .glass-nav {
   background-color: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px);
@@ -47,18 +102,38 @@
   border: 1px solid rgba(241, 245, 249, 0.9);
 }
 
+/* Premium layered shadow system (soft, multi-stop, neutral navy tint) */
 .shadow-brand {
-  box-shadow: 0 4px 20px rgba(35, 47, 70, 0.04);
+  box-shadow: 0 1px 2px rgba(35, 47, 70, 0.04), 0 4px 16px rgba(35, 47, 70, 0.04);
 }
 
 .shadow-brand-lg {
-  box-shadow: 0 10px 30px rgba(35, 47, 70, 0.08);
+  box-shadow: 0 2px 4px rgba(35, 47, 70, 0.04), 0 12px 32px rgba(35, 47, 70, 0.08);
+}
+
+.shadow-brand-xl {
+  box-shadow: 0 4px 8px rgba(35, 47, 70, 0.05), 0 24px 56px rgba(35, 47, 70, 0.10);
+}
+
+/* Premium eyebrow / kicker label rhythm */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* Subtle hairline divider */
+.hairline {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(35, 47, 70, 0.12), transparent);
 }
 
 /* Custom CSS Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -66,12 +141,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: rgba(35, 47, 70, 0.18);
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(35, 47, 70, 0.32);
 }
 
 /* Custom animation delay classes */
@@ -84,6 +159,14 @@
 }
 
 .bg-dot-pattern {
-  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-  background-size: 16px 16px;
+  background-image: radial-gradient(rgba(35, 47, 70, 0.10) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Premium fine grid background treatment */
+.bg-grid-faint {
+  background-image:
+    linear-gradient(to right, rgba(35, 47, 70, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(35, 47, 70, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
