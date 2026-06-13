@@ -133,7 +133,7 @@ export default function DashboardLayout() {
     <div className="min-h-screen bg-brand-gray flex overflow-hidden font-sans select-none text-brand-charcoal">
       
       {/* A. DESKTOP SIDEBAR VIEW (Collapsible, Premium Dark Theme) */}
-      <div className="hidden md:block h-screen">
+      <div className="hidden md:block h-screen sticky top-0">
         <Sidebar 
           isCollapsed={isSidebarCollapsed} 
           setIsCollapsed={setIsSidebarCollapsed} 
@@ -159,7 +159,7 @@ export default function DashboardLayout() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-64 h-full bg-brand-charcoal flex flex-col z-10"
+              className="relative w-[280px] h-full flex flex-col z-10"
             >
               {/* Close Button Inside Drawer */}
               <button
