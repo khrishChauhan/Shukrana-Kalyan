@@ -4,15 +4,22 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Poppins", system-ui, -apple-system, sans-serif;
-  --color-brand-gold: #F4B400;
-  --color-brand-gold-hover: #F59E0B;
+  --color-brand-primary: #ED8C32;
+  --color-brand-accent: #232F46;
+  --color-brand-accent-hover: #171F2E;
+  --color-brand-primary-hover: #D67A29;
+  --color-brand-light: #FFF8F2;
+  --color-brand-green: #232F46;
+  --color-brand-dark: #232F46;
+  --color-brand-charcoal: #232F46;
+  --color-brand-gray: #FFF6EF;
 }
 
 @layer base {
   body {
     font-family: var(--font-sans);
-    background-color: #F8FAFC;
-    color: #111827;
+    background-color: var(--color-brand-gray);
+    color: var(--color-brand-charcoal);
     margin: 0;
     overflow-x: hidden;
   }
@@ -38,6 +45,14 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(241, 245, 249, 0.9);
+}
+
+.shadow-brand {
+  box-shadow: 0 4px 20px rgba(35, 47, 70, 0.04);
+}
+
+.shadow-brand-lg {
+  box-shadow: 0 10px 30px rgba(35, 47, 70, 0.08);
 }
 
 /* Custom CSS Scrollbar */

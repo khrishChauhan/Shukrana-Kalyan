@@ -116,12 +116,12 @@ export default function DashboardLayout() {
 
   if (!adminUser) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-brand-gray flex items-center justify-center font-sans">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-2 w-20 bg-amber-200 rounded-full overflow-hidden relative">
-            <div className="absolute top-0 left-0 bottom-0 w-8 bg-amber-500 rounded-full animate-bounce" />
+          <div className="h-2 w-20 bg-brand-primary/40 rounded-full overflow-hidden relative">
+            <div className="absolute top-0 left-0 bottom-0 w-8 bg-[#FFF8F2]0 rounded-full animate-bounce" />
           </div>
-          <span className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase">
+          <span className="text-xs font-mono font-bold tracking-widest text-brand-charcoal/60 uppercase">
             Synchronizing Admin Session...
           </span>
         </div>
@@ -130,7 +130,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex overflow-hidden font-sans select-none text-slate-800">
+    <div className="min-h-screen bg-brand-gray flex overflow-hidden font-sans select-none text-brand-charcoal">
       
       {/* A. DESKTOP SIDEBAR VIEW (Collapsible, Premium Dark Theme) */}
       <div className="hidden md:block h-screen">
@@ -150,7 +150,7 @@ export default function DashboardLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileSidebarOpen(false)}
-              className="absolute inset-0 bg-slate-950/45 backdrop-blur-xs"
+              className="absolute inset-0 bg-brand-charcoal/45 backdrop-blur-xs"
             />
             
             {/* Sliding Drawer core */}
@@ -159,12 +159,12 @@ export default function DashboardLayout() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-64 h-full bg-slate-950 flex flex-col z-10"
+              className="relative w-64 h-full bg-brand-charcoal flex flex-col z-10"
             >
               {/* Close Button Inside Drawer */}
               <button
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="absolute top-4.5 right-4 p-1.5 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl"
+                className="absolute top-4.5 right-4 p-1.5 text-brand-charcoal/60 hover:text-white hover:bg-brand-charcoal rounded-xl"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -185,20 +185,20 @@ export default function DashboardLayout() {
       <div className="flex-grow flex flex-col h-screen overflow-hidden min-w-0">
         
         {/* TOP BAR GUEST HEADER */}
-        <header className="sticky top-0 bg-white border-b border-slate-200/80 p-4 shrink-0 flex items-center justify-between z-10 px-6">
+        <header className="sticky top-0 bg-white border-b border-brand-gray/80/80 p-4 shrink-0 flex items-center justify-between z-10 px-6">
           <div className="flex items-center gap-3">
             {/* Mobile Humburger trigger btn */}
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl"
+              className="md:hidden p-2 text-brand-charcoal/80 hover:bg-brand-gray rounded-xl"
             >
               <Menu className="h-5.5 w-5.5" />
             </button>
             <div className="text-left">
-              <p className="text-xs text-slate-400 font-mono font-bold uppercase tracking-widest leading-none">
+              <p className="text-xs text-brand-charcoal/60 font-mono font-bold uppercase tracking-widest leading-none">
                 Administrative Core
               </p>
-              <h2 className="text-sm sm:text-base font-extrabold text-slate-900 mt-1 font-display">
+              <h2 className="text-sm sm:text-base font-extrabold text-brand-charcoal mt-1 font-display">
                 Welcome Back, Demo User
               </h2>
             </div>
@@ -208,20 +208,20 @@ export default function DashboardLayout() {
             {/* Quick action: Record Contribution */}
             <button
               onClick={() => setAddDonationOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-950 hover:bg-slate-850 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-brand-charcoal hover:bg-slate-850 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
             >
-              <PlusCircle className="h-4 w-4 text-amber-400" />
+              <PlusCircle className="h-4 w-4 text-brand-primary" />
               <span className="hidden sm:inline">Add Donation</span>
             </button>
 
             {/* Profile User Identity widget */}
-            <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
-              <div className="w-8.5 h-8.5 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs shadow-sm">
+            <div className="flex items-center gap-2 border-l border-brand-gray/80 pl-4">
+              <div className="w-8.5 h-8.5 rounded-xl bg-[#FFF8F2]0 text-brand-charcoal flex items-center justify-center font-bold text-xs shadow-brand">
                 DU
               </div>
               <div className="hidden lg:block text-left">
-                <span className="block text-xs font-bold text-slate-800 leading-none">demo</span>
-                <span className="block text-[9px] text-slate-400 font-mono mt-0.5 uppercase tracking-wider">
+                <span className="block text-xs font-bold text-brand-charcoal leading-none">demo</span>
+                <span className="block text-[9px] text-brand-charcoal/60 font-mono mt-0.5 uppercase tracking-wider">
                   Registrar
                 </span>
               </div>
@@ -230,7 +230,7 @@ export default function DashboardLayout() {
             {/* Exit Session link button */}
             <button 
               onClick={handleSystemLogout}
-              className="p-1.5 px-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-lg text-xs font-mono font-bold transition-colors"
+              className="p-1.5 px-2.5 bg-brand-gray hover:bg-brand-gray border border-brand-gray/80 text-brand-charcoal/80 rounded-lg text-xs font-mono font-bold transition-colors"
               title="Close System Session"
             >
               Exit
@@ -253,57 +253,57 @@ export default function DashboardLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setAddDonationOpen(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
+              className="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-xs"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl z-10 border border-slate-100 p-6 sm:p-8 text-left"
+              className="relative bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl z-10 border border-brand-gray p-6 sm:p-8 text-left"
             >
               <button
                 onClick={() => setAddDonationOpen(false)}
-                className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded-lg"
+                className="absolute top-4 right-4 p-1 text-brand-charcoal/60 hover:text-brand-charcoal hover:bg-brand-gray rounded-lg"
               >
                 ✕
               </button>
 
               <form onSubmit={handleAddDonationSubmit} className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-950 font-display">Record Sandbox Transaction</h3>
+                  <h3 className="text-lg font-bold text-brand-charcoal font-display">Record Sandbox Transaction</h3>
                   <p className="text-xs text-slate-550 mt-1">Record a physical sponsorship or digital grant collection directly into Sandbox files.</p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Donor Identity</label>
+                  <label className="block text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest">Donor Identity</label>
                   <input
                     type="text"
                     required
                     value={newDonor}
                     onChange={(e) => setNewDonor(e.target.value)}
                     placeholder="Full Name (e.g. Priyanth Sen)"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold"
+                    className="w-full px-4 py-2.5 bg-brand-gray border border-brand-gray/80 rounded-xl text-brand-charcoal text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Dollar Amount ($)</label>
+                  <label className="block text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest">Dollar Amount ($)</label>
                   <input
                     type="number"
                     required
                     value={newAmount}
                     onChange={(e) => setNewAmount(e.target.value)}
                     placeholder="Contribution amount ($)"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold"
+                    className="w-full px-4 py-2.5 bg-brand-gray border border-brand-gray/80 rounded-xl text-brand-charcoal text-sm focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                 </div>
 
                 <div className="space-y-1 flex flex-col">
-                  <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1 text-left">Allotted Segment</label>
+                  <label className="block text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest mb-1 text-left">Allotted Segment</label>
                   <select
                     value={newProgram}
                     onChange={(e) => setNewProgram(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-850 text-sm focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-2.5 bg-brand-gray border border-brand-gray/80 rounded-xl text-slate-850 text-sm focus:outline-none cursor-pointer"
                   >
                     <option value="Education Support">Education Support Program</option>
                     <option value="Healthcare Initiative">Healthcare Initiative</option>
@@ -315,7 +315,7 @@ export default function DashboardLayout() {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer"
+                    className="w-full py-3 bg-brand-charcoal hover:bg-brand-charcoal text-white font-bold rounded-xl text-xs transition-all shadow-brand flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <Check className="h-4 w-4" />
                     <span>Authorize & Log Transaction</span>

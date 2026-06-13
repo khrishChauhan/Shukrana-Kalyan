@@ -98,21 +98,21 @@ export default function DashboardPage() {
       {/* 1. DYNAMIC SYSTEM NOTIFICATIONS */}
       <div className="p-4 bg-amber-55 border border-amber-250/20 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-start gap-3">
-          <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+          <Info className="h-5 w-5 text-brand-light0 shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-bold text-slate-900 text-sm font-display">Real-time Data Active</h4>
-            <p className="text-slate-600 text-xs mt-0.5">This dashboard is connected with client-side localStorage. Contributions authorized on the landing page or layout header will immediately reflect below.</p>
+            <h4 className="font-bold text-brand-charcoal text-sm font-display">Real-time Data Active</h4>
+            <p className="text-brand-charcoal/80 text-xs mt-0.5">This dashboard is connected with client-side localStorage. Contributions authorized on the landing page or layout header will immediately reflect below.</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className="h-2 w-2 rounded-full bg-emerald-500 " />
-          <span className="text-[10px] font-mono font-bold text-slate-505 uppercase tracking-widest">Active Sandbox Session</span>
+          <span className="text-[10px] font-mono font-bold text-brand-gray5 uppercase tracking-widest">Active Sandbox Session</span>
         </div>
       </div>
 
       {/* 2. KPI METRIC SECTION */}
       <div>
-        <h3 className="text-xs font-mono font-bold text-slate-400 tracking-wider uppercase mb-4">Core Foundation Metrics</h3>
+        <h3 className="text-xs font-mono font-bold text-brand-charcoal/60 tracking-wider uppercase mb-4">Core Foundation Metrics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {KPI_DATA.map((kpi) => {
             let displayValue = kpi.value;
@@ -128,15 +128,15 @@ export default function DashboardPage() {
             return (
               <div 
                 key={kpi.title}
-                className="bg-white p-5 rounded-2xl border border-slate-150 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden text-left"
+                className="bg-white p-5 rounded-2xl border border-slate-150 shadow-brand flex flex-col justify-between hover:shadow-brand transition-shadow relative overflow-hidden text-left"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-slate-500 font-sans">{kpi.title}</span>
-                  <span className="h-2 w-2 rounded-full bg-amber-400/60" />
+                  <span className="text-xs font-semibold text-brand-gray0 font-sans">{kpi.title}</span>
+                  <span className="h-2 w-2 rounded-full bg-brand-primary/60" />
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-2xl font-extrabold text-slate-900 tracking-tight font-display">
+                  <p className="text-2xl font-extrabold text-brand-charcoal tracking-tight font-display">
                     {displayValue}
                   </p>
                   <p className="flex items-center gap-1 text-[11px] font-medium text-emerald-600">
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 
-                <div className="absolute top-0 left-0 h-1 bg-amber-400 w-0 hover:w-full transition-all" />
+                <div className="absolute top-0 left-0 h-1 bg-brand-primary w-0 hover:w-full transition-all" />
               </div>
             );
           })}
@@ -153,20 +153,20 @@ export default function DashboardPage() {
       </div>
 
       {/* 3. RECHARTS COMMUNITY IMPACT OVERVIEW */}
-      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-150 shadow-sm">
+      <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-150 shadow-brand">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-lg font-bold text-slate-950 font-display">Community Impact Overview</h3>
-            <p className="text-xs text-slate-500 mt-1">Authorized contribution trend mapping targets ($) vs individuals assisted.</p>
+            <h3 className="text-lg font-bold text-brand-charcoal font-display">Community Impact Overview</h3>
+            <p className="text-xs text-brand-gray0 mt-1">Authorized contribution trend mapping targets ($) vs individuals assisted.</p>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded bg-amber-500" />
-              <span className="text-slate-600">Actual Raised ($)</span>
+              <span className="h-2.5 w-2.5 rounded bg-brand-primary" />
+              <span className="text-brand-charcoal/80">Actual Raised ($)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded bg-slate-300" />
-              <span className="text-slate-600">Target Standard ($)</span>
+              <span className="h-2.5 w-2.5 rounded bg-brand-accent" />
+              <span className="text-brand-charcoal/80">Target Standard ($)</span>
             </div>
           </div>
         </div>
@@ -180,12 +180,12 @@ export default function DashboardPage() {
             >
               <defs>
                 <linearGradient id="colorRaised" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#F4B400" stopOpacity={0.25}/>
-                  <stop offset="95%" stopColor="#F4B400" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#ED8C32" stopOpacity={0.25}/>
+                  <stop offset="95%" stopColor="#ED8C32" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#232F46" stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor="#232F46" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -206,8 +206,8 @@ export default function DashboardPage() {
               />
               <Tooltip 
                 contentStyle={{ 
-                  background: '#0f172a', 
-                  color: '#e2e8f0', 
+                  background: '#1F2937', 
+                  color: '#FFFFFF', 
                   borderRadius: '12px',
                   border: 'none',
                   fontSize: '12px',
@@ -217,7 +217,7 @@ export default function DashboardPage() {
               <Area 
                 type="monotone" 
                 dataKey="raised" 
-                stroke="#F4B400" 
+                stroke="#ED8C32" 
                 strokeWidth={2.5}
                 fillOpacity={1} 
                 fill="url(#colorRaised)" 
@@ -225,7 +225,7 @@ export default function DashboardPage() {
               <Area 
                 type="monotone" 
                 dataKey="target" 
-                stroke="#94a3b8" 
+                stroke="#232F46" 
                 strokeWidth={1.5}
                 fillOpacity={1} 
                 fill="url(#colorTarget)" 
@@ -239,18 +239,18 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Timeline (7 columns column-span-7) */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-150 shadow-sm text-left">
+        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-150 shadow-brand text-left">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-base font-bold text-slate-900 font-display">System Activity log</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Physical camp launches, cleared micro-credits, and ledger receipts.</p>
+              <h3 className="text-base font-bold text-brand-charcoal font-display">System Activity log</h3>
+              <p className="text-xs text-brand-gray0 mt-0.5">Physical camp launches, cleared micro-credits, and ledger receipts.</p>
             </div>
             <button 
               onClick={() => {
                 const stored = localStorage.getItem('shukrana_activities');
                 if (stored) { setTimeline(JSON.parse(stored)); }
               }}
-              className="p-1 px-2 hover:bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-mono text-slate-500 cursor-pointer"
+              className="p-1 px-2 hover:bg-brand-gray border border-brand-gray/80 rounded-lg text-[10px] font-mono text-brand-gray0 cursor-pointer"
             >
               Refresh Log
             </button>
@@ -260,15 +260,15 @@ export default function DashboardPage() {
             {timeline.slice(0, 5).map((log) => (
               <div key={log.id} className="relative">
                 {/* Indicator dot */}
-                <div className="absolute -left-[31px] top-1.5 w-4 h-4 bg-amber-400 rounded-full border-4 border-white shadow-sm shrink-0" />
+                <div className="absolute -left-[31px] top-1.5 w-4 h-4 bg-brand-primary rounded-full border-4 border-white shadow-brand shrink-0" />
                 <div className="text-left space-y-1">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 font-mono font-medium">{log.time}</span>
-                    <span className="px-2 py-0.5 bg-amber-50 text-[10px] font-mono tracking-widest text-[#F4B400] font-bold uppercase rounded-full">
+                    <span className="text-xs text-brand-charcoal/60 font-mono font-medium">{log.time}</span>
+                    <span className="px-2 py-0.5 bg-brand-accent/10 text-[10px] font-mono tracking-widest text-brand-accent font-bold uppercase rounded-full">
                       {log.type}
                     </span>
                   </div>
-                  <p className="text-slate-700 text-sm font-medium">{log.content}</p>
+                  <p className="text-brand-charcoal/90 text-sm font-medium">{log.content}</p>
                 </div>
               </div>
             ))}
@@ -276,12 +276,12 @@ export default function DashboardPage() {
         </div>
 
         {/* High-impact recent transactions list (5 columns column-span-5) */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-150 shadow-sm text-left flex flex-col h-full justify-between">
+        <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-150 shadow-brand text-left flex flex-col h-full justify-between">
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-bold text-slate-900 font-display">Recent Contributions</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Cleared micro-grants in active segments.</p>
+                <h3 className="text-base font-bold text-brand-charcoal font-display">Recent Contributions</h3>
+                <p className="text-xs text-brand-charcoal/60 mt-0.5">Cleared micro-grants in active segments.</p>
               </div>
             </div>
 
@@ -290,19 +290,19 @@ export default function DashboardPage() {
                 {donations.slice(0, 4).map((record) => (
                   <div 
                     key={record.id}
-                    className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-105 rounded-xl text-left"
+                    className="flex items-center justify-between p-3.5 bg-brand-gray border border-slate-105 rounded-xl text-left"
                   >
                     <div className="flex items-center gap-3 truncate text-left">
-                      <div className="w-10 h-10 rounded-full bg-amber-50 text-[#F4B400] flex items-center justify-center font-black shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-[#FFF8F2] text-brand-primary flex items-center justify-center font-black shrink-0">
                         $
                       </div>
                       <div className="text-left truncate">
-                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">{record.donorName}</h4>
-                        <p className="text-[10px] font-mono text-slate-400 truncate">{record.program}</p>
+                        <h4 className="text-xs sm:text-sm font-bold text-brand-charcoal truncate">{record.donorName}</h4>
+                        <p className="text-[10px] font-mono text-brand-charcoal/60 truncate">{record.program}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="block text-sm font-extrabold text-slate-900">+${record.amount.toLocaleString()}</span>
+                      <span className="block text-sm font-extrabold text-brand-charcoal">+${record.amount.toLocaleString()}</span>
                       <span className="inline-block px-1.5 py-0.5 bg-emerald-50 text-[9px] font-mono text-emerald-650 rounded-lg uppercase">
                         {record.status}
                       </span>
@@ -313,8 +313,8 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 mt-6 flex items-center justify-between">
-            <span className="text-xs text-slate-400 font-semibold uppercase">Secured Audited Vault</span>
+          <div className="pt-4 border-t border-brand-gray mt-6 flex items-center justify-between">
+            <span className="text-xs text-brand-charcoal/60 font-semibold uppercase">Secured Audited Vault</span>
             <Shield className="h-4 w-4 text-emerald-500" />
           </div>
 

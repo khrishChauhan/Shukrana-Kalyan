@@ -235,13 +235,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
 
   return (
     <aside 
-      className={`bg-slate-950 text-slate-300 flex flex-col h-full z-45 transition-all duration-300 shrink-0 border-r border-slate-900 ${
+      className={`bg-brand-dark text-brand-light flex flex-col h-full z-45 transition-all duration-300 shrink-0 border-r border-brand-green/30 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
       {/* 1. Header Logo banner */}
-      <div className="p-4 flex items-center gap-3 border-b border-slate-900 overflow-hidden relative min-h-[73px]">
-        <div className="p-1.5 bg-amber-400 rounded-xl text-slate-950 flex items-center justify-center shrink-0">
+      <div className="p-4 flex items-center gap-3 border-b border-brand-green/30 overflow-hidden relative min-h-[73px]">
+        <div className="p-1.5 bg-brand-primary rounded-xl text-brand-charcoal flex items-center justify-center shrink-0">
           <Award className="h-5 w-5 stroke-[2.2]" />
         </div>
         {!isCollapsed && (
@@ -249,7 +249,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
             <span className="block font-bold tracking-tight text-white text-[13px] uppercase leading-tight font-display">
               SHUKRANA KALYAN
             </span>
-            <span className="block text-[8px] text-amber-400 uppercase tracking-widest font-mono font-bold leading-none mt-0.5">
+            <span className="block text-[8px] text-brand-accent uppercase tracking-widest font-mono font-bold leading-none mt-0.5">
               Foundation Desk
             </span>
           </div>
@@ -257,10 +257,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
       </div>
 
       {/* 2. Desktop expand/collapse toggle panel */}
-      <div className="hidden sm:flex justify-end p-2 border-b border-slate-900 bg-slate-900/40">
+      <div className="hidden sm:flex justify-end p-2 border-b border-brand-green/30 bg-brand-dark/40">
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg mx-auto cursor-pointer"
+          className="p-1 text-white/60 hover:text-white hover:bg-brand-green/20 rounded-lg mx-auto cursor-pointer"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -284,11 +284,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                 onClick={onCloseMobile}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-xs tracking-wide transition-all cursor-pointer ${
                   isParentActive 
-                    ? 'bg-amber-400/10 text-brand-gold border-l-[3.5px] border-brand-gold font-semibold' 
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900 border-l-[3.5px] border-transparent'
+                    ? 'bg-brand-accent/10 text-brand-accent border-l-[3.5px] border-brand-accent font-semibold' 
+                    : 'text-white/60 hover:text-white hover:bg-brand-green/20 border-l-[3.5px] border-transparent'
                 }`}
               >
-                <IconComp className={`h-4.5 w-4.5 shrink-0 ${isParentActive ? 'text-brand-gold' : 'text-slate-500'}`} />
+                <IconComp className={`h-4.5 w-4.5 shrink-0 ${isParentActive ? 'text-brand-accent' : 'text-brand-green'}`} />
                 {!isCollapsed && <span className="truncate">{item.name}</span>}
               </Link>
             );
@@ -301,19 +301,19 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                 onClick={() => toggleSection(item.name)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-xs tracking-wide transition-all cursor-pointer ${
                   isParentActive 
-                    ? 'bg-amber-400/5 text-brand-gold font-semibold' 
-                    : 'text-slate-405 hover:text-white hover:bg-slate-900'
+                    ? 'bg-brand-accent/5 text-brand-accent font-semibold' 
+                    : 'text-white/70 hover:text-white hover:bg-brand-green/20'
                 }`}
               >
                 <div className="flex items-center gap-3 truncate">
-                  <IconComp className={`h-4.5 w-4.5 shrink-0 ${isParentActive ? 'text-brand-gold' : 'text-slate-500'}`} />
+                  <IconComp className={`h-4.5 w-4.5 shrink-0 ${isParentActive ? 'text-brand-accent' : 'text-brand-green'}`} />
                   {!isCollapsed && <span className="truncate">{item.name}</span>}
                 </div>
                 
                 {!isCollapsed && (
                   <ChevronDown 
-                    className={`h-3.5 w-3.5 text-slate-500 transition-transform duration-200 ${
-                      isSectionOpen ? 'transform rotate-180 text-brand-gold' : ''
+                    className={`h-3.5 w-3.5 text-white/50 transition-transform duration-200 ${
+                      isSectionOpen ? 'transform rotate-180 text-brand-accent' : ''
                     }`} 
                   />
                 )}
@@ -327,7 +327,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="overflow-hidden pl-7.5 space-y-0.5 border-l border-slate-900 ml-5.5 text-left"
+                    className="overflow-hidden pl-7.5 space-y-0.5 border-l border-brand-green/30 ml-5.5 text-left"
                   >
                     {item.submenus.map((sub) => {
                       const isSubActive = location.pathname === sub.path;
@@ -338,8 +338,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                           onClick={onCloseMobile}
                           className={`block py-1.5 pr-3 pl-3 text-[11px] font-medium tracking-wide rounded-lg transition-colors truncate ${
                             isSubActive 
-                              ? 'text-amber-400 font-semibold bg-amber-450/5' 
-                              : 'text-slate-500 hover:text-slate-205 hover:bg-slate-900/40'
+                              ? 'text-brand-accent font-semibold bg-brand-primary/10' 
+                              : 'text-white/50 hover:text-white hover:bg-brand-green/20'
                           }`}
                         >
                           {sub.name}
@@ -355,12 +355,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
       </nav>
 
       {/* 4. Logout trigger row at bottom */}
-      <div className="p-3 border-t border-slate-900 bg-slate-900/20">
+      <div className="p-3 border-t border-brand-green/30 bg-brand-dark/20">
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-rose-450 hover:bg-rose-500/10 rounded-xl font-medium text-xs tracking-wide transition-all cursor-pointer text-left"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-white/60 hover:text-rose-450 hover:bg-rose-500/10 rounded-xl font-medium text-xs tracking-wide transition-all cursor-pointer text-left"
         >
-          <LogOut className="h-4.5 w-4.5 text-slate-500 hover:text-rose-400 shrink-0" />
+          <LogOut className="h-4.5 w-4.5 text-white/50 hover:text-rose-400 shrink-0" />
           {!isCollapsed && <span>Logout</span>}
         </button>
       </div>

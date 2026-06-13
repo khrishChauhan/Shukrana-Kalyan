@@ -10,20 +10,20 @@ import { LEADERSHIP_TEAM } from '../data';
 export default function LeadershipTeam() {
   return (
     <section className="py-24 bg-white relative">
-      <div className="absolute inset-0 bg-dot-pattern opacity-10 pointer-events-none" />
+      <div className="absolute inset-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.035] mix-blend-overlay pointer-events-none z-0" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Title / Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 rounded-full text-brand-gold text-xs font-semibold uppercase tracking-wider mb-4 cursor-pointer">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#232F46]/5 shadow-sm rounded-full text-[#ED8C32] text-xs font-semibold uppercase tracking-wider mb-4 cursor-pointer">
             <Sparkles className="h-3.5 w-3.5" />
             <span>Integrity In Actions</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4 font-display">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#232F46] tracking-tight mb-4 font-display">
             Meet Our Leadership Team
           </h2>
-          <p className="text-slate-600 text-base sm:text-lg">
+          <p className="text-[#232F46]/70 text-base sm:text-lg">
             Dedicated social entrepreneurs, clinical administrators, and corporate leaders guiding our development mission.
           </p>
         </div>
@@ -38,10 +38,10 @@ export default function LeadershipTeam() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: index * 0.15 }}
-                className="group relative bg-slate-50 border border-slate-100 hover:border-amber-200/50 hover:bg-white p-6 rounded-2xl text-center shadow-sm hover:shadow-xl transition-all duration-300"
+                className="group relative bg-white border border-[#232F46]/5 hover:border-[#ED8C32]/40 p-6 rounded-[24px] text-center shadow-[0_4px_12px_rgba(27,39,63,0.04)] hover:shadow-[0_12px_32px_rgba(27,39,63,0.08)] transition-all duration-300 transform hover:-translate-y-2"
               >
                 {/* Board member avatar frame */}
-                <div className="relative mx-auto w-32 h-32 mb-5 rounded-full overflow-hidden p-1 bg-gradient-to-tr from-brand-gold via-amber-200 to-amber-500 group-hover:scale-105 transition-transform duration-300 shadow-md">
+                <div className="relative mx-auto w-32 h-32 mb-5 rounded-full overflow-hidden p-1 bg-[#ED8C32]/40 group-hover:scale-105 transition-transform duration-300 shadow-sm group-hover:bg-[#ED8C32]">
                   <div className="w-full h-full rounded-full bg-white p-0.5">
                     <img
                       src={member.image}
@@ -57,10 +57,10 @@ export default function LeadershipTeam() {
                 </div>
 
                 {/* Meta text */}
-                <h3 className="text-lg font-bold text-slate-950 mb-1 group-hover:text-brand-gold transition-colors font-display">
+                <h3 className="text-lg font-bold text-[#232F46] mb-1 group-hover:text-[#232F46] transition-colors font-display">
                   {member.name}
                 </h3>
-                <p className="text-slate-500 text-xs font-semibold tracking-wide uppercase font-mono mb-4">
+                <p className="text-[#ED8C32] text-xs font-semibold tracking-wide uppercase font-mono mb-4">
                   {member.role}
                 </p>
 
@@ -69,14 +69,14 @@ export default function LeadershipTeam() {
                   href={member.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex p-2 bg-white hover:bg-brand-gold border border-slate-205 text-slate-500 hover:text-white rounded-xl shadow-sm transition-all"
+                  className="inline-flex p-2 bg-gray-50 hover:bg-[#ED8C32] border border-[#232F46]/5 text-[#232F46]/50 hover:text-[#232F46] rounded-[12px] shadow-sm transition-all"
                   aria-label={`${member.name} LinkedIn Profile`}
                 >
                   <Linkedin className="h-4.5 w-4.5" />
                 </a>
 
                 {/* Accent underline animation */}
-                <div className="absolute bottom-0 left-12 right-12 h-1 bg-brand-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-350 rounded-t-full" />
+                <div className="absolute bottom-0 left-12 right-12 h-1 bg-[#ED8C32] scale-x-0 group-hover:scale-x-100 transition-transform duration-350 rounded-t-full" />
               </motion.div>
             );
           })}

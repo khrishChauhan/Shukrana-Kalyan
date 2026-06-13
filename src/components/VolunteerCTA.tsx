@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'motion/react';
-import { HeartHandshake, ArrowRight, ShieldCheck, Mail } from 'lucide-react';
+import { HeartHandshake, ArrowRight, Mail, CheckCircle2 } from 'lucide-react';
 
 interface VolunteerCTAProps {
   onOpenVolunteerModal: () => void;
@@ -13,69 +13,118 @@ interface VolunteerCTAProps {
 
 export default function VolunteerCTA({ onOpenVolunteerModal, onOpenContactModal }: VolunteerCTAProps) {
   return (
-    <section className="relative py-24 overflow-hidden">
-      {/* Background with Dark Slate and amber accents */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950" />
-      {/* Dynamic blurred amber orb */}
-      <div className="absolute top-1/2 -left-1/4 w-96 h-96 bg-brand-gold/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-1/3 -right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-      {/* Background grids */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-35" />
+    <section className="relative py-32 lg:py-48 bg-[#232F46] overflow-hidden flex items-center justify-center">
+      
+      {/* Background */}
+      <div className="absolute inset-0 w-full h-full bg-[#232F46] z-0" />
+      
+      {/* Premium Grain Texture */}
+      <div className="absolute inset-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay pointer-events-none z-0" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      {/* Subtle Abstract NGO-themed Pattern (Grid) */}
+      <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_60%,transparent_100%)] pointer-events-none z-0" />
+
+      {/* Huge subtle text in background */}
+      <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none z-0 overflow-hidden">
+        <span className="text-[20vw] lg:text-[24vw] font-display font-black text-white/5 tracking-tighter leading-none whitespace-nowrap">
+          VOLUNTEER
+        </span>
+      </div>
+
+      <div className="max-w-[1000px] w-full mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center"
+           initial={{ opacity: 0, y: 40 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true, margin: "-100px" }}
+           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+           className="flex flex-col items-center"
         >
-          {/* Heart Handshake Badge */}
-          <div className="inline-flex p-3 bg-amber-500/10 text-brand-gold rounded-2xl border border-amber-500/25 mb-6 group-hover:scale-105 transition-transform">
-            <HeartHandshake className="h-8 w-8 stroke-[1.8]" />
-          </div>
+          {/* Flat Premium Badge Icon */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8 relative group"
+          >
+            <div className="relative inline-flex p-4 sm:p-5 bg-white/10 rounded-[24px] border border-white/20 shadow-[0_4px_12px_rgba(27,39,63,0.1)]">
+              <HeartHandshake className="h-8 w-8 sm:h-10 sm:w-10 text-white relative z-10" />
+            </div>
+          </motion.div>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 font-display leading-[1.12]">
+          {/* Headline */}
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-[44px] sm:text-[60px] lg:text-[76px] font-extrabold text-white tracking-[-0.03em] mb-6 font-display leading-[1.05] relative"
+          >
             Become A Volunteer
-          </h2>
+          </motion.h2>
           
-          <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+          {/* Description */}
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="text-white/80 text-[18px] sm:text-[21px] max-w-2xl mx-auto leading-[1.7] mb-14 font-medium"
+          >
             Join a powerful, civic-minded collective of field experts, advisors, and relief workers. No matter your skillset, there is an active village program that needs your heart and focus.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none">
+          {/* CTA Buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 w-full max-w-sm sm:max-w-none mb-16"
+          >
             <button
               onClick={onOpenVolunteerModal}
-              className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 bg-brand-gold hover:bg-brand-gold-hover text-slate-950 rounded-xl font-extrabold shadow-xl shadow-amber-400/5 hover:shadow-amber-400/15 text-sm transform hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+              className="group relative w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 sm:px-10 py-4.5 bg-[#ED8C32] hover:bg-[#ED8C32] text-[#232F46] rounded-[20px] font-bold text-[16px] shadow-[0_4px_12px_rgba(27,39,63,0.1)] transform hover:-translate-y-1 transition-all duration-400 cursor-pointer overflow-hidden border border-transparent"
             >
-              <span>Join Us Now</span>
-              <ArrowRight className="h-4.5 w-4.5 text-slate-950" />
+              <span className="relative z-10 tracking-wide">Join Us Now</span>
+              <ArrowRight className="h-5 w-5 text-[#232F46] relative z-10 transform group-hover:translate-x-1 transition-transform duration-400" />
             </button>
             
             <button
               onClick={onOpenContactModal}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-white hover:text-white rounded-xl font-semibold text-sm transition-all cursor-pointer"
+              className="group w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 sm:px-10 py-4.5 bg-white hover:bg-gray-50 text-[#232F46] rounded-[20px] font-bold text-[16px] shadow-[0_4px_12px_rgba(27,39,63,0.1)] transform hover:-translate-y-1 transition-all duration-400 cursor-pointer border border-transparent"
             >
-              <Mail className="h-4 w-4 text-slate-400" />
-              <span>Contact Team</span>
+              <Mail className="h-5 w-5 text-[#232F46] transition-colors duration-400" />
+              <span className="tracking-wide">Contact Team</span>
             </button>
-          </div>
+          </motion.div>
 
-          {/* Verification terms */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-slate-400 text-xs font-mono tracking-wider">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-brand-gold" />
-              <span>SECURED SYSTEM</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-brand-gold" />
-              <span>NO FEE ENROLLMENT</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-brand-gold" />
-              <span>TAX EXEMPT (80G) COGNIZANT</span>
-            </div>
-          </div>
+          {/* Trust Chips */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+          >
+            {[
+              "Verified NGO",
+              "Volunteer Network",
+              "Community Driven"
+            ].map((text, i) => (
+              <div 
+                key={i} 
+                className="group flex items-center gap-2.5 px-4.5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full border border-white/10 hover:border-white/20 transition-colors duration-300 shadow-sm"
+              >
+                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center transition-colors duration-300">
+                  <CheckCircle2 className="h-3 w-3 text-[#232F46]" />
+                </div>
+                <span className="text-[13px] font-semibold text-white/90 transition-colors tracking-wide">
+                  {text}
+                </span>
+              </div>
+            ))}
+          </motion.div>
 
         </motion.div>
       </div>

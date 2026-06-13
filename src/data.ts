@@ -7,17 +7,17 @@ import { Program, TeamMember, ActivityLog, DonationRecord, KPICardData } from '.
 
 export const CAROUSEL_IMAGES = [
   {
-    url: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=1200",
+    url: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Doctor_examining_a_child_in_a_medical_camp%2C_organised_by_the_DFP%2C_during_the_Bharat_Nirman_Public_Information_Campaign%2C_at_Hilli_Block%2C_Dakshin_Dinajpur%2C_West_Bengal_on_February_06%2C_2012.jpg",
     title: "Bringing Joy and Dignity to Every Community",
     subtitle: "We reach out to remote marginalized areas with active medical treatment, nutritional kits, and warmth."
   },
   {
-    url: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200",
+    url: "https://upload.wikimedia.org/wikipedia/commons/8/82/Rural_Village_Children_School_in_Solan_Himachal_Pradesh_India.jpg",
     title: "Transforming Lives Through Rightful Education",
     subtitle: "By building libraries and sponsoring scholarship programs, we bridge the extreme digital and material divide."
   },
   {
-    url: "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&q=80&w=1200",
+    url: "https://upload.wikimedia.org/wikipedia/commons/1/10/Empowering_Rural_Women_through_the_Lakhpati_Didi_Initiative.jpg",
     title: "Unlocking Financial Freedom for Self-Help Groups",
     subtitle: "Providing micro-grants, vocational training, and raw logistics to support rural female-led micro enterprises."
   }
@@ -28,7 +28,7 @@ export const IMPACT_PROGRAMS: Program[] = [
     id: "prog-edu",
     title: "Education Support Program",
     description: "Sponsoring children's tuition, distributing school backpacks, setting up tech-enabled classrooms, and modernizing primary learning structures.",
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=600",
+    image: "https://upload.wikimedia.org/wikipedia/commons/8/84/India_-_Faces_-_rural_kids_on_their_way_to_school_%282832084021%29.jpg",
     raised: 34500,
     goal: 50000,
     beneficiaries: 1200,
@@ -38,7 +38,7 @@ export const IMPACT_PROGRAMS: Program[] = [
     id: "prog-health",
     title: "Healthcare Initiative",
     description: "Running mobile community dispensaries, distributing clean drinking water purification systems, and hosting multi-specialty wellness camps.",
-    image: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/71/A_Doctor_is_checking_a_baby_at_a_Healthy_Baby_Show_by_Directorate_of_Field_Publicity_at_a_function_on_National_Rural_Health_Mission_organised_by_PIB_Guwahati_on_the_occasion_of_the_Public_information_Campaign_on%22_Bharat.jpg",
     raised: 48900,
     goal: 60000,
     beneficiaries: 3400,
@@ -48,7 +48,7 @@ export const IMPACT_PROGRAMS: Program[] = [
     id: "prog-women",
     title: "Women Empowerment Guild",
     description: "Empowering local artisans with training, micro-capital credits, and global retail channels, turning rural housewives into bold leaders.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+    image: "https://upload.wikimedia.org/wikipedia/commons/a/a5/These_Mising_tribe_women_are_involved_in_the_traditional_craft_of_handloom_weaving.jpg",
     raised: 28000,
     goal: 40000,
     beneficiaries: 850,
@@ -61,28 +61,28 @@ export const LEADERSHIP_TEAM: TeamMember[] = [
     id: "lead-1",
     name: "Dr. Aditya Sen",
     role: "President & Founder",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300",
+    image: "https://randomuser.me/api/portraits/men/11.jpg",
     linkedin: "https://linkedin.com/in/adityasen-shukrana"
   },
   {
     id: "lead-2",
     name: "Meera Deshmukh",
     role: "Director of Operations",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=300",
+    image: "https://randomuser.me/api/portraits/women/33.jpg",
     linkedin: "https://linkedin.com/in/meera-deshmukh-shukrana"
   },
   {
     id: "lead-3",
     name: "Rajesh Malhotra",
     role: "Head of Strategic Partnerships",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300",
+    image: "https://randomuser.me/api/portraits/men/22.jpg",
     linkedin: "https://linkedin.com/in/rajesh-malhotra-shukrana"
   },
   {
     id: "lead-4",
     name: "Dr. Shalini Prakash",
     role: "Chief Medical & Welfare Advisor",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
     linkedin: "https://linkedin.com/in/shalini-prakash-shukrana"
   }
 ];
