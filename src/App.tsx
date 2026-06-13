@@ -9,6 +9,10 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './components/DashboardLayout';
 import ComingSoonPage from './pages/ComingSoonPage';
+import EditProfile from './pages/account/EditProfile';
+import IDCard from './pages/account/IDCard';
+import UploadKYC from './pages/account/UploadKYC';
+import TransactionPassword from './pages/account/TransactionPassword';
 
 export default function App() {
   return (
@@ -31,10 +35,10 @@ export default function App() {
           <Route path="/account/change-password" element={<ComingSoonPage />} />
           <Route path="/account/consent-letter" element={<ComingSoonPage />} />
           <Route path="/account/welcome-letter" element={<ComingSoonPage />} />
-          <Route path="/account/edit-profile" element={<ComingSoonPage />} />
-          <Route path="/account/id-card" element={<ComingSoonPage />} />
-          <Route path="/account/upload-kyc" element={<ComingSoonPage />} />
-          <Route path="/account/transaction-password" element={<ComingSoonPage />} />
+          <Route path="/account/edit-profile" element={<EditProfile />} />
+          <Route path="/account/id-card" element={<IDCard />} />
+          <Route path="/account/upload-kyc" element={<UploadKYC />} />
+          <Route path="/account/transaction-password" element={<TransactionPassword />} />
           
           {/* Bhavishya Nidhi submenus */}
           <Route path="/bhavishya-nidhi/income" element={<ComingSoonPage />} />
