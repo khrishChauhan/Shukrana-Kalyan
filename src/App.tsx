@@ -9,10 +9,12 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './components/DashboardLayout';
 import ComingSoonPage from './pages/ComingSoonPage';
-import EditProfile from './pages/account/EditProfile';
-import IDCard from './pages/account/IDCard';
-import UploadKYC from './pages/account/UploadKYC';
-import TransactionPassword from './pages/account/TransactionPassword';
+
+// My Account pages
+import ProfileSettings from './pages/account/ProfileSettings';
+import ChangePassword from './pages/account/ChangePassword';
+import MembershipCard from './pages/account/MembershipCard';
+import WelcomeLetter from './pages/account/WelcomeLetter';
 
 export default function App() {
   return (
@@ -21,64 +23,59 @@ export default function App() {
         {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
         
-        {/* Login Credentials validation segment */}
+        {/* Login */}
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Real-time Administration Core & Parent layout */}
+        {/* Dashboard Layout wrapper */}
         <Route element={<DashboardLayout />}>
-          {/* Main Dashboard view */}
+          {/* Main Dashboard */}
           <Route path="/dashboard" element={<DashboardPage />} />
           
-          {/* Account submenus */}
-          <Route path="/account/activity-tracker" element={<ComingSoonPage />} />
-          <Route path="/account/kyc-verification" element={<ComingSoonPage />} />
-          <Route path="/account/change-password" element={<ComingSoonPage />} />
-          <Route path="/account/consent-letter" element={<ComingSoonPage />} />
-          <Route path="/account/welcome-letter" element={<ComingSoonPage />} />
-          <Route path="/account/edit-profile" element={<EditProfile />} />
-          <Route path="/account/id-card" element={<IDCard />} />
-          <Route path="/account/upload-kyc" element={<UploadKYC />} />
-          <Route path="/account/transaction-password" element={<TransactionPassword />} />
-          
-          {/* Bhavishya Nidhi submenus */}
+          {/* ── MY ACCOUNT ── */}
+          <Route path="/account/profile-settings" element={<ProfileSettings />} />
+          <Route path="/account/change-password" element={<ChangePassword />} />
+          <Route path="/account/membership-card" element={<MembershipCard />} />
+          <Route path="/account/welcome-letter" element={<WelcomeLetter />} />
+
+          {/* ── BHAVISHYA NIDHI ── */}
           <Route path="/bhavishya-nidhi/income" element={<ComingSoonPage />} />
           <Route path="/bhavishya-nidhi/activation" element={<ComingSoonPage />} />
           
-          {/* Deposit submenus */}
+          {/* ── DEPOSIT ── */}
           <Route path="/deposit/activate" element={<ComingSoonPage />} />
           <Route path="/deposit/member-donation-wallet" element={<ComingSoonPage />} />
           <Route path="/deposit/wallet-statement" element={<ComingSoonPage />} />
           <Route path="/deposit/request-donation" element={<ComingSoonPage />} />
           <Route path="/deposit/deposit-inr" element={<ComingSoonPage />} />
           
-          {/* Discount Card submenus */}
+          {/* ── DISCOUNT CARD ── */}
           <Route path="/discount-card/view" element={<ComingSoonPage />} />
           <Route path="/discount-card/upgrade-deduction" element={<ComingSoonPage />} />
           <Route path="/discount-card/income" element={<ComingSoonPage />} />
           <Route path="/discount-card/buy" element={<ComingSoonPage />} />
           
-          {/* Donation submenus */}
+          {/* ── DONATION ── */}
           <Route path="/donation/donate" element={<ComingSoonPage />} />
           <Route path="/donation/razorpay-history" element={<ComingSoonPage />} />
           <Route path="/donation/razorpay" element={<ComingSoonPage />} />
           <Route path="/donation/request" element={<ComingSoonPage />} />
           
-          {/* Income submenus */}
+          {/* ── INCOME ── */}
           <Route path="/income/level" element={<ComingSoonPage />} />
           <Route path="/income/matching" element={<ComingSoonPage />} />
           <Route path="/income/detail" element={<ComingSoonPage />} />
           <Route path="/income/running" element={<ComingSoonPage />} />
           <Route path="/income/statement" element={<ComingSoonPage />} />
           
-          {/* Jivandaan Samriddhi submenus */}
+          {/* ── JIVANDAAN SAMRIDDHI ── */}
           <Route path="/jivandaan/activate" element={<ComingSoonPage />} />
           <Route path="/jivandaan/activation" element={<ComingSoonPage />} />
           <Route path="/jivandaan/samriddhi" element={<ComingSoonPage />} />
           
-          {/* Message submenus */}
+          {/* ── MESSAGE ── */}
           <Route path="/message" element={<ComingSoonPage />} />
           
-          {/* My Team submenus */}
+          {/* ── MY TEAM ── */}
           <Route path="/my-team/left-downline" element={<ComingSoonPage />} />
           <Route path="/my-team/left-downline-paid" element={<ComingSoonPage />} />
           <Route path="/my-team/level-wise" element={<ComingSoonPage />} />
@@ -87,14 +84,14 @@ export default function App() {
           <Route path="/my-team/right-downline-paid" element={<ComingSoonPage />} />
           <Route path="/my-team/direct-member" element={<ComingSoonPage />} />
           
-          {/* Online Payment parent menu (directly linked, no submenus) */}
+          {/* ── ONLINE PAYMENT ── */}
           <Route path="/online-payment" element={<ComingSoonPage />} />
           
-          {/* Payment submenus */}
+          {/* ── PAYMENT ── */}
           <Route path="/payment/transaction" element={<ComingSoonPage />} />
           <Route path="/payment/income-to-activation" element={<ComingSoonPage />} />
           
-          {/* Project Fund submenus */}
+          {/* ── PROJECT FUND ── */}
           <Route path="/project-fund/request-grantee" element={<ComingSoonPage />} />
           <Route path="/project-fund/status" element={<ComingSoonPage />} />
           <Route path="/project-fund/my-fund" element={<ComingSoonPage />} />
@@ -103,20 +100,20 @@ export default function App() {
           <Route path="/project-fund/p2p" element={<ComingSoonPage />} />
           <Route path="/project-fund/income-to-fund" element={<ComingSoonPage />} />
           
-          {/* Support submenus */}
+          {/* ── SUPPORT ── */}
           <Route path="/support/complaint" element={<ComingSoonPage />} />
           <Route path="/support/suggestion" element={<ComingSoonPage />} />
           <Route path="/support/seminar-meeting" element={<ComingSoonPage />} />
           
-          {/* Withdraw submenus */}
+          {/* ── WITHDRAW ── */}
           <Route path="/withdraw/request" element={<ComingSoonPage />} />
           
-          {/* Settings submenus */}
+          {/* ── SETTINGS ── */}
           <Route path="/settings/general" element={<ComingSoonPage />} />
           <Route path="/settings/profile" element={<ComingSoonPage />} />
         </Route>
         
-        {/* Fallback route - safely redirects to central landing */}
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

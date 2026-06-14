@@ -32,18 +32,13 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
     path: '/dashboard'
   },
   {
-    name: 'Account',
+    name: 'My Account',
     icon: UserCheck,
     submenus: [
-      { name: 'Activity Tracker', path: '/account/activity-tracker' },
-      { name: 'KYC Verification', path: '/account/kyc-verification' },
+      { name: 'Profile Settings', path: '/account/profile-settings' },
       { name: 'Change Password', path: '/account/change-password' },
-      { name: 'Consent Letter', path: '/account/consent-letter' },
+      { name: 'Membership Card', path: '/account/membership-card' },
       { name: 'Welcome Letter', path: '/account/welcome-letter' },
-      { name: 'Edit Profile', path: '/account/edit-profile' },
-      { name: 'ID Card', path: '/account/id-card' },
-      { name: 'Upload KYC', path: '/account/upload-kyc' },
-      { name: 'Transaction Password', path: '/account/transaction-password' }
     ]
   },
   {
