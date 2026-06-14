@@ -6,154 +6,175 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Download, Printer, Award, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, Download, Printer } from 'lucide-react';
 
 const MEMBER = {
-  name: 'Demo User',
+  name: 'John Doe',
   id: 'SKS-447036',
   joined: '01 June 2026',
   address: '123, Green Colony, Mumbai, Maharashtra - 400001',
 };
 
 const BENEFITS = [
-  'Access to all foundation programs and community events.',
-  'Participation in educational workshops and skill development sessions.',
-  'Eligibility for emergency welfare assistance programs.',
-  'Monthly newsletter and foundation updates.',
-  'Voting rights in annual general meetings.',
-  'Access to the member portal and digital resources.',
+  'Access to foundation programs',
+  'Monthly newsletter and updates',
+  'Emergency welfare assistance',
 ];
 
 export default function WelcomeLetter() {
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-      {/* Breadcrumb */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: '#9ca3af', marginBottom: '24px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-        <Link to="/dashboard" style={{ color: '#9ca3af', textDecoration: 'none' }}>Dashboard</Link>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="max-w-[1200px] mx-auto px-4 py-2"
+    >
+      {/* Page Header / Breadcrumbs */}
+      <nav className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 mb-5 uppercase tracking-wider">
+        <Link to="/dashboard" className="hover:text-brand-primary transition-colors">Dashboard</Link>
         <ChevronRight size={12} />
         <span>My Account</span>
         <ChevronRight size={12} />
-        <span style={{ color: '#ED8C32' }}>Welcome Letter</span>
+        <span className="text-brand-primary">Welcome Letter</span>
       </nav>
 
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#232F46', margin: 0, letterSpacing: '-0.02em', fontFamily: 'Poppins, sans-serif' }}>Welcome Letter</h1>
-        <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '6px' }}>Your official membership welcome letter from Shukrana Kalyan Sangh Foundation.</p>
+      <div className="mb-8">
+        <h1 className="text-3xl font-extrabold text-brand-accent tracking-tight m-0">WELCOME LETTER</h1>
+        <p className="text-sm text-gray-500 mt-1.5">Official welcome letter from Shukrana Kalyan Sangh Foundation.</p>
       </div>
 
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-
-        {/* A4 Letter */}
-        <div style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(35,47,70,0.1)', overflow: 'hidden', marginBottom: '24px' }}>
-
-          {/* Letter header band */}
-          <div style={{ background: '#232F46', padding: '28px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#ED8C32', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Award size={24} color="#fff" strokeWidth={2.2} />
+      {/* CenteredA4Wrapper (Max-width: 800px) */}
+      <div className="max-w-[800px] mx-auto flex flex-col gap-6 items-center">
+        
+        {/* LetterDocumentContainer (Flat white, 1px border) */}
+        <div className="w-full bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col print:border-none print:shadow-none">
+          
+          {/* LetterHeader (Dark Blue) */}
+          <div className="bg-[#232F46] px-8 py-6 text-white flex justify-between items-center flex-wrap gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded bg-[#ED8C32] flex items-center justify-center font-extrabold text-white text-lg">
+                S
               </div>
               <div>
-                <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff', fontFamily: 'Poppins, sans-serif', letterSpacing: '-0.01em', lineHeight: 1 }}>SHUKRANA KALYAN SANGH</div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '3px' }}>Foundation — Member Services</div>
+                <p className="font-extrabold tracking-wider text-sm m-0">SHUKRANA KALYAN SANGH</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest m-0 mt-0.5">Foundation</p>
               </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.07em', margin: '0 0 4px' }}>Membership Ref</p>
-              <p style={{ fontSize: '13px', fontWeight: 800, color: '#ED8C32', fontFamily: 'monospace', margin: 0 }}>{MEMBER.id}</p>
-            </div>
+            
+            <span className="font-mono text-xs text-gray-300">
+              Ref: {MEMBER.id}
+            </span>
           </div>
 
-          {/* Orange accent line */}
-          <div style={{ height: '4px', background: '#ED8C32' }} />
+          {/* LetterDivider (Orange) */}
+          <div className="h-1 bg-[#ED8C32]"></div>
 
-          {/* Letter body */}
-          <div style={{ padding: '40px 40px 48px' }}>
+          {/* LetterBody (White) */}
+          <div className="p-8 md:p-10 flex flex-col gap-6 text-[#232F46] text-sm leading-relaxed">
+            
             {/* Date */}
-            <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '24px', textAlign: 'right' }}>Date: {MEMBER.joined}</p>
+            <p className="text-right text-xs font-semibold text-gray-500 m-0">
+              Date: {MEMBER.joined}
+            </p>
 
-            {/* To */}
-            <div style={{ marginBottom: '28px' }}>
-              <p style={{ fontSize: '14px', fontWeight: 600, color: '#232F46', margin: '0 0 2px' }}>{MEMBER.name}</p>
-              <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 2px' }}>{MEMBER.address}</p>
-              <p style={{ fontSize: '13px', color: '#6b7280', margin: 0, fontFamily: 'monospace', fontWeight: 600 }}>Member ID: {MEMBER.id}</p>
+            {/* MemberAddressBlock */}
+            <div className="flex flex-col gap-0.5 font-medium text-gray-600">
+              <p className="font-bold text-[#232F46]">To,</p>
+              <p className="font-bold text-[#232F46]">{MEMBER.name}</p>
+              <p>{MEMBER.address.split(',')[0]}, {MEMBER.address.split(',')[1]}, {MEMBER.address.split(',')[2]}</p>
             </div>
 
-            {/* Subject */}
-            <div style={{ background: 'rgba(237,140,50,0.08)', border: '1px solid rgba(237,140,50,0.18)', borderRadius: '10px', padding: '12px 16px', marginBottom: '28px', display: 'inline-block' }}>
-              <p style={{ fontSize: '13px', fontWeight: 700, color: '#232F46', margin: 0 }}>Subject: <span style={{ color: '#ED8C32' }}>Welcome to Shukrana Kalyan Sangh Foundation – Membership Confirmation</span></p>
+            {/* SubjectBox (Light Orange Bg, Dark Orange Border) */}
+            <div className="bg-[#FFF8F2] border border-[#ED8C32]/45 rounded-lg px-4 py-3">
+              <p className="font-bold text-[#232F46] m-0">
+                Subject: <span className="text-brand-primary">Welcome to Shukrana Kalyan Sangh Foundation</span>
+              </p>
             </div>
 
             {/* Salutation */}
-            <p style={{ fontSize: '15px', fontWeight: 600, color: '#232F46', marginBottom: '16px' }}>Dear {MEMBER.name},</p>
+            <p className="font-bold text-base m-0">
+              Dear {MEMBER.name},
+            </p>
 
-            {/* Body paragraphs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '14px', color: '#374151', lineHeight: '1.75' }}>
-              <p style={{ margin: 0 }}>We are delighted to welcome you as an official member of <strong style={{ color: '#232F46' }}>Shukrana Kalyan Sangh Foundation</strong>. Your membership has been activated successfully, and we are thrilled to have you join our community of dedicated individuals working towards welfare, empowerment, and social progress.</p>
-
-              <p style={{ margin: 0 }}>The foundation is committed to uplifting communities through education, healthcare, and livelihood programs. As a member, you are now part of a growing family that believes in the power of collective action and compassionate service.</p>
-
-              <p style={{ margin: 0 }}>Your membership details are as follows:</p>
+            {/* WelcomeParagraphs */}
+            <div className="flex flex-col gap-4 text-gray-650 font-normal">
+              <p className="m-0">
+                We are delighted to welcome you as an official member of <strong className="font-bold text-[#232F46]">Shukrana Kalyan Sangh Foundation</strong>. Your membership is now active, and we are excited to embark on this journey of community empowerment and welfare together.
+              </p>
+              <p className="m-0">
+                The foundation is committed to driving positive change through welfare programs, social support, and development initiatives. Your association strengthens our mission to make a lasting impact in the lives of those we serve.
+              </p>
             </div>
 
-            {/* Membership info box */}
-            <div style={{ background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: '12px', padding: '18px 20px', margin: '20px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {[['Member Name', MEMBER.name], ['Member ID', MEMBER.id], ['Date of Joining', MEMBER.joined], ['Membership Status', 'Active']].map(([label, value]) => (
-                <div key={label}>
-                  <p style={{ fontSize: '10px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 3px', fontFamily: 'monospace' }}>{label}</p>
-                  <p style={{ fontSize: '13px', fontWeight: 700, color: '#232F46', margin: 0 }}>{value}</p>
+            {/* BenefitsList (Custom Check Icons) */}
+            <div className="flex flex-col gap-3 my-2 bg-gray-50 border border-gray-100 rounded-lg p-5">
+              <p className="font-bold text-[#232F46] text-xs uppercase tracking-wider m-0 mb-1">
+                As a member, you are entitled to:
+              </p>
+              <ul className="flex flex-col gap-2.5 m-0 p-0 list-none">
+                {BENEFITS.map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-2.5 font-semibold text-sm">
+                    <span className="text-brand-primary select-none text-base leading-none">[✓]</span>
+                    <span className="text-gray-600">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Closing & Signature Block */}
+            <div className="flex justify-between items-end mt-4 pt-4 border-t border-gray-100">
+              <div className="flex flex-col gap-1 text-gray-600 font-medium">
+                <p className="m-0">Warm regards,</p>
+                <div className="mt-4">
+                  <p className="font-bold text-[#232F46] m-0">The Secretary</p>
+                  <p className="text-xs text-gray-400 m-0">Shukrana Kalyan Sangh Foundation</p>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {/* Benefits */}
-            <p style={{ fontSize: '14px', fontWeight: 600, color: '#232F46', margin: '20px 0 12px' }}>As a member, you are entitled to:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
-              {BENEFITS.map(b => (
-                <div key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <CheckCircle2 size={16} color="#ED8C32" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span style={{ fontSize: '13.5px', color: '#374151', lineHeight: 1.55 }}>{b}</span>
+              {/* Signature NGO Seal */}
+              <div className="flex items-center justify-center w-20 h-20 rounded-full border border-dashed border-[#232F46] text-[#232F46] flex-shrink-0 text-center p-2 opacity-80 select-none">
+                <div className="flex flex-col items-center justify-center gap-0.5">
+                  <span className="text-[7px] font-extrabold uppercase tracking-wider">FOUNDATION</span>
+                  <span className="text-[10px] font-extrabold tracking-widest border-y border-[#232F46] py-0.5 px-1">SEAL</span>
+                  <span className="text-[6px] font-bold">SKS NGO</span>
                 </div>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '14px', color: '#374151', lineHeight: '1.75', marginBottom: '32px' }}>
-              <p style={{ margin: 0 }}>We encourage you to explore the member portal, participate actively in our programs, and connect with fellow members. Your contribution — be it time, effort, or resources — makes a meaningful difference in the lives of those we serve.</p>
-              <p style={{ margin: 0 }}>Should you have any questions or require assistance, please do not hesitate to reach out to our Member Services team. We are here to support you every step of the way.</p>
-            </div>
-
-            {/* Closing */}
-            <div style={{ marginTop: '8px' }}>
-              <p style={{ fontSize: '14px', color: '#374151', margin: '0 0 20px' }}>Warm regards,</p>
-              <p style={{ fontSize: '15px', fontWeight: 700, color: '#232F46', margin: '0 0 3px', fontFamily: 'Poppins, sans-serif' }}>The Secretary</p>
-              <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 2px' }}>Shukrana Kalyan Sangh Foundation</p>
-              <p style={{ fontSize: '12px', color: '#9ca3af', margin: 0 }}>Member Services Division</p>
-
-              {/* Seal */}
-              <div style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '2px solid #232F46', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Award size={26} color="#232F46" />
-                </div>
-                <div style={{ height: '1px', flex: 1, background: 'linear-gradient(to right, #e5e7eb, transparent)' }} />
               </div>
             </div>
+
           </div>
 
-          {/* Footer strip */}
-          <div style={{ background: '#f9fafb', borderTop: '1px solid #f3f4f6', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-            <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0, fontFamily: 'monospace' }}>Shukrana Kalyan Sangh Foundation | Member Portal</p>
-            <p style={{ fontSize: '11px', color: '#9ca3af', margin: 0, fontFamily: 'monospace' }}>Ref: {MEMBER.id} | {MEMBER.joined}</p>
+          {/* LetterFooter (Light Gray Band) */}
+          <div className="bg-gray-50 border-t border-gray-100 px-8 py-4 flex justify-between items-center text-[11px] font-bold text-gray-400 font-mono tracking-wider uppercase">
+            <span>Shukrana Kalyan Sangh | Member Portal</span>
+            <span className="hidden sm:inline">Ref: {MEMBER.id}</span>
           </div>
+
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '12px', border: 'none', background: '#232F46', color: '#fff', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(35,47,70,0.2)' }}>
-            <Download size={16} /> Download PDF
+        {/* ActionRow (Download, Print) */}
+        <div className="flex flex-col sm:flex-row gap-3 w-full justify-center max-w-[800px] print:hidden">
+          <button
+            type="button"
+            className="flex-1 px-5 py-2.5 rounded-lg bg-[#232F46] text-white hover:bg-[#1a2334] text-sm font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors border-none shadow-sm"
+          >
+            <Download size={16} />
+            <span>Download PDF</span>
           </button>
-          <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '12px', border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
-            <Printer size={16} /> Print Letter
+          
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="flex-1 px-5 py-2.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-755 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+          >
+            <Printer size={16} />
+            <span>Print Letter</span>
           </button>
         </div>
+
       </div>
     </motion.div>
   );
