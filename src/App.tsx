@@ -6,6 +6,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PaymentSubmissionPage from './pages/PaymentSubmissionPage';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './components/DashboardLayout';
 import ComingSoonPage from './pages/ComingSoonPage';
@@ -23,8 +26,11 @@ export default function App() {
         {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
         
-        {/* Login */}
+        {/* Login & Auth */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/payment-submission" element={<PaymentSubmissionPage />} />
         
         {/* Dashboard Layout wrapper */}
         <Route element={<DashboardLayout />}>

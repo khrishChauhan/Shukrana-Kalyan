@@ -5,8 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { Lock, User, ShieldCheck, Eye, EyeOff, Award, ArrowLeft, Terminal } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, Award, ArrowLeft, HeartHandshake, Users, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -29,19 +28,19 @@ export default function LoginPage() {
     setErrorMsg('');
 
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Please specify both valid credential parameters.');
+      setErrorMsg('Please enter both Member ID and Password.');
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate safe server-side delay to reflect modern premium app validation
+    // Simulate server-side validation delay
     setTimeout(() => {
+      // Mock validation for demo
       if (username.trim() === 'demo' && password === '123') {
-        // Safe authenticated match
         localStorage.setItem('shukrana_session', JSON.stringify({
           authenticated: true,
-          role: 'Administrator',
+          role: 'Member',
           username: 'demo',
           time: new Date().toISOString(),
         }));
@@ -49,145 +48,192 @@ export default function LoginPage() {
         navigate('/dashboard');
       } else {
         setIsSubmitting(false);
-        setErrorMsg('Invalid username or password. Use demo / 123');
+        setErrorMsg('Invalid credentials. Use demo / 123');
       }
     }, 1000);
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-brand-gray overflow-hidden">
+    <div className="min-h-screen flex bg-[#f8f9fa] selection:bg-[#ED8C32] selection:text-white font-sans">
       
-      {/* Visual background adornments */}
-      <div className="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none" />
-      <div className="absolute top-[10%] left-[-10%] w-[350px] h-[350px] bg-[#FFF8F2]/40 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[-10%] w-[400px] h-[400px] bg-sky-100/30 rounded-full blur-3xl pointer-events-none" />
+      {/* LEFT COLUMN - BRAND & MISSION (Hidden on Mobile) */}
+      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-[#232F46] text-white p-12 lg:p-16 relative overflow-hidden">
+        {/* Simple geometric accent */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#ED8C32] rounded-bl-full opacity-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#ED8C32] rounded-tr-full opacity-10 pointer-events-none" />
 
-      {/* Floating security badge */}
-      <div className="absolute top-8 left-8">
-        <Link 
-          to="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-brand-gray border border-slate-205 text-slate-705 text-xs font-semibold rounded-xl shadow-brand transition-all"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Exit to Website</span>
-        </Link>
-      </div>
-
-      <div className="max-w-md w-full px-4 relative z-10 select-none">
-        
-        {/* Top Header Logo */}
-        <div className="text-center mb-8 flex flex-col items-center">
-          <div className="p-3 bg-brand-primary rounded-2xl text-white shadow-brand-lg shadow-brand mb-4 inline-flex items-center justify-center">
-            <Award className="h-8 w-8 stroke-[2.2]" />
+        <div className="relative z-10 flex flex-col items-start gap-4">
+          <Link to="/" className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg transition-colors border border-white/20">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Website</span>
+          </Link>
+          
+          <div className="mt-12 p-3 bg-[#ED8C32] rounded-xl text-white inline-flex items-center justify-center">
+            <Award className="h-10 w-10 stroke-[2]" />
           </div>
-          <h1 className="text-2xl font-extrabold text-brand-charcoal tracking-tight font-display uppercase leading-none">
-            Shukrana Kalyan Sangh
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight uppercase leading-tight mt-4">
+            Shukrana <br />Kalyan Sangh
           </h1>
-          <p className="text-[10px] text-brand-charcoal/60 font-mono font-bold uppercase tracking-widest mt-1.5">
-            Registry Administration Panel
+          <p className="text-lg text-white/80 max-w-md mt-4">
+            Welcome to the official member portal. Access your welfare dashboard, manage your profile, and connect with our community.
           </p>
         </div>
 
-        {/* Card Frame */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white p-8 sm:p-10 rounded-3xl border border-brand-gray shadow-brand-lg shadow-brand-gray/80/50 text-left"
-        >
-          <h2 className="text-xl font-bold text-brand-charcoal mb-2 font-display">Welcome Back Desk</h2>
-          <p className="text-xs text-brand-gray0 mb-6">Authorize below to monitor financial ledgers, volunteer applications, and village statistics.</p>
+        <div className="relative z-10 mt-16 space-y-8">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-white/10 rounded-lg shrink-0 mt-1">
+              <HeartHandshake className="h-6 w-6 text-[#ED8C32]" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Welfare Programs</h3>
+              <p className="text-sm text-white/70 mt-1">Access financial assistance and support.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-white/10 rounded-lg shrink-0 mt-1">
+              <Users className="h-6 w-6 text-[#ED8C32]" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Community Network</h3>
+              <p className="text-sm text-white/70 mt-1">Join a network of dedicated members.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-white/10 rounded-lg shrink-0 mt-1">
+              <ShieldCheck className="h-6 w-6 text-[#ED8C32]" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Secure Platform</h3>
+              <p className="text-sm text-white/70 mt-1">Your data is protected with NGO transparency.</p>
+            </div>
+          </div>
+        </div>
 
-          <form onSubmit={handleLoginSubmit} className="space-y-5">
-            {/* Username Input */}
-            <div className="space-y-1.5">
-              <label className="block text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest">Username</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-brand-charcoal/60" />
-                <input
-                  type="text"
-                  required
-                  id="username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter administrator username"
-                  className="w-full pl-10 pr-4 py-3 bg-brand-gray focus:bg-white border border-slate-205 rounded-xl text-brand-charcoal text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
-                />
-              </div>
+        <div className="relative z-10 text-sm text-white/50 mt-12">
+          &copy; {new Date().getFullYear()} Shukrana Kalyan Sangh Foundation.
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN - LOGIN FORM */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-md">
+          
+          {/* Mobile Back Button & Logo (Visible only on mobile) */}
+          <div className="lg:hidden mb-8 flex flex-col items-center">
+            <Link to="/" className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#232F46] text-xs font-semibold rounded-lg shadow-sm border border-slate-200 mb-6 self-start">
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back</span>
+            </Link>
+            <div className="p-3 bg-[#ED8C32] rounded-xl text-white inline-flex items-center justify-center mb-4 shadow-sm">
+              <Award className="h-8 w-8 stroke-[2]" />
+            </div>
+            <h1 className="text-2xl font-extrabold text-[#232F46] tracking-tight uppercase text-center">
+              Member Portal
+            </h1>
+          </div>
+
+          <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-[#232F46] mb-2">Member Login</h2>
+              <p className="text-sm text-slate-500">Please enter your credentials to continue.</p>
             </div>
 
-            {/* Password Input */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest">Password</label>
-                <span className="text-[10px] text-brand-charcoal/60 font-medium">Use 123 to authorize</span>
+            <form onSubmit={handleLoginSubmit} className="space-y-5">
+              {/* Username Input */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Member ID or Mobile</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <input
+                    type="text"
+                    required
+                    id="username"
+                    name="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="e.g. SK000123"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-brand-charcoal/60" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  id="password"
-                  name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-3 bg-brand-gray focus:bg-white border border-slate-205 rounded-xl text-brand-charcoal text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-brand-charcoal/60 hover:text-brand-charcoal/80 rounded-lg"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
 
-            {/* Error alerts */}
-            <AnimatePresence>
+              {/* Password Input */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    id="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-11 pr-10 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-lg focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Options */}
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative flex items-center justify-center w-4 h-4">
+                    <input type="checkbox" className="peer appearance-none w-4 h-4 border border-slate-300 rounded bg-white checked:bg-[#ED8C32] checked:border-[#ED8C32] cursor-pointer transition-colors" />
+                    <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 14 14" fill="none">
+                      <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" />
+                    </svg>
+                  </div>
+                  <span className="text-slate-600 group-hover:text-[#232F46] transition-colors">Remember me</span>
+                </label>
+                <Link to="/forgot-password" className="text-[#ED8C32] hover:text-[#D97A24] font-semibold transition-colors">
+                  Forgot Password?
+                </Link>
+              </div>
+
+              {/* Error alerts */}
               {errorMsg && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, textBaseline: 'middle', height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="p-3 bg-red-50 text-red-700 border border-red-100 rounded-xl text-xs font-semibold leading-relaxed flex items-center gap-2 overflow-hidden"
-                >
+                <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm flex items-center gap-2">
                   <span className="shrink-0">⚠️</span>
                   <span>{errorMsg}</span>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
 
-            {/* Credentials helper card */}
-            <div className="p-3.5 bg-brand-gray border border-brand-gray rounded-2xl text-left">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-brand-charcoal/60 uppercase tracking-widest mb-1.5">
-                <Terminal className="h-3.5 w-3.5 text-brand-charcoal/60" />
-                <span>Default Credentials</span>
-              </span>
-              <div className="text-xs text-brand-charcoal/80 space-y-0.5">
-                <p>Username: <strong className="text-brand-charcoal font-semibold font-mono">demo</strong></p>
-                <p>Password: <strong className="text-brand-charcoal font-semibold font-mono">123</strong></p>
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col gap-3">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 bg-[#ED8C32] hover:bg-[#D97A24] text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-70"
+                >
+                  {isSubmitting ? "Authenticating..." : "Login to Dashboard"}
+                </button>
+                
+                <Link 
+                  to="/register"
+                  className="w-full py-3.5 bg-slate-50 hover:bg-slate-100 text-[#232F46] border border-slate-200 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 text-sm text-center"
+                >
+                  Register New Account
+                </Link>
               </div>
-            </div>
+            </form>
+          </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 bg-brand-primary hover:bg-brand-primary-hover text-brand-charcoal rounded-2xl font-bold shadow-brand-lg shadow-brand hover:shadow-brand active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
-            >
-              <ShieldCheck className="h-4.5 w-4.5 text-brand-charcoal" />
-              <span>{isSubmitting ? "Authorizing Secure Core..." : "Sign In to Dashboard"}</span>
-            </button>
+          {/* Help Link */}
+          <div className="mt-8 text-center">
+            <a href="#" className="text-sm text-slate-500 hover:text-[#232F46] transition-colors">
+              Need Help? Contact Support
+            </a>
+          </div>
 
-          </form>
-        </motion.div>
-        
-        {/* Footer info */}
-        <p className="text-center text-[11px] text-brand-charcoal/60 mt-8 font-mono">
-          Authorized personnel only. Activities are audited under section compliance.
-        </p>
+        </div>
       </div>
 
     </div>
