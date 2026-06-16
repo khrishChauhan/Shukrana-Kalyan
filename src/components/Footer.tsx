@@ -85,18 +85,13 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
         >
           {/* Col 1: Foundation Info */}
           <motion.div variants={itemVariants} className="lg:col-span-4 text-left">
-            <Link to="/" className="inline-flex items-center gap-3 mb-7 group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <div className="relative p-2.5 bg-[#ED8C32] rounded-xl text-[#232F46] shadow-[0_8px_24px_rgba(237,140,50,0.25)]">
-                <Award className="h-6 w-6 stroke-[2]" />
-              </div>
-              <div className="text-left">
-                <span className="block font-semibold tracking-[-0.01em] text-white text-[17px] leading-tight font-display">
-                  Shukrana Kalyan Sangh
-                </span>
-                <span className="block text-[9.5px] text-[#ED8C32] uppercase tracking-[0.28em] font-semibold leading-none mt-1">
-                  Foundation
-                </span>
-              </div>
+            <Link to="/" className="inline-block mb-6 group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <img 
+                src="/footer-logo.jpg" 
+                alt="Shukrana Kalyan Sangh" 
+                className="h-20 w-auto object-contain transition-all duration-300 group-hover:scale-105"
+                style={{ mixBlendMode: 'screen' }}
+              />
             </Link>
 
             <p className="text-white/55 text-[14.5px] leading-[1.85] mb-7 max-w-sm">
@@ -109,7 +104,7 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
             </div>
 
             {/* Social Icons */}
-            <div className="flex gap-2.5 text-left mb-8">
+            <div className="flex gap-2.5 text-left">
               {[
                 { icon: Twitter, label: 'Twitter', url: 'https://twitter.com' },
                 { icon: Facebook, label: 'Facebook', url: 'https://facebook.com' },
@@ -127,15 +122,6 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
                   <social.icon className="relative z-10 h-4 w-4 text-white/65 group-hover:text-[#232F46] transition-colors" />
                 </a>
               ))}
-            </div>
-
-            {/* Corporate Logo */}
-            <div className="pt-6 border-t border-white/10 max-w-[240px]">
-              <img 
-                src="/footer-logo.jpg" 
-                alt="Shukrana Digital Private Limited" 
-                className="w-full h-auto rounded-lg border border-white/10 shadow-sm filter brightness-90 hover:brightness-100 transition-all duration-300" 
-              />
             </div>
           </motion.div>
 
