@@ -87,10 +87,9 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
           <motion.div variants={itemVariants} className="lg:col-span-4 text-left">
             <Link to="/" className="inline-block mb-6 group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <img 
-                src="/footer-logo.jpg" 
+                src="/footer-logo.png" 
                 alt="Shukrana Kalyan Sangh" 
                 className="h-20 w-auto object-contain transition-all duration-300 group-hover:scale-105"
-                style={{ mixBlendMode: 'screen' }}
               />
             </Link>
 
