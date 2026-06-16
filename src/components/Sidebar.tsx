@@ -7,10 +7,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Award, LayoutDashboard, UserCheck, Landmark, Wallet, CreditCard, Heart,
-  TrendingUp, Sparkles, MessageSquare, Users, Globe, ArrowLeftRight,
-  ClipboardList, HelpCircle, ArrowUpRight, Settings, LogOut, ChevronLeft,
-  ChevronRight, ChevronDown
+  Award, LayoutDashboard, UserCheck, Heart, Users,
+  MessageSquare, Settings, LogOut, ChevronLeft,
+  ChevronRight, ChevronDown, Gift, Bell
 } from 'lucide-react';
 
 export interface SubmenuItem {
@@ -35,140 +34,31 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
     name: 'My Account',
     icon: UserCheck,
     submenus: [
+      { name: 'Activity Timeline', path: '/account/activity-timeline' },
       { name: 'Profile Settings', path: '/account/profile-settings' },
-      { name: 'Change Password', path: '/account/change-password' },
+      { name: 'Membership Status', path: '/account/membership-status' },
       { name: 'Membership Card', path: '/account/membership-card' },
       { name: 'Welcome Letter', path: '/account/welcome-letter' },
+      { name: 'Consent Letter', path: '/account/consent-letter' },
+      { name: 'Change Password', path: '/account/change-password' },
     ]
   },
   {
-    name: 'Bhavishya Nidhi',
-    icon: Landmark,
-    submenus: [
-      { name: 'Income To Bhavishya Nidhi', path: '/bhavishya-nidhi/income' },
-      { name: 'Activation To Bhavishya Nidhi', path: '/bhavishya-nidhi/activation' }
-    ]
-  },
-  {
-    name: 'Deposit',
-    icon: Wallet,
-    submenus: [
-      { name: 'Activate Now', path: '/deposit/activate' },
-      { name: 'Member Donation Wallet', path: '/deposit/member-donation-wallet' },
-      { name: 'Wallet Statement', path: '/deposit/wallet-statement' },
-      { name: 'Request Donation', path: '/deposit/request-donation' },
-      { name: 'Deposit INR', path: '/deposit/deposit-inr' }
-    ]
-  },
-  {
-    name: 'Discount Card',
-    icon: CreditCard,
-    submenus: [
-      { name: 'Discount Card', path: '/discount-card/view' },
-      { name: 'Card Upgrade Deduction', path: '/discount-card/upgrade-deduction' },
-      { name: 'Card Income', path: '/discount-card/income' },
-      { name: 'Buy Discount Card', path: '/discount-card/buy' }
-    ]
-  },
-  {
-    name: 'Donation',
-    icon: Heart,
-    submenus: [
-      { name: 'Donate Now', path: '/donation/donate' },
-      { name: 'Donation Razorpay History', path: '/donation/razorpay-history' },
-      { name: 'Donation Razorpay', path: '/donation/razorpay' },
-      { name: 'Request Donation', path: '/donation/request' }
-    ]
-  },
-  {
-    name: 'Income',
-    icon: TrendingUp,
-    submenus: [
-      { name: 'Level Income', path: '/income/level' },
-      { name: 'Matching Income', path: '/income/matching' },
-      { name: 'Income Detail', path: '/income/detail' },
-      { name: 'Running Income', path: '/income/running' },
-      { name: 'Income Statement', path: '/income/statement' }
-    ]
-  },
-  {
-    name: 'Jivandaan Samriddhi',
-    icon: Sparkles,
-    submenus: [
-      { name: 'Activate Now', path: '/jivandaan/activate' },
-      { name: 'Activation To Jivandaan', path: '/jivandaan/activation' },
-      { name: 'Jivandaan Samriddhi', path: '/jivandaan/samriddhi' }
-    ]
-  },
-  {
-    name: 'Message',
-    icon: MessageSquare,
-    submenus: [
-      { name: 'Message', path: '/message' }
-    ]
-  },
-  {
-    name: 'My Team',
+    name: 'Member Network',
     icon: Users,
     submenus: [
-      { name: 'My Left Downline', path: '/my-team/left-downline' },
-      { name: 'Left Downline Paid', path: '/my-team/left-downline-paid' },
-      { name: 'Level Wise Downline', path: '/my-team/level-wise' },
-      { name: 'Tree View', path: '/my-team/tree-view' },
-      { name: 'Right Downline', path: '/my-team/right-downline' },
-      { name: 'Right Downline Paid', path: '/my-team/right-downline-paid' },
-      { name: 'My Direct Member', path: '/my-team/direct-member' }
+      { name: 'Overview', path: '/network/overview' },
+      { name: 'Direct Referrals', path: '/network/direct-referrals' },
+      { name: 'Verified Members', path: '/network/verified-members' },
+      { name: 'Pending Approval', path: '/network/pending-approval' },
+      { name: 'Network Levels', path: '/network/network-levels' },
+      { name: 'Network Tree', path: '/network/network-tree' }
     ]
   },
   {
-    name: 'Online Payment',
-    icon: Globe,
-    path: '/online-payment'
-  },
-  {
-    name: 'Payment',
-    icon: ArrowLeftRight,
-    submenus: [
-      { name: 'Transaction', path: '/payment/transaction' },
-      { name: 'Income To Activation', path: '/payment/income-to-activation' }
-    ]
-  },
-  {
-    name: 'Project Fund',
-    icon: ClipboardList,
-    submenus: [
-      { name: 'Request Grantee', path: '/project-fund/request-grantee' },
-      { name: 'Fund Status', path: '/project-fund/status' },
-      { name: 'My Fund', path: '/project-fund/my-fund' },
-      { name: 'Grantee Verification', path: '/project-fund/verification' },
-      { name: 'Fund Repayment', path: '/project-fund/repayment' },
-      { name: 'Project Fund (P2P)', path: '/project-fund/p2p' },
-      { name: 'Income To Project Fund', path: '/project-fund/income-to-fund' }
-    ]
-  },
-  {
-    name: 'Support',
-    icon: HelpCircle,
-    submenus: [
-      { name: 'My Complaint', path: '/support/complaint' },
-      { name: 'My Suggestion', path: '/support/suggestion' },
-      { name: 'Seminar & Meeting', path: '/support/seminar-meeting' }
-    ]
-  },
-  {
-    name: 'Withdraw',
-    icon: ArrowUpRight,
-    submenus: [
-      { name: 'Withdrawal Request', path: '/withdraw/request' }
-    ]
-  },
-  {
-    name: 'Settings',
-    icon: Settings,
-    submenus: [
-      { name: 'General Settings', path: '/settings/general' },
-      { name: 'Profile Settings', path: '/settings/profile' }
-    ]
+    name: 'Notifications',
+    icon: Bell,
+    path: '/notifications'
   }
 ];
 
