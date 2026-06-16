@@ -57,20 +57,14 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
             {/* Logo Section */}
             <Link
               to="/"
-              className="flex items-center gap-3 group text-left cursor-pointer"
+              className="inline-block group cursor-pointer"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <div className="p-2.5 bg-[#ED8C32] rounded-xl text-[#232F46] group-hover:scale-[1.04] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center justify-center shadow-[0_4px_14px_rgba(237,140,50,0.32)]">
-                <Award className="h-5 w-5 stroke-[2.2]" />
-              </div>
-              <div className="flex flex-col">
-                <span className="block font-semibold tracking-[-0.01em] text-[#232F46] text-[15px] sm:text-[16px] leading-tight font-display">
-                  Shukrana Kalyan Sangh
-                </span>
-                <span className="block text-[9.5px] text-[#232F46]/45 uppercase tracking-[0.32em] font-semibold leading-none mt-1">
-                  Foundation
-                </span>
-              </div>
+              <img 
+                src="/navbar-logo.png" 
+                alt="Shukrana" 
+                className="h-10 w-auto object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+              />
             </Link>
 
             {/* Desktop Navigation */}
