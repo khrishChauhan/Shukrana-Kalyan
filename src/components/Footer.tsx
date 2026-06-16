@@ -109,7 +109,7 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
             </div>
 
             {/* Social Icons */}
-            <div className="flex gap-2.5 text-left">
+            <div className="flex gap-2.5 text-left mb-8">
               {[
                 { icon: Twitter, label: 'Twitter', url: 'https://twitter.com' },
                 { icon: Facebook, label: 'Facebook', url: 'https://facebook.com' },
@@ -127,6 +127,15 @@ export default function Footer({ onOpenDonateModal }: FooterProps) {
                   <social.icon className="relative z-10 h-4 w-4 text-white/65 group-hover:text-[#232F46] transition-colors" />
                 </a>
               ))}
+            </div>
+
+            {/* Corporate Logo */}
+            <div className="pt-6 border-t border-white/10 max-w-[240px]">
+              <img 
+                src="/footer-logo.jpg" 
+                alt="Shukrana Digital Private Limited" 
+                className="w-full h-auto rounded-lg border border-white/10 shadow-sm filter brightness-90 hover:brightness-100 transition-all duration-300" 
+              />
             </div>
           </motion.div>
 
