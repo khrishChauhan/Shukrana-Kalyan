@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Benefit, BenefitStatus, getBenefitStatus } from '../../data/benefitsData';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface BenefitCardProps {
   benefit: Benefit;
@@ -9,22 +10,23 @@ interface BenefitCardProps {
   onClick: (benefit: Benefit) => void;
 }
 
-function statusLabel(status: BenefitStatus): string {
-  if (status === 'eligible') return '✅ पात्र';
-  if (status === 'in-progress') return '⏳ जारी है';
-  return '🔒 लॉक्ड';
-}
-
-function statusVariant(status: BenefitStatus): 'success' | 'warning' | 'gray' {
-  if (status === 'eligible') return 'success';
-  if (status === 'in-progress') return 'warning';
-  return 'gray';
-}
-
 export function BenefitCard({ benefit, currentDays, onClick }: BenefitCardProps) {
+  const { t } = useTranslation();
   const status = getBenefitStatus(benefit.unlockDays, currentDays);
   const progressPct = Math.min(100, Math.round((currentDays / benefit.unlockDays) * 100));
   const Icon = benefit.icon;
+
+  const statusVariant = (s: BenefitStatus): 'success' | 'warning' | 'gray' => {
+    if (s === 'eligible') return 'success';
+    if (s === 'in-progress') return 'warning';
+    return 'gray';
+  };
+
+  const getStatusLabel = (s: BenefitStatus) => {
+    if (s === 'eligible') return t('status.eligible');
+    if (s === 'in-progress') return t('status.inProgress');
+    return t('status.locked');
+  };
 
   return (
     <button
@@ -40,21 +42,21 @@ export function BenefitCard({ benefit, currentDays, onClick }: BenefitCardProps)
             <Icon className={`w-5 h-5 ${benefit.iconColor}`} />
           </div>
           <Badge variant={statusVariant(status)} className="shrink-0 text-[10px]">
-            {statusLabel(status)}
+            {getStatusLabel(status)}
           </Badge>
         </div>
 
         {/* Title + Description — flex-1 to push footer down */}
         <div className="flex-1">
-          <h4 className="text-sm font-bold text-[#232F46] leading-snug mb-1">{benefit.title}</h4>
-          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{benefit.description}</p>
+          <h4 className="text-sm font-bold text-[#232F46] leading-snug mb-1">{t(benefit.titleKey)}</h4>
+          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{t(benefit.descKey)}</p>
         </div>
 
         {/* Progress bar footer — always at bottom */}
         <div className="mt-4 pt-3 border-t border-gray-100">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[10px] font-medium text-gray-500">
-              {currentDays} / {benefit.unlockDays} दिन
+              {currentDays} / {benefit.unlockDays} {t('journey.days')}
             </span>
             <span className="text-[10px] font-semibold text-[#ED8C32]">{progressPct}%</span>
           </div>

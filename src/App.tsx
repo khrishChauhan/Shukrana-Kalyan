@@ -4,6 +4,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { LanguageProvider } from './context/LanguageContext';
 
 // ── PUBLIC ───────────────────────────────────────────────────────────────────
 import LandingPage from './pages/LandingPage';
@@ -43,52 +44,54 @@ import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        {/* PUBLIC */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/payment-submission" element={<PaymentSubmissionPage />} />
+    <LanguageProvider>
+      <Router>
+        <Routes>
+          {/* PUBLIC */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/payment-submission" element={<PaymentSubmissionPage />} />
 
-        {/* ADMIN — isolated from DashboardLayout */}
-        <Route path="/admin" element={<AdminLoginPage />} />
-        <Route element={<AdminLayout />}>
-          <Route path="/admin/dashboard"      element={<AdminDashboardPage />} />
-          <Route path="/admin/members"        element={<AdminMembersPage />} />
-          <Route path="/admin/notifications"  element={<AdminNotificationsPage />} />
-        </Route>
+          {/* ADMIN — isolated from DashboardLayout */}
+          <Route path="/admin" element={<AdminLoginPage />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard"      element={<AdminDashboardPage />} />
+            <Route path="/admin/members"        element={<AdminMembersPage />} />
+            <Route path="/admin/notifications"  element={<AdminNotificationsPage />} />
+          </Route>
 
-        {/* MEMBER PORTAL */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* MEMBER PORTAL */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
 
-          {/* My Account — cleaned per Phase F/G */}
-          <Route path="/account/activity-timeline" element={<ActivityTimelinePage />} />
-          <Route path="/account/profile-settings"  element={<ProfileSettings />} />
-          <Route path="/account/membership-status" element={<MembershipStatus />} />
-          <Route path="/account/membership-card"   element={<MembershipCard />} />
-          <Route path="/account/welcome-letter"    element={<WelcomeLetter />} />
-          <Route path="/account/consent-letter"    element={<ConsentLetterPage />} />
-          <Route path="/account/change-password"   element={<ChangePassword />} />
-          <Route path="/account/kyc-verification"  element={<KYCVerification />} />
+            {/* My Account — cleaned per Phase F/G */}
+            <Route path="/account/activity-timeline" element={<ActivityTimelinePage />} />
+            <Route path="/account/profile-settings"  element={<ProfileSettings />} />
+            <Route path="/account/membership-status" element={<MembershipStatus />} />
+            <Route path="/account/membership-card"   element={<MembershipCard />} />
+            <Route path="/account/welcome-letter"    element={<WelcomeLetter />} />
+            <Route path="/account/consent-letter"    element={<ConsentLetterPage />} />
+            <Route path="/account/change-password"   element={<ChangePassword />} />
+            <Route path="/account/kyc-verification"  element={<KYCVerification />} />
 
-          {/* Member Network — all 6 kept */}
-          <Route path="/network/overview"         element={<NetworkOverviewPage />} />
-          <Route path="/network/direct-referrals" element={<DirectReferralsPage />} />
-          <Route path="/network/verified-members" element={<VerifiedMembersPage />} />
-          <Route path="/network/pending-approval" element={<PendingApprovalPage />} />
-          <Route path="/network/network-levels"   element={<NetworkLevelsPage />} />
-          <Route path="/network/network-tree"     element={<NetworkTreePage />} />
+            {/* Member Network — all 6 kept */}
+            <Route path="/network/overview"         element={<NetworkOverviewPage />} />
+            <Route path="/network/direct-referrals" element={<DirectReferralsPage />} />
+            <Route path="/network/verified-members" element={<VerifiedMembersPage />} />
+            <Route path="/network/pending-approval" element={<PendingApprovalPage />} />
+            <Route path="/network/network-levels"   element={<NetworkLevelsPage />} />
+            <Route path="/network/network-tree"     element={<NetworkTreePage />} />
 
-          {/* Notifications */}
-          <Route path="/notifications" element={<NotificationsPage />} />
-        </Route>
+            {/* Notifications */}
+            <Route path="/notifications" element={<NotificationsPage />} />
+          </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </LanguageProvider>
   );
 }

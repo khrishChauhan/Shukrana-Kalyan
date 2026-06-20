@@ -2,42 +2,45 @@ import React from 'react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Card } from '../components/ui/Card';
 import { CheckCircle2, AlertCircle, Info, Gift } from 'lucide-react';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
+
   const notifications = [
     {
       id: 1,
       type: 'success',
-      title: 'Payment Approved',
-      message: 'Your activation fee of ₹500 has been verified. Welcome to Shukrana Kalyan Sangh!',
-      time: '2 hours ago',
+      title: t('notifications.paymentApproved'),
+      message: t('notifications.paymentMsg'),
+      time: `2 ${t('timeline.hoursAgo')}`,
       icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
       bg: 'bg-green-50',
     },
     {
       id: 2,
       type: 'info',
-      title: 'Welcome Letter Generated',
-      message: 'Your official Welcome Letter is now available in My Documents.',
-      time: '2 hours ago',
+      title: t('notifications.welcomeLetter'),
+      message: t('notifications.welcomeMsg'),
+      time: `2 ${t('timeline.hoursAgo')}`,
       icon: <Info className="w-5 h-5 text-blue-500" />,
       bg: 'bg-blue-50',
     },
     {
       id: 3,
       type: 'warning',
-      title: 'Action Required: KYC Pending',
-      message: 'Please upload your Aadhar Card to complete your KYC Verification and access all welfare benefits.',
-      time: '1 day ago',
+      title: t('notifications.kycPending'),
+      message: t('notifications.kycMsg'),
+      time: `1 ${t('timeline.dayAgo')}`,
       icon: <AlertCircle className="w-5 h-5 text-yellow-500" />,
       bg: 'bg-yellow-50',
     },
     {
       id: 4,
       type: 'reward',
-      title: 'Referral Reward Earned',
-      message: '₹150 has been credited to your wallet for referring Amit Singh.',
-      time: '3 days ago',
+      title: t('notifications.referralReward'),
+      message: t('notifications.referralMsg'),
+      time: `3 ${t('timeline.daysAgo')}`,
       icon: <Gift className="w-5 h-5 text-[#ED8C32]" />,
       bg: 'bg-orange-50',
     }
@@ -46,8 +49,8 @@ export default function NotificationsPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <PageHeader
-        title="Notifications"
-        description="Stay updated on your account activity and foundation announcements."
+        title={t('notifications.title')}
+        description={t('notifications.desc')}
       />
 
       <Card className="p-0 overflow-hidden">

@@ -11,6 +11,7 @@ import {
   User, Award, Heart, Users, Clock, AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface TimelineEvent {
   id: string;
@@ -82,6 +83,7 @@ const categoryColors = {
 
 export default function ActivityTimelinePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<string>('All Activities');
   const [search, setSearch] = useState('');
 
@@ -95,9 +97,9 @@ export default function ActivityTimelinePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
       <PageHeader
-        title="Activity Timeline"
-        description="Track all account, membership, donation, and network activities."
-        breadcrumbs={[{ label: 'My Account' }, { label: 'Activity Timeline' }]}
+        title={t('activity.title')}
+        description={t('activity.desc')}
+        breadcrumbs={[{ label: 'My Account' }, { label: t('activity.title') }]}
       />
 
       {/* Summary Cards */}
@@ -108,7 +110,7 @@ export default function ActivityTimelinePage() {
               <Activity className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Activities</p>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.total')}</p>
           <h3 className="text-2xl font-black text-[#232F46]">128</h3>
         </Card>
 
@@ -118,7 +120,7 @@ export default function ActivityTimelinePage() {
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Last Login</p>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.lastLogin')}</p>
           <h3 className="text-sm font-bold text-[#232F46]">Today, 08:30 AM</h3>
         </Card>
 
@@ -129,8 +131,8 @@ export default function ActivityTimelinePage() {
             </div>
             <StatusBadge status="Active" />
           </div>
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Membership Status</p>
-          <h3 className="text-sm font-bold text-[#232F46]">Verified</h3>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.memStatus')}</p>
+          <h3 className="text-sm font-bold text-[#232F46]">{t('dashboard.kpiVerified')}</h3>
         </Card>
 
         <Card className="flex flex-col">
@@ -140,44 +142,47 @@ export default function ActivityTimelinePage() {
             </div>
             <StatusBadge status="Pending Review" />
           </div>
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">KYC Status</p>
-          <h3 className="text-sm font-bold text-[#232F46]">In Progress</h3>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.kycStatus')}</p>
+          <h3 className="text-sm font-bold text-[#232F46]">{t('status.inProgress')}</h3>
         </Card>
       </div>
 
       {/* Filter Section */}
       <Card className="p-4 sm:p-6 flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar hide-scrollbar-mobile">
-          {['All Activities', 'Account', 'Membership', 'KYC', 'Donations', 'Network'].map(cat => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${
-                filter === cat 
-                  ? 'bg-[#232F46] text-white border-[#232F46]' 
-                  : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          {['All Activities', 'Account', 'Membership', 'KYC', 'Donations', 'Network'].map(cat => {
+            const labelKey = cat === 'All Activities' ? 'all' : cat.toLowerCase();
+            return (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${
+                  filter === cat 
+                    ? 'bg-[#232F46] text-white border-[#232F46]' 
+                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                {t(`activity.${labelKey}`)}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 shrink-0">
           <div className="w-full sm:w-40">
             <Select 
               options={[
-                { value: '7', label: 'Last 7 Days' },
-                { value: '30', label: 'Last 30 Days' },
-                { value: '90', label: 'Last 90 Days' },
-                { value: 'custom', label: 'Custom Range' },
+                { value: '7', label: t('activity.last7') },
+                { value: '30', label: t('activity.last30') },
+                { value: '90', label: t('activity.last90') },
+                { value: 'custom', label: t('activity.custom') },
               ]}
               className="text-sm bg-white"
             />
           </div>
           <div className="w-full sm:w-64">
             <Input 
-              placeholder="Search activities..." 
+              placeholder={t('activity.search')} 
               leftIcon={<Search className="w-4 h-4" />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -223,11 +228,11 @@ export default function ActivityTimelinePage() {
           <div className="p-12">
             <EmptyState 
               icon={<Activity className="w-12 h-12 text-gray-300" />}
-              title="No activity found"
-              description="There are no activities matching your current filters."
+              title={t('activity.emptyTitle')}
+              description={t('activity.emptyDesc')}
               action={
                 <Button onClick={() => navigate('/dashboard')} variant="outline">
-                  Go to Dashboard
+                  {t('activity.goDashboard')}
                 </Button>
               }
             />

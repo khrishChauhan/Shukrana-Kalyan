@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 
 export interface SubmenuItem {
-  name: string;
+  nameKey: string;
   path: string;
 }
 
 export interface MenuItem {
-  name: string;
+  nameKey: string;
   icon: React.ComponentType<any>;
   path?: string;
   submenus?: SubmenuItem[];
@@ -26,41 +26,43 @@ export interface MenuItem {
 
 export const SIDEBAR_STRUCTURE: MenuItem[] = [
   {
-    name: 'Dashboard',
+    nameKey: 'sidebar.dashboard',
     icon: LayoutDashboard,
     path: '/dashboard'
   },
   {
-    name: 'My Account',
+    nameKey: 'sidebar.myAccount',
     icon: UserCheck,
     submenus: [
-      { name: 'Activity Timeline', path: '/account/activity-timeline' },
-      { name: 'Profile Settings', path: '/account/profile-settings' },
-      { name: 'Membership Status', path: '/account/membership-status' },
-      { name: 'Membership Card', path: '/account/membership-card' },
-      { name: 'Welcome Letter', path: '/account/welcome-letter' },
-      { name: 'Consent Letter', path: '/account/consent-letter' },
-      { name: 'Change Password', path: '/account/change-password' },
+      { nameKey: 'sidebar.activityTimeline', path: '/account/activity-timeline' },
+      { nameKey: 'sidebar.profileSettings', path: '/account/profile-settings' },
+      { nameKey: 'sidebar.membershipStatus', path: '/account/membership-status' },
+      { nameKey: 'sidebar.membershipCard', path: '/account/membership-card' },
+      { nameKey: 'sidebar.welcomeLetter', path: '/account/welcome-letter' },
+      { nameKey: 'sidebar.consentLetter', path: '/account/consent-letter' },
+      { nameKey: 'sidebar.changePassword', path: '/account/change-password' },
     ]
   },
   {
-    name: 'Member Network',
+    nameKey: 'sidebar.memberNetwork',
     icon: Users,
     submenus: [
-      { name: 'Overview', path: '/network/overview' },
-      { name: 'Direct Referrals', path: '/network/direct-referrals' },
-      { name: 'Verified Members', path: '/network/verified-members' },
-      { name: 'Pending Approval', path: '/network/pending-approval' },
-      { name: 'Network Levels', path: '/network/network-levels' },
-      { name: 'Network Tree', path: '/network/network-tree' }
+      { nameKey: 'sidebar.overview', path: '/network/overview' },
+      { nameKey: 'sidebar.directReferrals', path: '/network/direct-referrals' },
+      { nameKey: 'sidebar.verifiedMembers', path: '/network/verified-members' },
+      { nameKey: 'sidebar.pendingApproval', path: '/network/pending-approval' },
+      { nameKey: 'sidebar.networkLevels', path: '/network/network-levels' },
+      { nameKey: 'sidebar.networkTree', path: '/network/network-tree' }
     ]
   },
   {
-    name: 'Notifications',
+    nameKey: 'sidebar.notifications',
     icon: Bell,
     path: '/notifications'
   }
 ];
+
+import { useTranslation } from '../context/LanguageContext';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -71,6 +73,7 @@ interface SidebarProps {
 export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   // Auto-expand the parent section whose child is currently active
@@ -80,13 +83,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
       item.submenus?.some(sub => sub.path === currentPath)
     );
     if (activeSection) {
-      setOpenSections(prev => ({ ...prev, [activeSection.name]: true }));
+      setOpenSections(prev => ({ ...prev, [activeSection.nameKey]: true }));
     }
   }, [location.pathname]);
 
-  const toggleSection = (name: string) => {
+  const toggleSection = (nameKey: string) => {
     if (isCollapsed) setIsCollapsed(false);
-    setOpenSections(prev => ({ ...prev, [name]: !prev[name] }));
+    setOpenSections(prev => ({ ...prev, [nameKey]: !prev[nameKey] }));
   };
 
   const handleLogout = () => {
@@ -141,7 +144,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
               className="block font-mono font-semibold uppercase tracking-widest"
               style={{ fontSize: '8px', color: '#ED8C32', marginTop: '2px' }}
             >
-              Foundation Desk
+              {t('sidebar.foundationDesk')}
             </span>
           </div>
         )}
@@ -194,13 +197,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
           const Icon = item.icon;
           const active = isParentActive(item);
           const hasSubmenus = !!item.submenus;
-          const isOpen = !!openSections[item.name];
+          const isOpen = !!openSections[item.nameKey];
 
           // ── Direct link (Dashboard, Online Payment)
           if (!hasSubmenus && item.path) {
             return (
               <Link
-                key={item.name}
+                key={item.nameKey}
                 to={item.path}
                 onClick={onCloseMobile}
                 className="flex items-center gap-3 rounded-xl mb-0.5 relative overflow-hidden transition-all duration-200 group"
@@ -255,7 +258,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                       transition: 'color 0.2s',
                     }}
                   >
-                    {item.name}
+                    {t(item.nameKey)}
                   </span>
                 )}
               </Link>
@@ -264,10 +267,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
 
           // ── Accordion item with submenus
           return (
-            <div key={item.name} style={{ marginBottom: '1px' }}>
+            <div key={item.nameKey} style={{ marginBottom: '1px' }}>
               {/* Parent button */}
               <button
-                onClick={() => toggleSection(item.name)}
+                onClick={() => toggleSection(item.nameKey)}
                 className="w-full flex items-center rounded-xl transition-all duration-200 cursor-pointer relative overflow-hidden"
                 style={{
                   height: '48px',
@@ -317,7 +320,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                         transition: 'color 0.2s',
                       }}
                     >
-                      {item.name}
+                      {t(item.nameKey)}
                     </span>
                   )}
                 </div>
@@ -361,7 +364,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                         const isSubActive = location.pathname === sub.path;
                         return (
                           <Link
-                            key={sub.name}
+                            key={sub.nameKey}
                             to={sub.path}
                             onClick={onCloseMobile}
                             className="flex items-center gap-2.5 rounded-lg transition-all duration-200 group"
@@ -416,7 +419,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
                                 if (!isSubActive) (e.currentTarget as HTMLSpanElement).style.color = 'rgba(255,255,255,0.55)';
                               }}
                             >
-                              {sub.name}
+                              {t(sub.nameKey)}
                             </span>
                           </Link>
                         );

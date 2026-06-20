@@ -12,12 +12,14 @@ import { BenefitCard } from '../components/Dashboard/BenefitCard';
 import { BenefitJourney } from '../components/Dashboard/BenefitJourney';
 import { BenefitDetailModal } from '../components/Dashboard/BenefitDetailModal';
 import { benefitsData, CATEGORIES, getMemberDays, Benefit } from '../data/benefitsData';
+import { useTranslation } from '../context/LanguageContext';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState<any>(null);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
   const currentDays = getMemberDays();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const sessionStr = localStorage.getItem('shukrana_session');
@@ -31,7 +33,7 @@ export default function DashboardPage() {
   if (!adminUser) return null;
 
   const benefitsByCategory = (category: string) =>
-    benefitsData.filter((b) => b.category === category);
+    benefitsData.filter((b) => b.categoryKey === category);
 
   return (
     <motion.div
@@ -44,9 +46,9 @@ export default function DashboardPage() {
       {/* ─── 1. WELCOME BANNER ─────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#232F46]">नमस्ते, Demo User! 🙏</h1>
+          <h1 className="text-2xl font-bold text-[#232F46]">{t('dashboard.welcomeTitle')}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            आपके Shukrana Kalyan Sangh सदस्य पोर्टल में आपका स्वागत है।
+            {t('dashboard.welcomeSubtitle')}
           </p>
         </div>
         <div className="flex gap-3">
@@ -54,7 +56,7 @@ export default function DashboardPage() {
             onClick={() => navigate('/welfare/make-donation')}
             leftIcon={<Heart className="w-4 h-4" />}
           >
-            Donate Now
+            {t('dashboard.donateNow')}
           </Button>
         </div>
       </div>
@@ -71,8 +73,8 @@ export default function DashboardPage() {
             </div>
             <StatusBadge status="Active" />
           </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">Membership Status</p>
-          <h3 className="text-xl font-bold text-[#232F46]">Verified</h3>
+          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiMembership')}</p>
+          <h3 className="text-xl font-bold text-[#232F46]">{t('dashboard.kpiVerified')}</h3>
         </Card>
 
         <Card
@@ -84,7 +86,7 @@ export default function DashboardPage() {
               <UserCheck className="w-6 h-6" />
             </div>
           </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">Profile Completion</p>
+          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiProfile')}</p>
           <h3 className="text-xl font-bold text-[#232F46]">85%</h3>
           <div className="w-full bg-gray-100 h-1.5 rounded-full mt-3 overflow-hidden">
             <div className="bg-blue-500 h-full w-[85%] rounded-full" />
@@ -100,10 +102,10 @@ export default function DashboardPage() {
               <Users className="w-6 h-6" />
             </div>
           </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">Network Members</p>
+          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiNetwork')}</p>
           <div className="flex items-end gap-2">
             <h3 className="text-2xl font-bold text-[#232F46]">45</h3>
-            <span className="text-xs font-medium text-green-600 mb-1">+3 this week</span>
+            <span className="text-xs font-medium text-green-600 mb-1">{t('dashboard.kpiThisWeek')}</span>
           </div>
         </Card>
 
@@ -116,10 +118,10 @@ export default function DashboardPage() {
               <Award className="w-6 h-6" />
             </div>
           </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">सदस्य दिन</p>
+          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiDays')}</p>
           <div className="flex items-end gap-2">
             <h3 className="text-2xl font-bold text-[#232F46]">{currentDays}</h3>
-            <span className="text-xs font-medium text-gray-400 mb-1">दिन</span>
+            <span className="text-xs font-medium text-gray-400 mb-1">{t('dashboard.kpiDaysLabel')}</span>
           </div>
         </Card>
       </div>
@@ -129,9 +131,9 @@ export default function DashboardPage() {
 
       {/* ─── 4. आपके 10 सदस्य लाभ ─────────────────────────────────────── */}
       <div>
-        <h2 className="text-xl font-bold text-[#232F46] mb-1">आपके 10 सदस्य लाभ</h2>
+        <h2 className="text-xl font-bold text-[#232F46] mb-1">{t('journey.benefitsTitle')}</h2>
         <p className="text-sm text-gray-500 mb-6">
-          किसी भी योजना पर क्लिक करें और पूरी जानकारी देखें।
+          {t('journey.benefitsSubtitle')}
         </p>
 
         {CATEGORIES.map((category) => {
@@ -142,9 +144,9 @@ export default function DashboardPage() {
               {/* Category heading — rendered directly, no BenefitCategoryGroup component */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-1 h-5 rounded-full bg-[#ED8C32]" />
-                <h3 className="text-base font-bold text-[#232F46]">{category}</h3>
+                <h3 className="text-base font-bold text-[#232F46]">{t(category)}</h3>
                 <span className="text-xs text-gray-400 font-medium">
-                  ({cards.length} योजनाएं)
+                  ({cards.length} {t('journey.schemesCount')})
                 </span>
               </div>
 
@@ -169,30 +171,30 @@ export default function DashboardPage() {
         <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <h3 className="font-bold text-[#232F46] flex items-center gap-2">
             <Activity className="w-5 h-5 text-gray-400" />
-            Recent Activity
+            {t('dashboard.recentActivity')}
           </h3>
           <Link
             to="/notifications"
             className="text-xs font-bold text-[#ED8C32] hover:text-[#ED8C32]/80 flex items-center"
           >
-            View All <ChevronRight className="w-3 h-3 ml-1" />
+            {t('dashboard.viewAll')} <ChevronRight className="w-3 h-3 ml-1" />
           </Link>
         </div>
         <div className="divide-y divide-gray-100">
           {[
             {
-              title: 'Payment Approved',
-              time: '2 hours ago',
+              title: t('timeline.paymentApproved'),
+              time: `2 ${t('timeline.hoursAgo')}`,
               icon: <Heart className="w-4 h-4 text-green-500" />,
             },
             {
-              title: 'New Member Joined Network',
-              time: '1 day ago',
+              title: t('timeline.newMember'),
+              time: `1 ${t('timeline.dayAgo')}`,
               icon: <Users className="w-4 h-4 text-blue-500" />,
             },
             {
-              title: 'Welcome Letter Generated',
-              time: '2 days ago',
+              title: t('timeline.welcomeLetter'),
+              time: `2 ${t('timeline.daysAgo')}`,
               icon: <Award className="w-4 h-4 text-[#ED8C32]" />,
             },
           ].map((activity, i) => (
@@ -215,13 +217,13 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <h3 className="font-bold text-[#232F46] mb-4 text-sm uppercase tracking-wide">
-            Member Network Overview
+            {t('dashboard.networkOverview')}
           </h3>
           <div className="grid grid-cols-3 gap-4 text-center">
             {[
-              { label: 'Direct Members', value: '12', color: 'text-[#ED8C32]' },
-              { label: 'Team Size', value: '45', color: 'text-blue-600' },
-              { label: 'Active This Month', value: '8', color: 'text-green-600' },
+              { label: t('dashboard.directMembers'), value: '12', color: 'text-[#ED8C32]' },
+              { label: t('dashboard.teamSize'), value: '45', color: 'text-blue-600' },
+              { label: t('dashboard.activeMonth'), value: '8', color: 'text-green-600' },
             ].map((stat, i) => (
               <div key={i} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
                 <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
@@ -235,7 +237,7 @@ export default function DashboardPage() {
               onClick={() => navigate('/network/overview')}
               rightIcon={<ArrowUpRight className="w-4 h-4" />}
             >
-              View Full Network
+              {t('dashboard.viewFullNetwork')}
             </Button>
           </div>
         </Card>
@@ -243,27 +245,27 @@ export default function DashboardPage() {
         <div className="space-y-4">
           <Card className="bg-[#232F46] text-white border-none">
             <Award className="w-8 h-8 text-[#ED8C32] mb-4" />
-            <h3 className="font-bold text-lg mb-2">Quick Links</h3>
+            <h3 className="font-bold text-lg mb-2">{t('dashboard.quickLinks')}</h3>
             <div className="space-y-2 mt-4">
               <Link
                 to="/account/kyc-verification"
                 className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
               >
-                <span>KYC Verification</span>
+                <span>{t('dashboard.kycVerification')}</span>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
               <Link
                 to="/welfare/request-assistance"
                 className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
               >
-                <span>Request Welfare Support</span>
+                <span>{t('dashboard.requestWelfare')}</span>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
               <Link
                 to="/network/direct-referrals"
                 className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
               >
-                <span>Direct Referrals</span>
+                <span>{t('sidebar.directReferrals')}</span>
                 <ChevronRight className="w-4 h-4 text-gray-400" />
               </Link>
             </div>

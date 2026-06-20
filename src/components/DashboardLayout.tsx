@@ -6,10 +6,13 @@ import {
   Menu, X, Search, Bell, Home, Users, Heart, User
 } from 'lucide-react';
 import { Avatar } from './ui/Avatar';
+import { useTranslation } from '../context/LanguageContext';
+import { LanguageSwitcher } from './ui/LanguageSwitcher';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [adminUser, setAdminUser] = useState<any>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -46,10 +49,10 @@ export default function DashboardLayout() {
   if (!adminUser) return null;
 
   const mobileNavItems = [
-    { icon: <Home className="w-6 h-6" />, label: 'Home', path: '/dashboard' },
-    { icon: <Users className="w-6 h-6" />, label: 'Network', path: '/network/overview' },
-    { icon: <Heart className="w-6 h-6" />, label: 'Donate', path: '/welfare/make-donation' },
-    { icon: <User className="w-6 h-6" />, label: 'Profile', path: '/account/profile-settings' },
+    { icon: <Home className="w-6 h-6" />, label: t('sidebar.dashboard'), path: '/dashboard' },
+    { icon: <Users className="w-6 h-6" />, label: t('sidebar.overview'), path: '/network/overview' },
+    { icon: <Heart className="w-6 h-6" />, label: t('dashboard.donateNow'), path: '/welfare/make-donation' },
+    { icon: <User className="w-6 h-6" />, label: t('sidebar.profileSettings'), path: '/account/profile-settings' },
   ];
 
   return (
@@ -121,13 +124,15 @@ export default function DashboardLayout() {
               </div>
               <input
                 type="text"
-                placeholder="Search members, transactions, documents..."
+                placeholder={t('header.searchPlaceholder')}
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:border-[#ED8C32] focus:ring-2 focus:ring-[#ED8C32]/20 transition-all"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <LanguageSwitcher />
+            
             <Link to="/notifications" className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
