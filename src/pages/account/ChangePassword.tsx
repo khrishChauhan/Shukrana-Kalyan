@@ -7,6 +7,8 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Eye, EyeOff, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Input } from '../../components/ui/Input';
+import { Button } from '../../components/ui/Button';
 
 const Req = ({ met, label }: { met: boolean; label: string }) => (
   <div className={`flex items-center gap-2 text-sm font-semibold transition-colors duration-200 ${met ? 'text-emerald-600' : 'text-gray-400'}`}>
@@ -46,9 +48,9 @@ export default function ChangePassword() {
       case 2:
         return { strengthLabel: 'Weak', strengthBar: '[====----]', strengthColorClass: 'text-red-500' };
       case 3:
-        return { strengthLabel: 'Fair', strengthBar: '[====----]', strengthColorClass: 'text-brand-primary' };
+        return { strengthLabel: 'Fair', strengthBar: '[====----]', strengthColorClass: 'text-[#ED8C32]' };
       case 4:
-        return { strengthLabel: 'Good', strengthBar: '[======--]', strengthColorClass: 'text-brand-primary' };
+        return { strengthLabel: 'Good', strengthBar: '[======--]', strengthColorClass: 'text-[#ED8C32]' };
       case 5:
         return { strengthLabel: 'Strong', strengthBar: '[========]', strengthColorClass: 'text-emerald-600' };
       default:
@@ -79,29 +81,6 @@ export default function ChangePassword() {
     setConfirm('');
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px',
-    padding: '12px 42px 12px 14px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    color: '#232F46',
-    outline: 'none',
-    backgroundColor: '#FFFFFF',
-    transition: 'border-color 0.2s',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: '12px',
-    fontWeight: 700,
-    color: '#232F46',
-    marginBottom: '6px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -111,15 +90,15 @@ export default function ChangePassword() {
     >
       {/* Page Header / Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 mb-5 uppercase tracking-wider">
-        <Link to="/dashboard" className="hover:text-brand-primary transition-colors">Dashboard</Link>
+        <Link to="/dashboard" className="hover:text-[#ED8C32] transition-colors">Dashboard</Link>
         <ChevronRight size={12} />
         <span>My Account</span>
         <ChevronRight size={12} />
-        <span className="text-brand-primary">Change Password</span>
+        <span className="text-[#ED8C32]">Change Password</span>
       </nav>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-brand-accent tracking-tight m-0">SECURITY SETTINGS</h1>
+        <h1 className="text-3xl font-extrabold text-[#232F46] tracking-tight m-0">SECURITY SETTINGS</h1>
         <p className="text-sm text-gray-500 mt-1.5">Update your password to keep your account secure.</p>
       </div>
 
@@ -133,63 +112,57 @@ export default function ChangePassword() {
 
       {/* Centered Wrapper - Max-width 600px */}
       <div className="max-w-[600px] mx-auto">
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-5 shadow-sm">
           <h2 className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-2 border-b border-gray-100 pb-2.5">
             CHANGE PASSWORD
           </h2>
 
           {/* Current Password */}
-          <div>
-            <label style={labelStyle}>Current Password</label>
-            <div className="relative">
-              <input
-                type={showCurrent ? 'text' : 'password'}
-                value={current}
-                onChange={(e) => setCurrent(e.target.value)}
-                style={inputStyle}
-                className="focus:border-brand-primary font-mono"
-                required
-              />
+          <Input
+            label="Current Password"
+            type={showCurrent ? 'text' : 'password'}
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            className="font-mono"
+            required
+            rightIcon={
               <button
                 type="button"
                 onClick={() => setShowCurrent(!showCurrent)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-accent cursor-pointer p-1"
+                className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
                 title={showCurrent ? 'Hide password' : 'Show password'}
               >
                 {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
-            </div>
-          </div>
+            }
+          />
 
           {/* New Password */}
-          <div>
-            <label style={labelStyle}>New Password</label>
-            <div className="relative">
-              <input
-                type={showNew ? 'text' : 'password'}
-                value={newPw}
-                onChange={(e) => setNewPw(e.target.value)}
-                style={inputStyle}
-                className="focus:border-brand-primary font-mono"
-                required
-              />
+          <Input
+            label="New Password"
+            type={showNew ? 'text' : 'password'}
+            value={newPw}
+            onChange={(e) => setNewPw(e.target.value)}
+            className="font-mono"
+            required
+            rightIcon={
               <button
                 type="button"
                 onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-accent cursor-pointer p-1"
+                className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
                 title={showNew ? 'Hide password' : 'Show password'}
               >
                 {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
-            </div>
-          </div>
+            }
+          />
 
           {/* ValidationTracker - Strength Meter & Checklist */}
           {newPw.length > 0 && (
             <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-3.5">
               
               {/* Strength Meter */}
-              <div className="flex items-center gap-2 text-xs font-bold text-brand-accent">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#232F46]">
                 <span>Password Strength:</span>
                 <span className="font-mono tracking-wider">{strengthBar}</span>
                 <span className={`uppercase tracking-wide text-[11px] ${strengthColorClass}`}>{strengthLabel}</span>
@@ -208,25 +181,24 @@ export default function ChangePassword() {
 
           {/* Confirm New Password */}
           <div>
-            <label style={labelStyle}>Confirm New Password</label>
-            <div className="relative">
-              <input
-                type={showConfirm ? 'text' : 'password'}
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                style={inputStyle}
-                className="focus:border-brand-primary font-mono"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-accent cursor-pointer p-1"
-                title={showConfirm ? 'Hide password' : 'Show password'}
-              >
-                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
+            <Input
+              label="Confirm New Password"
+              type={showConfirm ? 'text' : 'password'}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="font-mono"
+              required
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
+                  title={showConfirm ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              }
+            />
             
             {/* Match Alert */}
             {showMatchError && (
@@ -239,24 +211,19 @@ export default function ChangePassword() {
 
           {/* Form Actions */}
           <div className="flex justify-end items-center gap-3 mt-2 border-t border-gray-100 pt-4">
-            <button
+            <Button
               type="button"
               onClick={handleCancel}
-              className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm font-bold text-brand-accent bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+              variant="outline"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={!canSubmit}
-              className={`px-6 py-2.5 rounded-lg text-sm font-extrabold border-none cursor-pointer transition-colors transition-all ${
-                canSubmit
-                  ? 'bg-brand-primary text-white hover:bg-brand-primary-hover shadow-sm'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
             >
               Update Password
-            </button>
+            </Button>
           </div>
         </form>
       </div>

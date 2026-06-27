@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Download, Printer } from 'lucide-react';
+import { Download, Printer, ShieldCheck } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
 
 const MEMBER = {
@@ -91,21 +92,23 @@ export default function MembershipCard() {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 mt-6 print:hidden">
-        <button
+        <Button
           type="button"
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 bg-[#232F46] hover:bg-[#1a2334] text-white text-sm font-bold rounded-lg transition-colors"
+          variant="secondary"
+          className="flex-1"
+          leftIcon={<Download className="w-4 h-4" />}
         >
-          <Download className="w-4 h-4" />
           Download Card
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => window.print()}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-2.5 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold rounded-lg transition-colors"
+          variant="outline"
+          className="flex-1"
+          leftIcon={<Printer className="w-4 h-4" />}
         >
-          <Printer className="w-4 h-4" />
           Print Card
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

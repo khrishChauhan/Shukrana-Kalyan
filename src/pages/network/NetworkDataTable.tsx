@@ -2,6 +2,9 @@ import React from 'react';
 import { Avatar } from '../../components/ui/Avatar';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Card } from '../../components/ui/Card';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
+import { Skeleton } from '../../components/ui/Skeleton';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 export interface NetworkMember {
   id: string;
@@ -11,48 +14,76 @@ export interface NetworkMember {
   mobile: string;
 }
 
-export function NetworkDataTable({ members }: { members: NetworkMember[] }) {
+export function NetworkDataTable({ members, loading = false }: { members: NetworkMember[], loading?: boolean }) {
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map(i => (
+          <Card key={i} className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-10 h-10 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="w-32 h-4" />
+                <Skeleton className="w-20 h-3" />
+              </div>
+            </div>
+            <Skeleton className="w-24 h-6 rounded-full" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (members.length === 0) {
+    return (
+      <EmptyState
+        title="No members found"
+        description="There are currently no members matching your criteria."
+      />
+    );
+  }
+
   return (
     <>
       {/* Desktop View */}
-      <div className="hidden md:block w-full overflow-x-auto border border-gray-200 rounded-xl bg-white shadow-sm">
-        <table className="w-full text-left text-sm text-gray-600">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-bold tracking-wider border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-4">Member</th>
-              <th className="px-6 py-4">ID</th>
-              <th className="px-6 py-4">Join Date</th>
-              <th className="px-6 py-4">Mobile</th>
-              <th className="px-6 py-4">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Member</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Join Date</TableHead>
+              <TableHead>Mobile</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {members.map((member) => (
-              <tr key={member.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-4">
+              <TableRow key={member.id}>
+                <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar initials={member.name} size="sm" />
                     <span className="font-bold text-[#232F46]">{member.name}</span>
                   </div>
-                </td>
-                <td className="px-6 py-4 font-mono">{member.id}</td>
-                <td className="px-6 py-4">{member.joinDate}</td>
-                <td className="px-6 py-4">{member.mobile}</td>
-                <td className="px-6 py-4">
+                </TableCell>
+                <TableCell className="font-mono text-gray-500">{member.id}</TableCell>
+                <TableCell>{member.joinDate}</TableCell>
+                <TableCell>{member.mobile}</TableCell>
+                <TableCell>
                   <StatusBadge 
                     status={member.status === 'Verified' ? 'Active' : member.status} 
                   />
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
         {members.map((member) => (
-          <Card key={member.id} className="p-4" noPadding>
+          <Card key={member.id} className="p-4 hover:border-[#ED8C32] transition-colors" noPadding>
             <div className="p-4 flex items-start justify-between border-b border-gray-100">
               <div className="flex items-center gap-3">
                 <Avatar initials={member.name} size="md" />

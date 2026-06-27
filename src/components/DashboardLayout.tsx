@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Menu, X, Search, Bell, Home, Users, Heart, User
+  Menu, X, Search, Bell, Home, Users, User
 } from 'lucide-react';
 import { Avatar } from './ui/Avatar';
 import { useTranslation } from '../context/LanguageContext';
@@ -51,7 +51,6 @@ export default function DashboardLayout() {
   const mobileNavItems = [
     { icon: <Home className="w-6 h-6" />, label: t('sidebar.dashboard'), path: '/dashboard' },
     { icon: <Users className="w-6 h-6" />, label: t('sidebar.overview'), path: '/network/overview' },
-    { icon: <Heart className="w-6 h-6" />, label: t('dashboard.donateNow'), path: '/welfare/make-donation' },
     { icon: <User className="w-6 h-6" />, label: t('sidebar.profileSettings'), path: '/account/profile-settings' },
   ];
 

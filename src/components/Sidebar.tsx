@@ -7,9 +7,9 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Award, LayoutDashboard, UserCheck, Heart, Users,
-  MessageSquare, Settings, LogOut, ChevronLeft,
-  ChevronRight, ChevronDown, Gift, Bell
+  Award, LayoutDashboard, UserCheck, Users,
+  LogOut, ChevronLeft,
+  ChevronRight, ChevronDown, Bell
 } from 'lucide-react';
 
 export interface SubmenuItem {
@@ -51,8 +51,9 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.directReferrals', path: '/network/direct-referrals' },
       { nameKey: 'sidebar.verifiedMembers', path: '/network/verified-members' },
       { nameKey: 'sidebar.pendingApproval', path: '/network/pending-approval' },
-      { nameKey: 'sidebar.networkLevels', path: '/network/network-levels' },
-      { nameKey: 'sidebar.networkTree', path: '/network/network-tree' }
+      // Hidden for current MVP:
+      // { nameKey: 'sidebar.networkLevels', path: '/network/network-levels' },
+      // { nameKey: 'sidebar.networkTree', path: '/network/network-tree' }
     ]
   },
   {

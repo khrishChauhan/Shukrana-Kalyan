@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   Users,
   Bell,
-  BarChart2,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -22,8 +20,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',      path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Members',        path: '/admin/members',   icon: Users },
   { label: 'Notifications',  path: '/admin/notifications', icon: Bell },
-  { label: 'Reports',        icon: BarChart2,  comingSoon: true },
-  { label: 'Settings',       icon: Settings,   comingSoon: true },
 ];
 
 export default function AdminSidebar() {
@@ -63,30 +59,7 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map(({ label, path, icon: Icon, comingSoon }) => {
-          if (comingSoon) {
-            return (
-              <div
-                key={label}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/40 cursor-not-allowed select-none ${
-                  collapsed ? 'justify-center' : ''
-                }`}
-                title={collapsed ? label : undefined}
-              >
-                <Icon className="w-5 h-5 shrink-0" />
-                {!collapsed && (
-                  <span className="text-sm font-medium flex-1 flex items-center justify-between">
-                    {label}
-                    <span className="text-[10px] font-bold uppercase tracking-wide bg-white/10 px-1.5 py-0.5 rounded text-white/50">
-                      Soon
-                    </span>
-                  </span>
-                )}
-              </div>
-            );
-          }
-
-          return (
+        {NAV_ITEMS.map(({ label, path, icon: Icon }) => (
             <NavLink
               key={label}
               to={path!}
@@ -106,8 +79,8 @@ export default function AdminSidebar() {
                 <span className="text-sm font-medium">{label}</span>
               )}
             </NavLink>
-          );
-        })}
+          )
+        )}
       </nav>
 
       {/* Logout */}

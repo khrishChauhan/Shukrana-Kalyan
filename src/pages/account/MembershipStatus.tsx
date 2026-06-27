@@ -4,6 +4,7 @@ import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ShieldCheck, Calendar, CreditCard, Activity } from 'lucide-react';
 import { useTranslation } from '../../context/LanguageContext';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui/Table';
 
 export default function MembershipStatus() {
   const { t } = useTranslation();
@@ -73,39 +74,37 @@ export default function MembershipStatus() {
         </div>
       </div>
 
-      <Card>
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-gray-100">
           <h3 className="text-lg font-bold text-[#232F46]">{t('membership.history')}</h3>
         </div>
-        <div className="p-0">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-6 py-4 font-bold">{t('membership.date')}</th>
-                <th className="px-6 py-4 font-bold">{t('membership.event')}</th>
-                <th className="px-6 py-4 font-bold">{t('membership.status')}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              <tr>
-                <td className="px-6 py-4 text-gray-600">Oct 16, 2023</td>
-                <td className="px-6 py-4 font-medium text-[#232F46]">{t('membership.verified')}</td>
-                <td className="px-6 py-4"><StatusBadge status="Active" /></td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 text-gray-600">Oct 15, 2023</td>
-                <td className="px-6 py-4 font-medium text-[#232F46]">{t('membership.submitted')}</td>
-                <td className="px-6 py-4"><StatusBadge status="Pending Verification" /></td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 text-gray-600">Oct 15, 2023</td>
-                <td className="px-6 py-4 font-medium text-[#232F46]">{t('membership.registered')}</td>
-                <td className="px-6 py-4"><StatusBadge status="Pending Approval" /></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Card>
+        <Table className="border-0 rounded-none shadow-none">
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t('membership.date')}</TableHead>
+              <TableHead>{t('membership.event')}</TableHead>
+              <TableHead>{t('membership.status')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell className="text-gray-600">Oct 16, 2023</TableCell>
+              <TableCell className="font-medium text-[#232F46]">{t('membership.verified')}</TableCell>
+              <TableCell><StatusBadge status="Active" /></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="text-gray-600">Oct 15, 2023</TableCell>
+              <TableCell className="font-medium text-[#232F46]">{t('membership.submitted')}</TableCell>
+              <TableCell><StatusBadge status="Pending Verification" /></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="text-gray-600">Oct 15, 2023</TableCell>
+              <TableCell className="font-medium text-[#232F46]">{t('membership.registered')}</TableCell>
+              <TableCell><StatusBadge status="Pending Approval" /></TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

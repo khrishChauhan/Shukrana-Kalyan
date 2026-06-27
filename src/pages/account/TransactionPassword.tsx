@@ -7,6 +7,9 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Lock, ShieldAlert, CheckCircle2, XCircle, Eye, EyeOff, ChevronRight } from 'lucide-react';
+import { Input } from '../../components/ui/Input';
+import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
 
 interface PasswordInputProps {
   label: string;
@@ -19,23 +22,22 @@ const PasswordInput = ({ label, value, onChange, placeholder }: PasswordInputPro
   const [show, setShow] = useState(false);
   return (
     <div className="mb-4">
-      <label className="block text-xs font-bold text-brand-charcoal/70 uppercase tracking-wider mb-1.5">{label}</label>
-      <div className="relative">
-        <input
-          type={show ? 'text' : 'password'}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          className="w-full border border-brand-gray/80 rounded-xl px-4 py-2.5 text-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none bg-white font-sans text-brand-charcoal pr-10"
-        />
-        <button
-          type="button"
-          onClick={() => setShow(!show)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-gray0 hover:text-brand-charcoal transition-colors"
-        >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      </div>
+      <Input
+        label={label}
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rightIcon={
+          <button
+            type="button"
+            onClick={() => setShow(!show)}
+            className="text-gray-400 hover:text-[#232F46] transition-colors cursor-pointer p-1"
+          >
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        }
+      />
     </div>
   );
 };
@@ -94,7 +96,7 @@ export default function TransactionPassword() {
 
       <div className="max-w-2xl space-y-5">
         {/* Password Form Card */}
-        <div className="bg-white rounded-2xl border border-slate-150 shadow-brand overflow-hidden">
+        <Card className="p-0 overflow-hidden">
           <div className="px-6 py-4 border-b border-brand-gray bg-brand-gray/50 flex items-center gap-2">
             <Lock size={14} className="text-brand-charcoal/60" />
             <h3 className="text-xs font-bold text-brand-charcoal/60 uppercase tracking-widest font-mono">Change Transaction Password</h3>
@@ -121,21 +123,20 @@ export default function TransactionPassword() {
               )}
 
               <div className="mt-6 flex items-center justify-between">
-                <button type="button" className="text-brand-primary text-xs font-black hover:underline font-mono">Forgot Password?</button>
+                <button type="button" className="text-[#ED8C32] text-xs font-black hover:underline font-mono cursor-pointer">Forgot Password?</button>
                 <div className="flex gap-3">
-                  <button type="button" className="px-4 py-2.5 border border-brand-gray/80 text-brand-charcoal rounded-xl text-sm font-bold hover:bg-brand-gray transition-colors">Cancel</button>
-                  <button
+                  <Button type="button" variant="outline">Cancel</Button>
+                  <Button
                     type="submit"
                     disabled={score < 5 || newPassword !== confirmPassword}
-                    className="px-4 py-2.5 bg-brand-primary text-brand-charcoal rounded-xl text-sm font-black hover:bg-brand-light0 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-brand"
                   >
                     Update Password
-                  </button>
+                  </Button>
                 </div>
               </div>
             </form>
           </div>
-        </div>
+        </Card>
 
         {/* Requirements Card */}
         <div className="bg-brand-gray rounded-2xl border border-brand-gray/80 p-5">

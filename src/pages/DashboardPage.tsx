@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
-  Users, UserCheck, Heart, ArrowUpRight, Award,
-  ChevronRight, Activity, ShieldCheck, Clock,
+  Heart, ChevronRight, Activity, Clock, ShieldCheck,
+  CreditCard, Award, FileText, UserCircle, Bell, Users, UserCheck, UserPlus, Megaphone
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
@@ -40,96 +40,39 @@ export default function DashboardPage() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-8 max-w-6xl mx-auto"
+      className="space-y-8 max-w-6xl mx-auto pb-10"
     >
-
       {/* ─── 1. WELCOME BANNER ─────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#232F46]">{t('dashboard.welcomeTitle')}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {t('dashboard.welcomeSubtitle')}
-          </p>
-        </div>
-        <div className="flex gap-3">
+      <Card className="bg-[#232F46] text-white border-0 shadow-sm relative overflow-hidden p-6 md:p-8">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white">
+              {t('dashboard.welcomeTitle')}, {adminUser.name || 'Member'}
+            </h1>
+            <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white/80">
+              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full">
+                <ShieldCheck className="w-4 h-4 text-[#ED8C32]" /> Active Member
+              </span>
+              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full">
+                <Clock className="w-4 h-4 text-[#ED8C32]" /> Joined: {adminUser.joinDate || 'Oct 15, 2023'}
+              </span>
+            </div>
+          </div>
           <Button
             onClick={() => navigate('/welfare/make-donation')}
+            className="bg-[#ED8C32] text-white hover:bg-[#D97A24] border-0 shrink-0 shadow-sm"
             leftIcon={<Heart className="w-4 h-4" />}
           >
             {t('dashboard.donateNow')}
           </Button>
         </div>
-      </div>
+      </Card>
 
-      {/* ─── 2. MEMBERSHIP STATUS KPI CARDS ────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card
-          className="flex flex-col hover:border-[#ED8C32] transition-colors cursor-pointer"
-          onClick={() => navigate('/account/membership-status')}
-        >
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-green-50 text-green-600 rounded-xl">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <StatusBadge status="Active" />
-          </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiMembership')}</p>
-          <h3 className="text-xl font-bold text-[#232F46]">{t('dashboard.kpiVerified')}</h3>
-        </Card>
-
-        <Card
-          className="flex flex-col hover:border-[#ED8C32] transition-colors cursor-pointer"
-          onClick={() => navigate('/account/profile-settings')}
-        >
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-              <UserCheck className="w-6 h-6" />
-            </div>
-          </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiProfile')}</p>
-          <h3 className="text-xl font-bold text-[#232F46]">85%</h3>
-          <div className="w-full bg-gray-100 h-1.5 rounded-full mt-3 overflow-hidden">
-            <div className="bg-blue-500 h-full w-[85%] rounded-full" />
-          </div>
-        </Card>
-
-        <Card
-          className="flex flex-col hover:border-[#ED8C32] transition-colors cursor-pointer"
-          onClick={() => navigate('/network/overview')}
-        >
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-orange-50 text-[#ED8C32] rounded-xl">
-              <Users className="w-6 h-6" />
-            </div>
-          </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiNetwork')}</p>
-          <div className="flex items-end gap-2">
-            <h3 className="text-2xl font-bold text-[#232F46]">45</h3>
-            <span className="text-xs font-medium text-green-600 mb-1">{t('dashboard.kpiThisWeek')}</span>
-          </div>
-        </Card>
-
-        <Card
-          className="flex flex-col hover:border-[#ED8C32] transition-colors cursor-pointer"
-          onClick={() => navigate('/account/membership-status')}
-        >
-          <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-orange-50 text-[#ED8C32] rounded-xl">
-              <Award className="w-6 h-6" />
-            </div>
-          </div>
-          <p className="text-sm font-semibold text-gray-500 mb-1">{t('dashboard.kpiDays')}</p>
-          <div className="flex items-end gap-2">
-            <h3 className="text-2xl font-bold text-[#232F46]">{currentDays}</h3>
-            <span className="text-xs font-medium text-gray-400 mb-1">{t('dashboard.kpiDaysLabel')}</span>
-          </div>
-        </Card>
-      </div>
-
-      {/* ─── 3. BENEFIT JOURNEY ─────────────────────────────────────────── */}
+      {/* ─── 2. MEMBERSHIP JOURNEY ─────────────────────────────────────── */}
       <BenefitJourney currentDays={currentDays} />
 
-      {/* ─── 4. आपके 10 सदस्य लाभ ─────────────────────────────────────── */}
+      {/* ─── 3. आपके 10 सदस्य लाभ ─────────────────────────────────────── */}
       <div>
         <h2 className="text-xl font-bold text-[#232F46] mb-1">{t('journey.benefitsTitle')}</h2>
         <p className="text-sm text-gray-500 mb-6">
@@ -141,7 +84,6 @@ export default function DashboardPage() {
           if (cards.length === 0) return null;
           return (
             <div key={category} className="mb-8">
-              {/* Category heading — rendered directly, no BenefitCategoryGroup component */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-1 h-5 rounded-full bg-[#ED8C32]" />
                 <h3 className="text-base font-bold text-[#232F46]">{t(category)}</h3>
@@ -149,8 +91,6 @@ export default function DashboardPage() {
                   ({cards.length} {t('journey.schemesCount')})
                 </span>
               </div>
-
-              {/* Responsive grid — 1 col → 2 cols → 5 cols */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 items-stretch">
                 {cards.map((benefit) => (
                   <BenefitCard
@@ -166,108 +106,171 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* ─── 5. RECENT ACTIVITY TIMELINE ───────────────────────────────── */}
-      <Card className="p-0 overflow-hidden">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-          <h3 className="font-bold text-[#232F46] flex items-center gap-2">
-            <Activity className="w-5 h-5 text-gray-400" />
-            {t('dashboard.recentActivity')}
-          </h3>
-          <Link
-            to="/notifications"
-            className="text-xs font-bold text-[#ED8C32] hover:text-[#ED8C32]/80 flex items-center"
+      {/* ─── 4. QUICK ACTIONS ──────────────────────────────────────────── */}
+      <div>
+        <h2 className="text-lg font-bold text-[#232F46] mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <Card 
+            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
+            onClick={() => navigate('/account/membership-card')}
           >
-            {t('dashboard.viewAll')} <ChevronRight className="w-3 h-3 ml-1" />
-          </Link>
+            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
+              <CreditCard className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
+            </div>
+            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Membership Card</span>
+          </Card>
+          <Card 
+            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
+            onClick={() => navigate('/account/welcome-letter')}
+          >
+            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
+              <Award className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
+            </div>
+            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Welcome Letter</span>
+          </Card>
+          <Card 
+            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
+            onClick={() => navigate('/account/consent-letter')}
+          >
+            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
+              <FileText className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
+            </div>
+            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Consent Letter</span>
+          </Card>
+          <Card 
+            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
+            onClick={() => navigate('/account/profile-settings')}
+          >
+            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
+              <UserCircle className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
+            </div>
+            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Edit Profile</span>
+          </Card>
+          <Card 
+            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
+            onClick={() => navigate('/notifications')}
+          >
+            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
+              <Bell className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
+            </div>
+            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Notifications</span>
+          </Card>
         </div>
-        <div className="divide-y divide-gray-100">
-          {[
-            {
-              title: t('timeline.paymentApproved'),
-              time: `2 ${t('timeline.hoursAgo')}`,
-              icon: <Heart className="w-4 h-4 text-green-500" />,
-            },
-            {
-              title: t('timeline.newMember'),
-              time: `1 ${t('timeline.dayAgo')}`,
-              icon: <Users className="w-4 h-4 text-blue-500" />,
-            },
-            {
-              title: t('timeline.welcomeLetter'),
-              time: `2 ${t('timeline.daysAgo')}`,
-              icon: <Award className="w-4 h-4 text-[#ED8C32]" />,
-            },
-          ].map((activity, i) => (
-            <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
-              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                {activity.icon}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* ─── 5. COMMUNITY OVERVIEW ─────────────────────────────────────── */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="p-6">
+            <h3 className="font-bold text-[#232F46] mb-4 text-sm uppercase tracking-wide">
+              Community Overview
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+                <Users className="w-6 h-6 text-[#ED8C32] mb-2" />
+                <p className="text-2xl font-bold text-[#232F46]">12</p>
+                <p className="text-xs text-gray-500 mt-1">My Referrals</p>
               </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-bold text-[#232F46]">{activity.title}</h4>
-                <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                  <Clock className="w-3 h-3" /> {activity.time}
-                </p>
+              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+                <UserCheck className="w-6 h-6 text-green-600 mb-2" />
+                <p className="text-2xl font-bold text-[#232F46]">8</p>
+                <p className="text-xs text-gray-500 mt-1">Verified Members</p>
+              </div>
+              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+                <UserPlus className="w-6 h-6 text-blue-600 mb-2" />
+                <p className="text-2xl font-bold text-[#232F46]">4</p>
+                <p className="text-xs text-gray-500 mt-1">Pending Members</p>
               </div>
             </div>
-          ))}
+            <div className="mt-5 text-center">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/network/overview')}
+                size="sm"
+              >
+                View Community
+              </Button>
+            </div>
+          </Card>
+
+          {/* ─── 6. RECENT ACTIVITY TIMELINE ───────────────────────────────── */}
+          <Card className="p-0 overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h3 className="font-bold text-[#232F46] flex items-center gap-2">
+                <Activity className="w-5 h-5 text-gray-400" />
+                {t('dashboard.recentActivity')}
+              </h3>
+              <Link
+                to="/account/activity-timeline"
+                className="text-xs font-bold text-[#ED8C32] hover:text-[#D97A24] flex items-center"
+              >
+                {t('dashboard.viewAll')} <ChevronRight className="w-3 h-3 ml-1" />
+              </Link>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {[
+                {
+                  title: t('timeline.paymentApproved'),
+                  time: `2 ${t('timeline.hoursAgo')}`,
+                  icon: <Heart className="w-4 h-4 text-green-500" />,
+                },
+                {
+                  title: t('timeline.newMember'),
+                  time: `1 ${t('timeline.dayAgo')}`,
+                  icon: <Users className="w-4 h-4 text-blue-500" />,
+                },
+                {
+                  title: t('timeline.welcomeLetter'),
+                  time: `2 ${t('timeline.daysAgo')}`,
+                  icon: <Award className="w-4 h-4 text-[#ED8C32]" />,
+                },
+              ].map((activity, i) => (
+                <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                    {activity.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-[#232F46]">{activity.title}</h4>
+                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                      <Clock className="w-3 h-3" /> {activity.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
-      </Card>
 
-      {/* ─── 6. MEMBER NETWORK OVERVIEW ────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <h3 className="font-bold text-[#232F46] mb-4 text-sm uppercase tracking-wide">
-            {t('dashboard.networkOverview')}
-          </h3>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            {[
-              { label: t('dashboard.directMembers'), value: '12', color: 'text-[#ED8C32]' },
-              { label: t('dashboard.teamSize'), value: '45', color: 'text-blue-600' },
-              { label: t('dashboard.activeMonth'), value: '8', color: 'text-green-600' },
-            ].map((stat, i) => (
-              <div key={i} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
+        {/* ─── 7. ANNOUNCEMENTS ──────────────────────────────────────────── */}
+        <div className="lg:col-span-1 space-y-6">
+          <Card className="p-0 overflow-hidden">
+            <div className="p-5 border-b border-gray-100 bg-[#232F46] text-white">
+              <h3 className="font-bold flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-[#ED8C32]" />
+                Announcements
+              </h3>
+            </div>
+            <div className="p-5 space-y-4 bg-white">
+              <div className="border-l-2 border-[#ED8C32] pl-3">
+                <p className="text-xs text-gray-400 font-medium mb-1">June 20, 2026</p>
+                <h4 className="text-sm font-bold text-[#232F46] leading-tight mb-1">Upcoming Health Camp in Mumbai</h4>
+                <p className="text-xs text-gray-500 line-clamp-2">Join us for the free health checkup camp organized for all verified NGO members and their families.</p>
               </div>
-            ))}
-          </div>
-          <div className="mt-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/network/overview')}
-              rightIcon={<ArrowUpRight className="w-4 h-4" />}
-            >
-              {t('dashboard.viewFullNetwork')}
-            </Button>
-          </div>
-        </Card>
-
-        <div className="space-y-4">
-          <Card className="bg-[#232F46] text-white border-none">
-            <Award className="w-8 h-8 text-[#ED8C32] mb-4" />
-            <h3 className="font-bold text-lg mb-2">{t('dashboard.quickLinks')}</h3>
-            <div className="space-y-2 mt-4">
-              <Link
-                to="/account/kyc-verification"
-                className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
-              >
-                <span>{t('dashboard.kycVerification')}</span>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-              </Link>
-              <Link
-                to="/welfare/request-assistance"
-                className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
-              >
-                <span>{t('dashboard.requestWelfare')}</span>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-              </Link>
-              <Link
-                to="/network/direct-referrals"
-                className="flex items-center justify-between p-2.5 rounded-lg hover:bg-white/10 text-sm font-medium text-gray-300 transition-colors"
-              >
-                <span>{t('sidebar.directReferrals')}</span>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-              </Link>
+              <div className="border-l-2 border-blue-500 pl-3">
+                <p className="text-xs text-gray-400 font-medium mb-1">June 15, 2026</p>
+                <h4 className="text-sm font-bold text-[#232F46] leading-tight mb-1">New Education Grants Available</h4>
+                <p className="text-xs text-gray-500 line-clamp-2">Applications for the newly introduced girl child education fund are now open for the current academic year.</p>
+              </div>
+              <div className="border-l-2 border-gray-200 pl-3">
+                <p className="text-xs text-gray-400 font-medium mb-1">June 01, 2026</p>
+                <h4 className="text-sm font-bold text-gray-600 leading-tight mb-1">Digital Literacy Program Wrap-up</h4>
+                <p className="text-xs text-gray-500 line-clamp-2">Over 500 members successfully completed the basic digital skills course this May.</p>
+              </div>
+            </div>
+            <div className="p-3 border-t border-gray-100 bg-gray-50 text-center">
+              <Button variant="outline" size="sm" className="w-full">
+                View All Announcements
+              </Button>
             </div>
           </Card>
         </div>

@@ -153,17 +153,14 @@ export default function ActivityTimelinePage() {
           {['All Activities', 'Account', 'Membership', 'KYC', 'Donations', 'Network'].map(cat => {
             const labelKey = cat === 'All Activities' ? 'all' : cat.toLowerCase();
             return (
-              <button
+              <Button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${
-                  filter === cat 
-                    ? 'bg-[#232F46] text-white border-[#232F46]' 
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                }`}
+                variant={filter === cat ? 'secondary' : 'outline'}
+                size="sm"
               >
                 {t(`activity.${labelKey}`)}
-              </button>
+              </Button>
             );
           })}
         </div>
