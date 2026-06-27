@@ -1,14 +1,10 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { ChevronRight, Eye, EyeOff, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const Req = ({ met, label }: { met: boolean; label: string }) => (
   <div className={`flex items-center gap-2 text-sm font-semibold transition-colors duration-200 ${met ? 'text-emerald-600' : 'text-gray-400'}`}>
@@ -86,21 +82,13 @@ export default function ChangePassword() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="max-w-[1200px] mx-auto px-4 py-2"
+      className="max-w-4xl mx-auto pb-10"
     >
-      {/* Page Header / Breadcrumbs */}
-      <nav className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 mb-5 uppercase tracking-wider">
-        <Link to="/dashboard" className="hover:text-[#ED8C32] transition-colors">Dashboard</Link>
-        <ChevronRight size={12} />
-        <span>My Account</span>
-        <ChevronRight size={12} />
-        <span className="text-[#ED8C32]">Change Password</span>
-      </nav>
-
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#232F46] tracking-tight m-0">SECURITY SETTINGS</h1>
-        <p className="text-sm text-gray-500 mt-1.5">Update your password to keep your account secure.</p>
-      </div>
+      <PageHeader
+        title="Security Settings"
+        description="Update your password to keep your account secure."
+        breadcrumbs={[{ label: 'My Account' }, { label: 'Change Password' }]}
+      />
 
       {/* Success banner */}
       {done && (
@@ -112,120 +100,122 @@ export default function ChangePassword() {
 
       {/* Centered Wrapper - Max-width 600px */}
       <div className="max-w-[600px] mx-auto">
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-5 shadow-sm">
-          <h2 className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-2 border-b border-gray-100 pb-2.5">
-            CHANGE PASSWORD
-          </h2>
-
-          {/* Current Password */}
-          <Input
-            label="Current Password"
-            type={showCurrent ? 'text' : 'password'}
-            value={current}
-            onChange={(e) => setCurrent(e.target.value)}
-            className="font-mono"
-            required
-            rightIcon={
-              <button
-                type="button"
-                onClick={() => setShowCurrent(!showCurrent)}
-                className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
-                title={showCurrent ? 'Hide password' : 'Show password'}
-              >
-                {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            }
-          />
-
-          {/* New Password */}
-          <Input
-            label="New Password"
-            type={showNew ? 'text' : 'password'}
-            value={newPw}
-            onChange={(e) => setNewPw(e.target.value)}
-            className="font-mono"
-            required
-            rightIcon={
-              <button
-                type="button"
-                onClick={() => setShowNew(!showNew)}
-                className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
-                title={showNew ? 'Hide password' : 'Show password'}
-              >
-                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            }
-          />
-
-          {/* ValidationTracker - Strength Meter & Checklist */}
-          {newPw.length > 0 && (
-            <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-3.5">
-              
-              {/* Strength Meter */}
-              <div className="flex items-center gap-2 text-xs font-bold text-[#232F46]">
-                <span>Password Strength:</span>
-                <span className="font-mono tracking-wider">{strengthBar}</span>
-                <span className={`uppercase tracking-wide text-[11px] ${strengthColorClass}`}>{strengthLabel}</span>
-              </div>
-
-              {/* Requirements Checklist */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5 pt-2 border-t border-gray-200/60">
-                <Req met={reqs.length} label="At least 8 characters" />
-                <Req met={reqs.number} label="One number" />
-                <Req met={reqs.upper} label="One uppercase letter" />
-                <Req met={reqs.special} label="One special character" />
-                <Req met={reqs.lower} label="One lowercase letter" />
-              </div>
-            </div>
-          )}
-
-          {/* Confirm New Password */}
-          <div>
+        <Card noPadding>
+          <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+            <h2 className="font-bold text-[#232F46]">Change Password</h2>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+            {/* Current Password */}
             <Input
-              label="Confirm New Password"
-              type={showConfirm ? 'text' : 'password'}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
+              label="Current Password"
+              type={showCurrent ? 'text' : 'password'}
+              value={current}
+              onChange={(e) => setCurrent(e.target.value)}
               className="font-mono"
               required
               rightIcon={
                 <button
                   type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
+                  onClick={() => setShowCurrent(!showCurrent)}
                   className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
-                  title={showConfirm ? 'Hide password' : 'Show password'}
+                  title={showCurrent ? 'Hide password' : 'Show password'}
                 >
-                  {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               }
             />
-            
-            {/* Match Alert */}
-            {showMatchError && (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-red-600 mt-2">
-                <AlertTriangle size={13} />
-                <span>Passwords do not match</span>
+
+            {/* New Password */}
+            <Input
+              label="New Password"
+              type={showNew ? 'text' : 'password'}
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              className="font-mono"
+              required
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowNew(!showNew)}
+                  className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
+                  title={showNew ? 'Hide password' : 'Show password'}
+                >
+                  {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              }
+            />
+
+            {/* ValidationTracker - Strength Meter & Checklist */}
+            {newPw.length > 0 && (
+              <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-3.5">
+                
+                {/* Strength Meter */}
+                <div className="flex items-center gap-2 text-xs font-bold text-[#232F46]">
+                  <span>Password Strength:</span>
+                  <span className="font-mono tracking-wider">{strengthBar}</span>
+                  <span className={`uppercase tracking-wide text-[11px] ${strengthColorClass}`}>{strengthLabel}</span>
+                </div>
+
+                {/* Requirements Checklist */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5 pt-2 border-t border-gray-200/60">
+                  <Req met={reqs.length} label="At least 8 characters" />
+                  <Req met={reqs.number} label="One number" />
+                  <Req met={reqs.upper} label="One uppercase letter" />
+                  <Req met={reqs.special} label="One special character" />
+                  <Req met={reqs.lower} label="One lowercase letter" />
+                </div>
               </div>
             )}
-          </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end items-center gap-3 mt-2 border-t border-gray-100 pt-4">
-            <Button
-              type="button"
-              onClick={handleCancel}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={!canSubmit}
-            >
-              Update Password
-            </Button>
-          </div>
-        </form>
+            {/* Confirm New Password */}
+            <div>
+              <Input
+                label="Confirm New Password"
+                type={showConfirm ? 'text' : 'password'}
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                className="font-mono"
+                required
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="text-gray-400 hover:text-[#232F46] cursor-pointer p-1"
+                    title={showConfirm ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                }
+              />
+              
+              {/* Match Alert */}
+              {showMatchError && (
+                <div className="flex items-center gap-1.5 text-xs font-bold text-red-600 mt-2">
+                  <AlertTriangle size={13} />
+                  <span>Passwords do not match</span>
+                </div>
+              )}
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex justify-end items-center gap-3 mt-2 border-t border-gray-100 pt-5">
+              <Button
+                type="button"
+                onClick={handleCancel}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!canSubmit}
+              >
+                Update Password
+              </Button>
+            </div>
+          </form>
+        </Card>
       </div>
     </motion.div>
   );

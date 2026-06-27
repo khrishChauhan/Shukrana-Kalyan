@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { FileText, Download, FileCheck, Image as ImageIcon } from 'lucide-react';
@@ -35,7 +36,12 @@ export default function MyDocuments() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="max-w-5xl mx-auto pb-10"
+    >
       <PageHeader
         title="My Documents"
         description="Access and download your official foundation documents and receipts."
@@ -47,7 +53,7 @@ export default function MyDocuments() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {documents.map((doc) => (
-          <Card key={doc.id} className="flex flex-col h-full hover:border-[#ED8C32] transition-colors cursor-pointer group">
+          <Card key={doc.id} className="flex flex-col h-full hover:border-[#ED8C32] transition-colors cursor-pointer group shadow-sm">
             <div className="flex items-start justify-between mb-4">
               <div className={`p-3 rounded-xl ${doc.bgColor}`}>
                 {doc.icon}
@@ -69,6 +75,6 @@ export default function MyDocuments() {
           </Card>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

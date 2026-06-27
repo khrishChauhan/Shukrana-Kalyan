@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Download, Printer, CheckCircle2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const MEMBER = {
   name: 'John Doe',
@@ -22,13 +23,14 @@ export default function WelcomeLetter() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="max-w-3xl mx-auto px-4 py-2"
+      className="max-w-4xl mx-auto pb-10"
     >
-      {/* Page Title */}
-      <div className="mb-8">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">My Account</p>
-        <h1 className="text-2xl font-bold text-[#232F46]">Welcome Letter</h1>
-        <p className="text-sm text-gray-500 mt-1">Official welcome letter from Shukrana Kalyan Sangh Foundation.</p>
+      <div className="print:hidden">
+        <PageHeader
+          title="Welcome Letter"
+          description="Official welcome letter from Shukrana Kalyan Sangh Foundation."
+          breadcrumbs={[{ label: 'My Account' }, { label: 'Welcome Letter' }]}
+        />
       </div>
 
       {/* Document */}
@@ -52,84 +54,83 @@ export default function WelcomeLetter() {
         <div className="h-1 bg-[#ED8C32]" />
 
         {/* Body */}
-        <div className="px-8 py-8 md:px-12 md:py-10 space-y-6 text-sm text-[#232F46] leading-relaxed">
+        <div className="px-8 py-10 md:px-12 md:py-14 space-y-8 text-[#232F46] leading-relaxed max-w-3xl mx-auto">
           
           {/* Date */}
-          <p className="text-right text-xs text-gray-400 font-medium">Date: {MEMBER.joined}</p>
+          <p className="text-right text-sm text-gray-500 font-medium">Date: {MEMBER.joined}</p>
 
           {/* Addressee */}
-          <div className="space-y-0.5 text-gray-600">
+          <div className="space-y-1 text-gray-700">
             <p className="font-bold text-[#232F46]">To,</p>
             <p className="font-bold text-[#232F46]">{MEMBER.name}</p>
-            <p>{MEMBER.address}</p>
+            <p className="max-w-xs leading-snug">{MEMBER.address}</p>
           </div>
 
           {/* Subject */}
-          <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-3">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg px-5 py-4">
             <p className="font-bold text-[#232F46]">
               Subject: <span className="text-[#ED8C32]">Welcome to Shukrana Kalyan Sangh Foundation</span>
             </p>
           </div>
 
           {/* Salutation */}
-          <p className="font-bold text-base">Dear {MEMBER.name},</p>
+          <p className="font-bold text-lg">Dear {MEMBER.name},</p>
 
           {/* Paragraphs */}
-          <p className="text-gray-600">
-            We are delighted to welcome you as an official member of <strong className="text-[#232F46]">Shukrana Kalyan Sangh Foundation</strong>. Your membership is now active, and we are excited to embark on this journey of community empowerment and welfare together.
-          </p>
-          <p className="text-gray-600">
-            The foundation is committed to driving positive change through welfare programs, social support, and development initiatives. Your association strengthens our mission to make a lasting impact in the lives of those we serve.
-          </p>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              We are delighted to welcome you as an official member of <strong className="text-[#232F46]">Shukrana Kalyan Sangh Foundation</strong>. Your membership is now active, and we are excited to embark on this journey of community empowerment and welfare together.
+            </p>
+            <p>
+              The foundation is committed to driving positive change through welfare programs, social support, and development initiatives. Your association strengthens our mission to make a lasting impact in the lives of those we serve.
+            </p>
+          </div>
 
           {/* Benefits */}
-          <div className="bg-gray-50 border border-gray-100 rounded-lg px-5 py-5 space-y-3">
+          <div className="bg-gray-50 border border-gray-100 rounded-lg px-6 py-6 space-y-4">
             <p className="text-xs font-bold text-[#232F46] uppercase tracking-wider">As a member, you are entitled to:</p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {BENEFITS.map(b => (
-                <li key={b} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#ED8C32] shrink-0 mt-0.5" />
-                  <span className="text-gray-600">{b}</span>
+                <li key={b} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#ED8C32] shrink-0 mt-0.5" />
+                  <span className="text-gray-700">{b}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Signature Block */}
-          <div className="pt-4 border-t border-gray-100">
-            <p className="text-gray-500">Warm regards,</p>
-            <div className="mt-8">
-              <p className="font-bold text-[#232F46]">The Secretary</p>
-              <p className="text-xs text-gray-400 mt-0.5">Shukrana Kalyan Sangh Foundation</p>
+          <div className="pt-8 border-t border-gray-100">
+            <p className="text-gray-600">Warm regards,</p>
+            <div className="mt-12">
+              <p className="font-bold text-[#232F46] text-lg">The Secretary</p>
+              <p className="text-sm text-gray-500 mt-0.5">Shukrana Kalyan Sangh Foundation</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 border-t border-gray-100 px-8 py-3 flex items-center justify-between text-[10px] font-mono font-bold text-gray-400 uppercase tracking-widest">
+        <div className="bg-gray-50 border-t border-gray-100 px-8 py-4 flex items-center justify-between text-[10px] font-mono font-bold text-gray-400 uppercase tracking-widest">
           <span>Shukrana Kalyan Sangh | Member Portal</span>
           <span className="hidden sm:inline">Ref: {MEMBER.id}</span>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-6 print:hidden">
-        <Button
-          type="button"
-          variant="secondary"
-          className="flex-1"
-          leftIcon={<Download className="w-4 h-4" />}
-        >
-          Download PDF
-        </Button>
+      <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 print:hidden">
         <Button
           type="button"
           onClick={() => window.print()}
           variant="outline"
-          className="flex-1"
           leftIcon={<Printer className="w-4 h-4" />}
         >
           Print Letter
+        </Button>
+        <Button
+          type="button"
+          leftIcon={<Download className="w-4 h-4" />}
+        >
+          Download PDF
         </Button>
       </div>
     </motion.div>

@@ -1,15 +1,10 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { Lock, ShieldAlert, CheckCircle2, XCircle, Eye, EyeOff, ChevronRight } from 'lucide-react';
+import { Lock, ShieldAlert, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 interface PasswordInputProps {
   label: string;
@@ -58,9 +53,9 @@ export default function TransactionPassword() {
   const score = Object.values(reqs).filter(Boolean).length;
 
   const strength = useMemo(() => {
-    if (newPassword.length === 0) return { label: '', color: 'bg-brand-gray', text: 'text-brand-gray0' };
+    if (newPassword.length === 0) return { label: '', color: 'bg-gray-200', text: 'text-gray-400' };
     if (score < 3) return { label: 'Weak', color: 'bg-red-500', text: 'text-red-600' };
-    if (score < 5) return { label: 'Medium', color: 'bg-brand-primary', text: 'text-amber-600' };
+    if (score < 5) return { label: 'Medium', color: 'bg-[#ED8C32]', text: 'text-[#ED8C32]' };
     return { label: 'Strong', color: 'bg-emerald-500', text: 'text-emerald-600' };
   }, [score, newPassword]);
 
@@ -74,32 +69,23 @@ export default function TransactionPassword() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
+      transition={{ duration: 0.2 }}
+      className="max-w-4xl mx-auto pb-10"
     >
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-xs font-mono font-bold text-brand-charcoal/60 select-none">
-        <Link to="/dashboard" className="hover:text-brand-light0 transition-colors uppercase tracking-wider">Dashboard</Link>
-        <ChevronRight className="h-3 w-3 text-slate-300" />
-        <span className="text-brand-charcoal/60 uppercase tracking-wider">Account</span>
-        <ChevronRight className="h-3 w-3 text-slate-300" />
-        <span className="text-brand-light0 uppercase tracking-wider">Transaction Password</span>
-      </nav>
+      <PageHeader
+        title="Transaction Password"
+        description="Manage your secure transaction PIN and authentication credentials."
+        breadcrumbs={[{ label: 'My Account' }, { label: 'Transaction Password' }]}
+      />
 
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-charcoal tracking-tight font-display">Transaction Password</h1>
-        <p className="text-xs text-brand-gray0 mt-1">Manage your secure transaction PIN and authentication credentials.</p>
-      </div>
-
-      <div className="max-w-2xl space-y-5">
+      <div className="max-w-[600px] mx-auto space-y-6">
         {/* Password Form Card */}
-        <Card className="p-0 overflow-hidden">
-          <div className="px-6 py-4 border-b border-brand-gray bg-brand-gray/50 flex items-center gap-2">
-            <Lock size={14} className="text-brand-charcoal/60" />
-            <h3 className="text-xs font-bold text-brand-charcoal/60 uppercase tracking-widest font-mono">Change Transaction Password</h3>
+        <Card noPadding>
+          <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+            <Lock size={14} className="text-gray-500" />
+            <h3 className="text-sm font-bold text-[#232F46] uppercase tracking-wider">Change Transaction Password</h3>
           </div>
           <div className="p-6">
             <form onSubmit={(e) => e.preventDefault()}>
@@ -111,19 +97,19 @@ export default function TransactionPassword() {
               {newPassword.length > 0 && (
                 <div className="mt-5">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] font-mono font-bold text-brand-charcoal/50 uppercase tracking-wider">Password Strength</span>
-                    <span className={`text-[10px] font-mono font-black uppercase tracking-wider ${strength.text}`}>{strength.label}</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Password Strength</span>
+                    <span className={`text-[10px] font-black uppercase tracking-wider ${strength.text}`}>{strength.label}</span>
                   </div>
                   <div className="flex gap-1 h-1.5 w-full">
                     {[1, 2, 3, 4, 5].map((level) => (
-                      <div key={level} className={`flex-1 rounded-full transition-colors duration-300 ${level <= score ? strength.color : 'bg-brand-gray'}`}></div>
+                      <div key={level} className={`flex-1 rounded-full transition-colors duration-300 ${level <= score ? strength.color : 'bg-gray-100'}`}></div>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div className="mt-6 flex items-center justify-between">
-                <button type="button" className="text-[#ED8C32] text-xs font-black hover:underline font-mono cursor-pointer">Forgot Password?</button>
+              <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <button type="button" className="text-[#ED8C32] text-xs font-bold hover:underline cursor-pointer">Forgot Password?</button>
                 <div className="flex gap-3">
                   <Button type="button" variant="outline">Cancel</Button>
                   <Button
@@ -139,30 +125,30 @@ export default function TransactionPassword() {
         </Card>
 
         {/* Requirements Card */}
-        <div className="bg-brand-gray rounded-2xl border border-brand-gray/80 p-5">
-          <h4 className="text-xs font-bold text-brand-charcoal uppercase tracking-widest font-mono mb-4">Password Requirements</h4>
+        <Card className="bg-gray-50 border border-gray-200">
+          <h4 className="text-xs font-bold text-[#232F46] uppercase tracking-widest mb-4">Password Requirements</h4>
           <div className="space-y-2.5">
             {requirements.map(({ label, met }) => (
-              <div key={label} className={`flex items-center gap-2 text-xs font-medium ${met ? 'text-emerald-600' : 'text-brand-gray0'}`}>
+              <div key={label} className={`flex items-center gap-2 text-xs font-medium ${met ? 'text-emerald-600' : 'text-gray-500'}`}>
                 {met ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
                 {label}
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Security Tips */}
-        <div className="bg-brand-primary/10 border border-brand-primary/30 rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-3 text-amber-700">
+        <Card className="bg-blue-50/50 border border-blue-100">
+          <div className="flex items-center gap-2 mb-3 text-blue-700">
             <ShieldAlert size={16} />
-            <h4 className="text-xs font-black uppercase tracking-widest font-mono">Security Tips</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest">Security Tips</h4>
           </div>
-          <ul className="space-y-2 text-xs text-brand-charcoal/80 font-medium">
+          <ul className="space-y-2 text-xs text-blue-800/80 font-medium">
             <li className="flex items-start gap-2"><span>🔒</span> Never share your transaction password with anyone.</li>
             <li className="flex items-start gap-2"><span>🔒</span> Use a unique password not used on other platforms.</li>
             <li className="flex items-start gap-2"><span>🔒</span> Change your password regularly for better security.</li>
           </ul>
-        </div>
+        </Card>
       </div>
     </motion.div>
   );

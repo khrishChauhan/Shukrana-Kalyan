@@ -1,15 +1,11 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { ChevronRight, Camera, CheckCircle2, Lock, Phone, Mail, MapPin } from 'lucide-react';
+import { Camera, CheckCircle2, Lock, Phone, Mail, MapPin } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { PageHeader } from '../../components/ui/PageHeader';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 
 const MEMBER = {
   name: 'John Doe',
@@ -18,7 +14,7 @@ const MEMBER = {
   email: 'demo@shukrana.org',
   address: '123, Green Colony, Mumbai, Maharashtra - 400001',
   joined: '01 June 2026',
-  status: 'Active Member',
+  status: 'Active',
 };
 
 export default function ProfileSettings() {
@@ -54,21 +50,13 @@ export default function ProfileSettings() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="max-w-[1200px] mx-auto px-4 py-2"
+      className="max-w-5xl mx-auto pb-10"
     >
-      {/* Page Header / Breadcrumbs */}
-      <nav className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 mb-5 uppercase tracking-wider">
-        <Link to="/dashboard" className="hover:text-[#ED8C32] transition-colors">Dashboard</Link>
-        <ChevronRight size={12} />
-        <span>My Account</span>
-        <ChevronRight size={12} />
-        <span className="text-[#ED8C32]">Profile Settings</span>
-      </nav>
-
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#232F46] tracking-tight m-0">PROFILE SETTINGS</h1>
-        <p className="text-sm text-gray-500 mt-1.5">Manage your personal information and account details.</p>
-      </div>
+      <PageHeader
+        title="Profile Settings"
+        description="Manage your personal information and account details."
+        breadcrumbs={[{ label: 'My Account' }, { label: 'Profile Settings' }]}
+      />
 
       {/* Success banner */}
       {saved && (
@@ -79,15 +67,11 @@ export default function ProfileSettings() {
       )}
 
       {/* ProfileGrid - 2 Columns on desktop, 1 on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 items-start">
         
         {/* [Left] IdentityCardContainer */}
-        <Card className="flex flex-col items-center text-center p-6">
-          <h2 className="w-full text-left text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-6 border-b border-gray-100 pb-2.5">
-            IDENTITY CARD
-          </h2>
-          
-          <div className="relative w-28 h-28 mb-5">
+        <Card className="flex flex-col items-center text-center">
+          <div className="relative w-28 h-28 mb-5 mt-4">
             <img
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80"
               alt="Profile"
@@ -95,31 +79,26 @@ export default function ProfileSettings() {
             />
             <button 
               type="button"
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#ED8C32] border-2 border-white flex items-center justify-center cursor-pointer hover:bg-[#D97A24] transition-colors"
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#ED8C32] border-2 border-white flex items-center justify-center cursor-pointer hover:bg-[#D97A24] transition-colors shadow-sm"
               title="Change Photo"
             >
               <Camera size={14} className="text-white" />
             </button>
           </div>
 
-          <p className="text-lg font-bold text-[#232F46] mb-1 uppercase tracking-wide">{form.name || 'JOHN DOE'}</p>
-          
-          <div className="mt-3.5 inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 text-xs font-bold text-emerald-700">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            {MEMBER.status}
-          </div>
+          <p className="text-lg font-bold text-[#232F46] mb-2">{form.name || 'JOHN DOE'}</p>
+          <StatusBadge status={MEMBER.status as any} />
         </Card>
 
         {/* [Right] FormsContainer */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           
           {/* ProfileInfoCard */}
-          <Card className="p-6">
-            <h2 className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-5 border-b border-gray-100 pb-2.5">
-              PROFILE INFORMATION
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Card noPadding>
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h2 className="font-bold text-[#232F46]">Profile Information</h2>
+            </div>
+            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="md:col-span-2">
                 <Input
                   label="Full Name"
@@ -138,7 +117,7 @@ export default function ProfileSettings() {
                   value={MEMBER.id}
                   readOnly
                   disabled
-                  rightIcon={<Lock size={12} />}
+                  rightIcon={<Lock size={14} />}
                 />
               </div>
 
@@ -149,19 +128,18 @@ export default function ProfileSettings() {
                   value={MEMBER.joined}
                   readOnly
                   disabled
-                  rightIcon={<Lock size={12} />}
+                  rightIcon={<Lock size={14} />}
                 />
               </div>
             </div>
           </Card>
 
           {/* ContactInfoCard */}
-          <Card className="p-6">
-            <h2 className="text-xs font-extrabold text-gray-400 tracking-widest uppercase mb-5 border-b border-gray-100 pb-2.5">
-              CONTACT INFORMATION
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Card noPadding>
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h2 className="font-bold text-[#232F46]">Contact Information</h2>
+            </div>
+            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
                 <Input
                   label="Mobile Number"
@@ -169,7 +147,7 @@ export default function ProfileSettings() {
                   name="mobile"
                   value={form.mobile}
                   onChange={handleChange}
-                  leftIcon={<Phone size={14} />}
+                  leftIcon={<Phone size={14} className="text-gray-400" />}
                   required
                 />
               </div>
@@ -181,13 +159,13 @@ export default function ProfileSettings() {
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  leftIcon={<Mail size={14} />}
+                  leftIcon={<Mail size={14} className="text-gray-400" />}
                   required
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide mb-1.5">
+                <label className="block text-xs font-bold text-[#232F46] mb-1.5">
                   Address
                 </label>
                 <div className="relative">
@@ -214,9 +192,7 @@ export default function ProfileSettings() {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-            >
+            <Button type="submit">
               Save Changes
             </Button>
           </div>

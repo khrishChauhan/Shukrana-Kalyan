@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
@@ -95,7 +96,12 @@ export default function ActivityTimelinePage() {
   });
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="max-w-5xl mx-auto space-y-6 md:space-y-8 pb-10"
+    >
       <PageHeader
         title={t('activity.title')}
         description={t('activity.desc')}
@@ -236,6 +242,6 @@ export default function ActivityTimelinePage() {
           </div>
         )}
       </Card>
-    </div>
+    </motion.div>
   );
 }

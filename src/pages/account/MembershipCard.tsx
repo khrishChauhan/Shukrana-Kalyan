@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Download, Printer, ShieldCheck } from 'lucide-react';
+import { Download, Printer } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 const MEMBER = {
   name: 'John Doe',
@@ -18,13 +19,14 @@ export default function MembershipCard() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="max-w-2xl mx-auto px-4 py-2"
+      className="max-w-2xl mx-auto pb-10"
     >
-      {/* Page Title */}
-      <div className="mb-8">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">My Account</p>
-        <h1 className="text-2xl font-bold text-[#232F46]">Membership Card</h1>
-        <p className="text-sm text-gray-500 mt-1">Your official Shukrana Kalyan Sangh digital membership pass.</p>
+      <div className="print:hidden">
+        <PageHeader
+          title="Membership Card"
+          description="Your official Shukrana Kalyan Sangh digital membership pass."
+          breadcrumbs={[{ label: 'My Account' }, { label: 'Membership Card' }]}
+        />
       </div>
 
       {/* Card */}
@@ -91,23 +93,20 @@ export default function MembershipCard() {
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-6 print:hidden">
-        <Button
-          type="button"
-          variant="secondary"
-          className="flex-1"
-          leftIcon={<Download className="w-4 h-4" />}
-        >
-          Download Card
-        </Button>
+      <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 print:hidden">
         <Button
           type="button"
           onClick={() => window.print()}
           variant="outline"
-          className="flex-1"
           leftIcon={<Printer className="w-4 h-4" />}
         >
           Print Card
+        </Button>
+        <Button
+          type="button"
+          leftIcon={<Download className="w-4 h-4" />}
+        >
+          Download PDF
         </Button>
       </div>
     </motion.div>
