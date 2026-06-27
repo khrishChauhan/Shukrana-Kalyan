@@ -39,7 +39,7 @@ export default function MembershipStatus() {
           {loading ? (
             <Skeleton className="w-full h-full min-h-[200px] rounded-xl" />
           ) : (
-            <Card className="h-full bg-[#232F46] text-white border-0 shadow-sm">
+            <Card className="h-full text-white border-0 shadow-sm" style={{ backgroundColor: '#232F46' }}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                 <div>
                   <p className="text-sm font-bold text-white/60 uppercase tracking-widest mb-2">{t('membership.currentStatus')}</p>
@@ -53,7 +53,7 @@ export default function MembershipStatus() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-white/10">
                 <div>
                   <p className="text-xs text-white/60 font-bold uppercase tracking-wider mb-1">{t('membership.memberId')}</p>
                   <p className="font-mono font-bold text-lg">SK000123</p>
@@ -61,6 +61,14 @@ export default function MembershipStatus() {
                 <div>
                   <p className="text-xs text-white/60 font-bold uppercase tracking-wider mb-1">{t('membership.joinDate')}</p>
                   <p className="font-bold text-lg">October 15, 2023</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 font-bold uppercase tracking-wider mb-1">KYC Status</p>
+                  <p className="font-bold text-lg text-green-400">Verified</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 font-bold uppercase tracking-wider mb-1">Benefits Unlocked</p>
+                  <p className="font-bold text-lg text-[#ED8C32]">4 / 10</p>
                 </div>
               </div>
             </Card>

@@ -43,7 +43,7 @@ export default function DashboardPage() {
       className="space-y-8 max-w-6xl mx-auto pb-10"
     >
       {/* ─── 1. WELCOME BANNER ─────────────────────────────────────────── */}
-      <Card className="bg-[#232F46] text-white border-0 shadow-sm relative overflow-hidden p-6 md:p-8">
+      <Card className="text-white border-0 shadow-sm relative overflow-hidden p-6 md:p-8" style={{ backgroundColor: '#232F46' }}>
         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex flex-col gap-2">
@@ -54,20 +54,46 @@ export default function DashboardPage() {
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full">
                 <ShieldCheck className="w-4 h-4 text-[#ED8C32]" /> Active Member
               </span>
+              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full cursor-pointer hover:bg-white/20 transition-colors" onClick={() => navigate('/account/kyc')}>
+                <UserCheck className="w-4 h-4 text-green-400" /> KYC: 60% Complete
+              </span>
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full">
                 <Clock className="w-4 h-4 text-[#ED8C32]" /> Joined: {adminUser.joinDate || 'Oct 15, 2023'}
               </span>
             </div>
           </div>
-          <Button
-            onClick={() => navigate('/welfare/make-donation')}
-            className="bg-[#ED8C32] text-white hover:bg-[#D97A24] border-0 shrink-0 shadow-sm"
-            leftIcon={<Heart className="w-4 h-4" />}
-          >
-            {t('dashboard.donateNow')}
-          </Button>
         </div>
       </Card>
+      {/* ─── 1.5 BINARY ENGINE SNAPSHOT ─────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Left BV</p>
+          <p className="text-lg font-bold text-[#232F46]">0</p>
+        </Card>
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Right BV</p>
+          <p className="text-lg font-bold text-[#ED8C32]">1</p>
+        </Card>
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Today's Income</p>
+          <p className="text-lg font-bold text-[#232F46]">₹800</p>
+        </Card>
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Today's Matches</p>
+          <p className="text-lg font-bold text-[#ED8C32]">4 <span className="text-[10px] text-gray-400">/ 10</span></p>
+        </Card>
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Binary</p>
+          <p className="text-lg font-bold text-[#232F46]">₹4,200</p>
+        </Card>
+        <Card 
+          className="p-4 bg-[#ED8C32]/10 border border-[#ED8C32]/20 hover:bg-[#ED8C32]/20 transition-colors cursor-pointer flex flex-col justify-center items-center text-center"
+          onClick={() => navigate('/business/pair-matching')}
+        >
+          <p className="text-xs font-bold text-[#ED8C32] uppercase">Binary History</p>
+          <ChevronRight className="w-5 h-5 text-[#ED8C32] mt-1" />
+        </Card>
+      </div>
 
       {/* ─── 2. MEMBERSHIP JOURNEY ─────────────────────────────────────── */}
       <BenefitJourney currentDays={currentDays} />

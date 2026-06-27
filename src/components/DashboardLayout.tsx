@@ -50,7 +50,7 @@ export default function DashboardLayout() {
 
   const mobileNavItems = [
     { icon: <Home className="w-6 h-6" />, label: t('sidebar.dashboard'), path: '/dashboard' },
-    { icon: <Users className="w-6 h-6" />, label: t('sidebar.overview'), path: '/network/overview' },
+    { icon: <Users className="w-6 h-6" />, label: t('sidebar.memberNetwork'), path: '/network/overview' },
     { icon: <User className="w-6 h-6" />, label: t('sidebar.profileSettings'), path: '/account/profile-settings' },
   ];
 
@@ -74,7 +74,7 @@ export default function DashboardLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileSidebarOpen(false)}
-              className="absolute inset-0 bg-[#232F46]/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-[#232F46]/50"
             />
             
             <motion.div

@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Award, LayoutDashboard, UserCheck, Users,
+  Award, LayoutDashboard, UserCheck, Users, Briefcase,
   LogOut, ChevronLeft,
   ChevronRight, ChevronDown, Bell
 } from 'lucide-react';
@@ -41,6 +41,9 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.welcomeLetter', path: '/account/welcome-letter' },
       { nameKey: 'sidebar.consentLetter', path: '/account/consent-letter' },
       { nameKey: 'sidebar.changePassword', path: '/account/change-password' },
+      { nameKey: 'sidebar.paymentCenter', path: '/payments' },
+      { nameKey: 'sidebar.kycCenter', path: '/account/kyc' },
+      { nameKey: 'sidebar.bankDetails', path: '/account/bank-details' },
     ]
   },
   {
@@ -51,9 +54,27 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.directReferrals', path: '/network/direct-referrals' },
       { nameKey: 'sidebar.verifiedMembers', path: '/network/verified-members' },
       { nameKey: 'sidebar.pendingApproval', path: '/network/pending-approval' },
-      // Hidden for current MVP:
-      // { nameKey: 'sidebar.networkLevels', path: '/network/network-levels' },
-      // { nameKey: 'sidebar.networkTree', path: '/network/network-tree' }
+    ]
+  },
+  {
+    nameKey: 'sidebar.business',
+    icon: Briefcase,
+    submenus: [
+      { nameKey: 'sidebar.businessDashboard', path: '/business/dashboard' },
+      { nameKey: 'sidebar.businessProfile', path: '/business/profile' },
+      { nameKey: 'sidebar.walletCenter', path: '/wallet' },
+      { nameKey: 'sidebar.walletLedger', path: '/wallet/ledger' },
+      { nameKey: 'sidebar.withdrawalCenter', path: '/wallet/withdrawals' },
+      { nameKey: 'sidebar.sponsorTree', path: '/business/sponsor-tree' },
+      { nameKey: 'sidebar.placementTree', path: '/business/placement-tree' },
+      { nameKey: 'sidebar.businessCalculator', path: '/business/calculator' },
+      { nameKey: 'sidebar.incomeDashboard', path: '/business/income-dashboard' },
+      { nameKey: 'sidebar.bvDashboard', path: '/business/bv-dashboard' },
+      { nameKey: 'sidebar.pairMatching', path: '/business/pair-matching' },
+      { nameKey: 'sidebar.reports', path: '/business/reports' },
+      { nameKey: 'sidebar.downloads', path: '/business/downloads' },
+      { nameKey: 'sidebar.businessTimeline', path: '/business/timeline' },
+      { nameKey: 'sidebar.payoutHistory', path: '/wallet/payout-history' },
     ]
   },
   {

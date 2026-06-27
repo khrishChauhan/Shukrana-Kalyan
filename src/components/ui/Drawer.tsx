@@ -27,13 +27,13 @@ export function Drawer({ isOpen, onClose, title, children, position = 'right' }:
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#232F46]/50 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-[#232F46]/50 transition-opacity"
         onClick={onClose}
       />
 
       {/* Drawer Panel */}
       <div 
-        className={`absolute inset-y-0 ${position === 'right' ? 'right-0' : 'left-0'} max-w-sm w-full bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out`}
+        className={`absolute inset-y-0 ${position === 'right' ? 'right-0 border-l border-gray-200' : 'left-0 border-r border-gray-200'} max-w-sm w-full bg-white shadow-sm flex flex-col transform transition-transform duration-300 ease-in-out`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">

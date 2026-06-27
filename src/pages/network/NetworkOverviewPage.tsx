@@ -17,7 +17,7 @@ export default function NetworkOverviewPage() {
 
   const stats = [
     { title: 'Total Members', value: '1,248', icon: <Users className="w-6 h-6 text-[#232F46]" />, trend: '+12% this month' },
-    { title: 'My Referrals', value: '45', icon: <TrendingUp className="w-6 h-6 text-[#ED8C32]" />, trend: '+3 this week' },
+    { title: 'My Invites', value: '45', icon: <TrendingUp className="w-6 h-6 text-[#ED8C32]" />, trend: '+3 this week' },
     { title: 'Verified Members', value: '956', icon: <UserCheck className="w-6 h-6 text-green-600" />, trend: '+8% this month' },
     { title: 'Pending Members', value: '292', icon: <UserPlus className="w-6 h-6 text-blue-600" />, trend: '+24% this month' },
   ];
@@ -26,8 +26,8 @@ export default function NetworkOverviewPage() {
     <div className="max-w-6xl mx-auto pb-10">
       <PageHeader
         title="Community Overview"
-        description="Monitor your NGO membership network and track new member onboarding."
-        breadcrumbs={[{ label: 'Member Network' }, { label: 'Overview' }]}
+        description="Monitor your NGO community and track new member onboarding."
+        breadcrumbs={[{ label: 'Community' }, { label: 'Overview' }]}
         action={
           <Button leftIcon={<Copy className="w-4 h-4" />}>
             Copy Invite Link

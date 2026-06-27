@@ -30,7 +30,7 @@ export default function VerifiedMembersPage() {
       <PageHeader
         title="Verified Members"
         description="All fully verified and active members in your community network."
-        breadcrumbs={[{ label: 'Member Network' }, { label: 'Verified Members' }]}
+        breadcrumbs={[{ label: 'Community' }, { label: 'Verified Members' }]}
       />
 
       <div className="mb-6 flex flex-col sm:flex-row gap-4">

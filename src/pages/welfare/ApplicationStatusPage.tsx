@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
@@ -22,7 +23,12 @@ export default function ApplicationStatusPage() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="max-w-4xl mx-auto pb-10"
+    >
       <PageHeader
         title="Application Status"
         description="Track the progress of your welfare assistance requests."
@@ -31,7 +37,7 @@ export default function ApplicationStatusPage() {
 
       <div className="space-y-6">
         {applications.map((app) => (
-          <Card key={app.id} className="p-0 overflow-hidden">
+          <Card key={app.id} className="p-0 overflow-hidden shadow-sm">
             <div className="p-6 bg-gray-50 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-mono text-gray-500 mb-1">ID: {app.id}</p>
@@ -44,7 +50,7 @@ export default function ApplicationStatusPage() {
             <div className="p-6">
               <h4 className="text-sm font-bold text-[#232F46] mb-6 uppercase tracking-wide">Application Timeline</h4>
               
-              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gray-200">
                 {app.steps.map((step, i) => (
                   <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white bg-gray-100 text-gray-400 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10"
@@ -68,6 +74,6 @@ export default function ApplicationStatusPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -30,7 +30,7 @@ export default function PendingApprovalPage() {
       <PageHeader
         title="Pending Approval"
         description="Members who have registered but have not completed verification."
-        breadcrumbs={[{ label: 'Member Network' }, { label: 'Pending Approval' }]}
+        breadcrumbs={[{ label: 'Community' }, { label: 'Pending Approval' }]}
       />
 
       <Alert variant="warning" className="mb-6" title="Follow Up Required">

@@ -1,11 +1,17 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { CreditCard, QrCode } from 'lucide-react';
 
 export default function DiscountCardPage() {
   return (
-    <div className="max-w-4xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="max-w-4xl mx-auto pb-10"
+    >
       <PageHeader
         title="My Discount Card"
         description="Show this digital card at partner vendors to avail member discounts."
@@ -13,7 +19,7 @@ export default function DiscountCardPage() {
       />
 
       <div className="flex justify-center mb-12">
-        <div className="w-full max-w-md h-64 bg-gradient-to-br from-[#232F46] to-[#1A2333] rounded-2xl shadow-lg relative overflow-hidden p-6 text-white border border-[#232F46]/50">
+        <div className="w-full max-w-md h-64 bg-[#232F46] rounded-2xl shadow-sm relative overflow-hidden p-6 text-white">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
           
           <div className="flex justify-between items-start relative z-10">
@@ -49,6 +55,6 @@ export default function DiscountCardPage() {
           </Card>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

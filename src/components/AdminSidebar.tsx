@@ -7,6 +7,12 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Briefcase,
+  Settings,
+  Banknote,
+  ShieldCheck,
+  FileCheck,
+  Network
 } from 'lucide-react';
 
 interface NavItem {
@@ -19,6 +25,13 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',      path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Members',        path: '/admin/members',   icon: Users },
+  { label: 'Biz Settings',   path: '/admin/business/settings', icon: Settings },
+  { label: 'Payouts',        path: '/admin/business/payouts',  icon: Banknote },
+  { label: 'Biz Rules',      path: '/admin/business/rules',    icon: ShieldCheck },
+  { label: 'Biz KYC',        path: '/admin/business/kyc',      icon: FileCheck },
+  { label: 'Global Sponsor', path: '/admin/business/global-sponsor-tree', icon: Network },
+  { label: 'Global Placement', path: '/admin/business/global-placement-tree', icon: Network },
+  { label: 'Tree Overrides', path: '/admin/business/tree-overrides', icon: Settings },
   { label: 'Notifications',  path: '/admin/notifications', icon: Bell },
 ];
 

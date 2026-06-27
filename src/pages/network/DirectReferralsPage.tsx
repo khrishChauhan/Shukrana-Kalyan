@@ -28,9 +28,9 @@ export default function DirectReferralsPage() {
       className="max-w-6xl mx-auto pb-10"
     >
       <PageHeader
-        title="My Referrals"
+        title="My Invites"
         description="Members directly sponsored by you."
-        breadcrumbs={[{ label: 'Member Network' }, { label: 'My Referrals' }]}
+        breadcrumbs={[{ label: 'Community' }, { label: 'My Invites' }]}
       />
 
       <div className="mb-6 flex flex-col sm:flex-row gap-4">

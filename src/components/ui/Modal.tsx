@@ -35,13 +35,13 @@ export function Modal({ isOpen, onClose, title, children, footer, maxWidth = 'md
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-[#232F46]/50 backdrop-blur-sm transition-opacity" 
+        className="fixed inset-0 bg-[#232F46]/50 transition-opacity" 
         onClick={onClose}
       />
       
       {/* Modal Dialog */}
       <div 
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white rounded-2xl shadow-xl flex flex-col transform transition-all`}
+        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white rounded-2xl shadow-sm flex flex-col transform transition-all border border-gray-200`}
         role="dialog"
         aria-modal="true"
       >
