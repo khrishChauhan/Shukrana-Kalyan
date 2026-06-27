@@ -1,43 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
-  Users, UserCheck, Clock, UserX, FileSearch,
-  ClipboardList, UserPlus, GitBranch, ChevronRight
+  Users, UserCheck, Clock, ShieldCheck, UserPlus,
+  GitBranch, FileSearch, Bell, ChevronRight, Activity, Download
 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { useTranslation } from '../../context/LanguageContext';
+import { Skeleton } from '../../components/ui/Skeleton';
+import { PageHeader } from '../../components/ui/PageHeader';
 
-// ── Mock Activity Feed ─────────────────────────────────────────────────────────
 const ACTIVITY_FEED = [
-  { id: 1, text: 'Neelam Kumari registered as a new member.',         time: 'Today, 10:32 AM' },
-  { id: 2, text: 'Member ID SK00124 activated successfully.',          time: 'Today, 09:15 AM' },
-  { id: 3, text: 'KYC approved for Member ID SK00152.',                time: 'Yesterday, 04:47 PM' },
-  { id: 4, text: 'Welcome Letter generated for SK00168.',              time: 'Yesterday, 02:10 PM' },
-  { id: 5, text: 'Member profile updated — SK00091.',                  time: '14 Jun 2026, 11:55 AM' },
-  { id: 6, text: 'Rahul Verma referred 3 new members this week.',      time: '14 Jun 2026, 09:30 AM' },
-  { id: 7, text: 'KYC documents submitted for SK00177.',               time: '13 Jun 2026, 03:20 PM' },
-  { id: 8, text: 'Password reset completed for SK00042.',              time: '13 Jun 2026, 01:05 PM' },
+  { id: 1, type: 'New Registration', text: 'Neelam Kumari registered as a new member.', time: 'Today, 10:32 AM', icon: <UserPlus className="w-4 h-4 text-blue-500" /> },
+  { id: 2, type: 'Member Approved', text: 'Member ID SK00124 activated successfully.', time: 'Today, 09:15 AM', icon: <ShieldCheck className="w-4 h-4 text-green-500" /> },
+  { id: 3, type: 'KYC Verified', text: 'KYC approved for Member ID SK00152.', time: 'Yesterday, 04:47 PM', icon: <FileSearch className="w-4 h-4 text-purple-500" /> },
+  { id: 4, type: 'Profile Updated', text: 'Member profile updated — SK00091.', time: 'Yesterday, 02:10 PM', icon: <Users className="w-4 h-4 text-orange-500" /> },
+  { id: 5, type: 'Admin Login', text: 'System Administrator logged in.', time: '14 Jun 2026, 09:00 AM', icon: <Activity className="w-4 h-4 text-gray-500" /> },
 ];
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
 
-  // ── Mock KPI Data ──────────────────────────────────────────────────────────────
-  const KPI_ROW_1 = [
-    { label: t('admin.totalMembers'),     value: '1,248', icon: Users,      color: 'bg-blue-50 text-blue-600' },
-    { label: t('admin.activeMembers'),    value: '984',   icon: UserCheck,  color: 'bg-green-50 text-green-600' },
-    { label: t('admin.pendingMembers'),   value: '193',   icon: Clock,      color: 'bg-yellow-50 text-yellow-600' },
-    { label: t('admin.suspendedMembers'), value: '71',    icon: UserX,      color: 'bg-red-50 text-red-500' },
-  ];
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const KPI_ROW_2 = [
-    { label: t('admin.pendingKyc'),    value: '47',  icon: FileSearch,   color: 'bg-purple-50 text-purple-600' },
-    { label: t('admin.pendingApps'),   value: '26',  icon: ClipboardList, color: 'bg-orange-50 text-[#ED8C32]' },
-    { label: t('admin.newReg'), value: '88',  icon: UserPlus,     color: 'bg-teal-50 text-teal-600' },
-    { label: t('admin.totalReferrals'),        value: '2,140', icon: GitBranch,  color: 'bg-indigo-50 text-indigo-600' },
+  const KPIs = [
+    { label: 'Total Members', value: '1,248', icon: Users, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Active Members', value: '984', icon: UserCheck, color: 'bg-green-50 text-green-600' },
+    { label: 'Pending Verification', value: '193', icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
+    { label: 'Verified Members', value: '856', icon: ShieldCheck, color: 'bg-purple-50 text-purple-600' },
+    { label: 'New Registrations (This Month)', value: '88', icon: UserPlus, color: 'bg-teal-50 text-teal-600' },
+    { label: 'Total Referrals', value: '2,140', icon: GitBranch, color: 'bg-indigo-50 text-indigo-600' },
+    { label: 'Pending Reviews', value: '47', icon: FileSearch, color: 'bg-orange-50 text-[#ED8C32]' },
+    { label: 'Notifications', value: '12', icon: Bell, color: 'bg-red-50 text-red-600' },
   ];
 
   return (
@@ -45,106 +43,158 @@ export default function AdminDashboardPage() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="space-y-6 max-w-7xl mx-auto"
+      className="space-y-6 max-w-7xl mx-auto pb-10"
     >
-      {/* ── Row 1: KPI Cards ─────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
-          {t('admin.overview')}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {KPI_ROW_1.map(({ label, value, icon: Icon, color }) => (
-            <Card key={label} className="flex items-center gap-4">
-              <div className={`p-3 rounded-xl shrink-0 ${color}`}>
-                <Icon className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 mb-0.5">{label}</p>
-                <p className="text-2xl font-black text-[#232F46]">{value}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <PageHeader
+        title="Admin Portal"
+        description="Internal management system for Shukrana Kalyan Sangh Foundation."
+        action={
+          <Button leftIcon={<Download className="w-4 h-4" />} variant="outline">
+            Export Report
+          </Button>
+        }
+      />
 
-      {/* ── Row 2: KPI Cards ─────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
-          {t('admin.operations')}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {KPI_ROW_2.map(({ label, value, icon: Icon, color }) => (
-            <Card key={label} className="flex items-center gap-4">
-              <div className={`p-3 rounded-xl shrink-0 ${color}`}>
-                <Icon className="w-6 h-6" />
+      {/* ── KPI Grid ─────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {KPIs.map(({ label, value, icon: Icon, color }) => (
+          <Card key={label} className="flex items-start gap-4">
+            {loading ? (
+              <div className="flex w-full items-center gap-4">
+                <Skeleton className="w-12 h-12 rounded-xl shrink-0" />
+                <div className="flex-1">
+                  <Skeleton className="w-full h-4 mb-2" />
+                  <Skeleton className="w-12 h-6" />
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-bold text-gray-400 mb-0.5">{label}</p>
-                <p className="text-2xl font-black text-[#232F46]">{value}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+            ) : (
+              <>
+                <div className={`p-3 rounded-xl shrink-0 ${color}`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-gray-500 mb-0.5 leading-tight">{label}</p>
+                  <p className="text-2xl font-black text-[#232F46]">{value}</p>
+                </div>
+              </>
+            )}
+          </Card>
+        ))}
+      </div>
 
-      {/* ── Bottom Split: Activity Feed + Quick Actions ───────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Activity Feed (2/3 width) */}
-        <Card noPadding className="lg:col-span-2 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-bold text-[#232F46]">{t('admin.recentActivity')}</h3>
-            <span className="text-xs text-gray-400">{ACTIVITY_FEED.length} {t('admin.events')}</span>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {ACTIVITY_FEED.map((item, i) => (
-              <div key={item.id} className="flex items-start gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors">
-                {/* Timeline dot */}
-                <div className="mt-1.5 shrink-0">
-                  <span className={`block w-2 h-2 rounded-full ${i === 0 ? 'bg-[#ED8C32]' : 'bg-gray-300'}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[#232F46] font-medium leading-snug">{item.text}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{item.time}</p>
+        {/* ── Left Column: Activity & Quick Actions ───────────────────── */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card noPadding className="overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <h3 className="font-bold text-[#232F46] flex items-center gap-2">
+                <Activity className="w-5 h-5 text-gray-400" />
+                Recent Activity Timeline
+              </h3>
+            </div>
+            {loading ? (
+              <div className="p-5 space-y-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex gap-4">
+                    <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="w-1/3 h-4" />
+                      <Skeleton className="w-2/3 h-3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-5">
+                <div className="relative border-l-2 border-gray-100 ml-4 space-y-8">
+                  {ACTIVITY_FEED.map((item) => (
+                    <div key={item.id} className="relative pl-6">
+                      <div className="absolute -left-[17px] bg-white border border-gray-100 rounded-full p-1.5 shadow-sm">
+                        {item.icon}
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{item.type}</span>
+                        <p className="text-sm font-medium text-[#232F46] mt-0.5">{item.text}</p>
+                        <p className="text-xs text-gray-500 mt-1">{item.time}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </Card>
+            )}
+          </Card>
+        </div>
 
-        {/* Quick Actions (1/3 width) */}
-        <Card>
-          <h3 className="font-bold text-[#232F46] mb-4">{t('admin.quickActions')}</h3>
-          <div className="space-y-2">
-            {[
-              { label: t('admin.viewMembers'),       path: '/admin/members' },
-              { label: t('admin.reviewKyc'),         path: '/admin/members' },
-              { label: t('admin.viewApps'),  path: '/admin/members' },
-              { label: t('admin.viewNotifs'), path: '/admin/notifications' },
-              { label: t('admin.genReports'),   path: null },
-            ].map(({ label, path }) => (
-              <button
-                key={label}
-                onClick={() => path ? navigate(path) : undefined}
-                disabled={!path}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-100 ${
-                  path
-                    ? 'text-[#232F46] hover:bg-[#232F46] hover:text-white hover:border-[#232F46]'
-                    : 'text-gray-300 cursor-not-allowed bg-gray-50'
-                }`}
-              >
-                {label}
-                {path && <ChevronRight className="w-4 h-4 opacity-50" />}
-                {!path && (
-                  <span className="text-[10px] font-bold uppercase tracking-wide bg-gray-100 px-1.5 py-0.5 rounded text-gray-400">
-                    {t('admin.soon')}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </Card>
+        {/* ── Right Column: Summary & Actions ───────────────────────────── */}
+        <div className="lg:col-span-1 space-y-6">
+          <Card>
+            <h3 className="font-bold text-[#232F46] mb-4">Quick Actions</h3>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="w-full h-12 rounded-lg" />)}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {[
+                  { label: 'View Members', path: '/admin/members' },
+                  { label: 'Approve Members', path: '/admin/members' },
+                  { label: 'Review KYC', path: '/admin/members' },
+                  { label: 'Send Notification', path: '/admin/notifications' },
+                  { label: 'Export Members', path: null },
+                ].map(({ label, path }) => (
+                  <button
+                    key={label}
+                    onClick={() => path ? navigate(path) : undefined}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors border border-gray-100 ${
+                      path
+                        ? 'text-[#232F46] hover:bg-[#232F46] hover:text-white hover:border-[#232F46]'
+                        : 'text-gray-400 hover:bg-gray-50 cursor-pointer'
+                    }`}
+                  >
+                    {label}
+                    <ChevronRight className="w-4 h-4 opacity-50" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </Card>
 
+          <Card className="bg-[#232F46] text-white border-0 shadow-sm p-5">
+            <h3 className="font-bold mb-4">System Summary</h3>
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i}>
+                    <Skeleton className="w-24 h-3 bg-white/20 mb-2" />
+                    <Skeleton className="w-16 h-6 bg-white/30" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4 divide-y divide-white/10">
+                <div className="pt-2 flex justify-between items-end">
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Recent Registrations</p>
+                    <p className="text-2xl font-black">12</p>
+                  </div>
+                  <span className="text-xs text-green-400 font-medium">+3 today</span>
+                </div>
+                <div className="pt-4 flex justify-between items-end">
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Recent Approvals</p>
+                    <p className="text-2xl font-black">8</p>
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-between items-end">
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Latest Notifications</p>
+                    <p className="text-2xl font-black">5</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
     </motion.div>
   );
