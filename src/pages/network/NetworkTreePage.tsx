@@ -139,7 +139,7 @@ const TreeLevel = ({ node, isRoot = false, maxDepth, currentDepth = 0 }: {
               {/* Left branch */}
               <div className="flex flex-col items-center" style={{ marginRight: '8px' }}>
                 <div className="flex items-start">
-                  <div className="w-[60px] h-px bg-slate-300 mt-0 translate-y-0 self-start mt-[0px]" style={{ marginTop: '0px', alignSelf: 'flex-start', marginTop: 0, height: '1px', width: '60px' }} />
+                  <div className="w-[60px] h-px bg-slate-300" style={{ alignSelf: 'flex-start', height: '1px', width: '60px' }} />
                 </div>
               </div>
 
