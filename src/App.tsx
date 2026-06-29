@@ -66,6 +66,7 @@ import AdminLayout from './components/AdminLayout';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminMembersPage from './pages/admin/AdminMembersPage';
+import AdminPendingPaymentsPage from './pages/admin/AdminPendingPaymentsPage';
 import AdminNotificationsPage from './pages/admin/AdminNotificationsPage';
 import AdminBusinessSettingsPage from './pages/admin/AdminBusinessSettingsPage';
 import AdminPayoutManagementPage from './pages/admin/AdminPayoutManagementPage';
@@ -92,6 +93,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/members" element={<AdminMembersPage />} />
+            <Route path="/admin/payments" element={<AdminPendingPaymentsPage />} />
             
             {/* Admin Business Ops */}
             <Route path="/admin/business/settings" element={<AdminBusinessSettingsPage />} />

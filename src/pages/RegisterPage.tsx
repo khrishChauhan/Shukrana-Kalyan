@@ -6,12 +6,18 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Award, ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, Bell, Eye, EyeOff, User, MapPin, Mail, Phone, Lock, FileText, Check } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { Input } from '../components/ui/Input';
+import { Select } from '../components/ui/Select';
+import { Button } from '../components/ui/Button';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sponsorName, setSponsorName] = useState('');
+  const [generatedMemberId, setGeneratedMemberId] = useState('');
   
   // Form State
   const [formData, setFormData] = useState({
@@ -19,7 +25,7 @@ export default function RegisterPage() {
     mobileNumber: '',
     email: '',
     state: '',
-    district: '',
+    city: '',
     sponsorId: '',
     placement: 'left',
     password: '',
@@ -42,9 +48,28 @@ export default function RegisterPage() {
   const nextStep = () => setStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step < 4) {
+      if (step === 2) {
+        // Validate sponsor ID if provided
+        if (formData.sponsorId.trim() !== '') {
+          setIsSubmitting(true);
+          const { data, error } = await supabase
+            .from('members')
+            .select('id, member_profile(full_name)')
+            .eq('member_id', formData.sponsorId.trim().toUpperCase())
+            .single();
+          setIsSubmitting(false);
+          if (error || !data) {
+            alert('Invalid Sponsor ID');
+            return;
+          }
+          setSponsorName(data.member_profile?.full_name || 'Verified Sponsor');
+        } else {
+          setSponsorName('No Sponsor');
+        }
+      }
       nextStep();
       return;
     }
@@ -61,20 +86,71 @@ export default function RegisterPage() {
 
     setIsSubmitting(true);
 
-    // Simulate backend processing
-    setTimeout(() => {
-      // Mock successful registration
-      setIsSubmitting(false);
-      setIsSuccess(true);
+    try {
+      const pseudoEmail = `${formData.mobileNumber}@sks.org`;
       
-      // Store pending member state
-      localStorage.setItem('shukrana_member_id', 'SK000123');
-      localStorage.setItem('shukrana_payment_status', 'Pending');
-    }, 1500);
-  };
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: pseudoEmail,
+        password: formData.password,
+      });
 
-  // Mock auto-fill for sponsor name based on ID
-  const sponsorName = formData.sponsorId.length >= 3 ? "SKS Sponsor Desk" : "";
+      if (authError) throw authError;
+      
+      if (authData.user) {
+        const userId = authData.user.id;
+
+        // 1. Insert Member (Trigger will generate member_id)
+        const { error: memberError } = await supabase.from('members').insert({
+          id: userId,
+          status: 'PENDING'
+        });
+        if (memberError) throw memberError;
+
+        // 2. Fetch the generated member_id
+        const { data: newMember } = await supabase.from('members').select('member_id').eq('id', userId).single();
+        const memberId = newMember?.member_id || 'UNKNOWN';
+
+        // 3. Insert Profile
+        const { error: profileError } = await supabase.from('member_profile').insert({
+          id: userId,
+          full_name: formData.fullName,
+          phone_number: formData.mobileNumber,
+          email: formData.email || null,
+          city: formData.city,
+          state: formData.state
+        });
+        if (profileError) throw profileError;
+
+        // 4. Fetch Sponsor UUID if provided
+        let sponsorUuid = null;
+        if (formData.sponsorId.trim() !== '') {
+          const { data: sponsorData } = await supabase.from('members').select('id').eq('member_id', formData.sponsorId.trim().toUpperCase()).single();
+          sponsorUuid = sponsorData?.id;
+        }
+
+        // 5. Insert Business (allow NULL sponsors)
+        const { error: bizError } = await supabase.from('member_business').insert({
+          id: userId,
+          sponsor_member_uuid: sponsorUuid || null,
+          placement_parent_uuid: sponsorUuid || null,
+          placement_side: sponsorUuid ? formData.placement : null
+        });
+        if (bizError) throw bizError;
+
+        // 6. Insert KYC (Empty placeholder)
+        await supabase.from('member_kyc').insert({ id: userId });
+
+        localStorage.setItem('shukrana_member_id', memberId);
+        localStorage.setItem('shukrana_payment_status', 'Pending');
+        setGeneratedMemberId(memberId);
+        setIsSuccess(true);
+      }
+    } catch (error: any) {
+      alert(error.message || "An error occurred during registration");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex bg-[#f8f9fa] selection:bg-[#ED8C32] selection:text-white font-sans">
@@ -175,7 +251,7 @@ export default function RegisterPage() {
                 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8 inline-block w-full">
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Your Member ID</p>
-                  <p className="text-3xl font-mono font-bold text-[#232F46]">SK000123</p>
+                  <p className="text-3xl font-mono font-bold text-[#232F46]">{generatedMemberId}</p>
                   <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
                     <span className="w-2 h-2 rounded-full bg-yellow-500" />
                     Pending Payment
@@ -226,46 +302,57 @@ export default function RegisterPage() {
                   {/* STEP 1: Personal Info */}
                   {step === 1 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Full Name</label>
-                        <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          <input type="text" required name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Enter your full name" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                        </div>
-                      </div>
+                      <Input
+                        label="Full Name"
+                        required
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        placeholder="Enter your full name"
+                        leftIcon={<User className="h-5 w-5" />}
+                      />
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Mobile Number</label>
-                          <div className="relative">
-                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            <input type="tel" required name="mobileNumber" value={formData.mobileNumber} onChange={handleInputChange} placeholder="10-digit number" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                          </div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Email (Optional)</label>
-                          <div className="relative">
-                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email address" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                          </div>
-                        </div>
+                        <Input
+                          label="Mobile Number"
+                          type="tel"
+                          required
+                          name="mobileNumber"
+                          value={formData.mobileNumber}
+                          onChange={handleInputChange}
+                          placeholder="10-digit number"
+                          leftIcon={<Phone className="h-5 w-5" />}
+                        />
+                        <Input
+                          label="Email (Optional)"
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="Email address"
+                          leftIcon={<Mail className="h-5 w-5" />}
+                        />
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">State</label>
-                          <div className="relative">
-                            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            <input type="text" required name="state" value={formData.state} onChange={handleInputChange} placeholder="e.g. Maharashtra" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                          </div>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">District</label>
-                          <div className="relative">
-                            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            <input type="text" required name="district" value={formData.district} onChange={handleInputChange} placeholder="e.g. Mumbai" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                          </div>
-                        </div>
+                        <Input
+                          label="State"
+                          required
+                          name="state"
+                          value={formData.state}
+                          onChange={handleInputChange}
+                          placeholder="e.g. Maharashtra"
+                          leftIcon={<MapPin className="h-5 w-5" />}
+                        />
+                        <Input
+                          label="City"
+                          required
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          placeholder="e.g. Mumbai"
+                          leftIcon={<MapPin className="h-5 w-5" />}
+                        />
                       </div>
                     </div>
                   )}
@@ -276,64 +363,103 @@ export default function RegisterPage() {
                       <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mb-2 flex gap-3">
                         <User className="text-blue-500 shrink-0 h-5 w-5" />
                         <div>
-                          <p className="text-sm font-semibold text-blue-900">Sponsor Details Required</p>
-                          <p className="text-xs text-blue-700 mt-1">Please enter the Member ID of your sponsor to join their network.</p>
+                          <p className="text-sm font-semibold text-blue-900">Sponsor Details (Optional)</p>
+                          <p className="text-xs text-blue-700 mt-1">Enter the Member ID of your sponsor to join their network. Leave blank to join directly.</p>
                         </div>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Sponsor ID</label>
-                        <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          <input type="text" required name="sponsorId" value={formData.sponsorId} onChange={handleInputChange} placeholder="e.g. SK000001" className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46] uppercase" />
-                        </div>
-                      </div>
+                      <Input
+                        label="Sponsor ID"
+                        name="sponsorId"
+                        value={formData.sponsorId}
+                        onChange={handleInputChange}
+                        placeholder="e.g. SK000001 (Optional)"
+                        className="uppercase"
+                        leftIcon={<User className="h-5 w-5" />}
+                      />
 
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Sponsor Name</label>
-                        <input type="text" readOnly value={sponsorName} placeholder="Auto-filled sponsor name" className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg outline-none text-sm text-slate-500 font-medium cursor-not-allowed" />
-                      </div>
+                      {formData.sponsorId && (
+                        <Input
+                          label="Sponsor Name"
+                          readOnly
+                          value={sponsorName}
+                          placeholder="Auto-filled sponsor name"
+                          className="bg-slate-100 cursor-not-allowed"
+                        />
+                      )}
 
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Placement Direction</label>
-                        <select name="placement" value={formData.placement} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]">
-                          <option value="left">Left Organization</option>
-                          <option value="right">Right Organization</option>
-                        </select>
-                      </div>
+                      {formData.sponsorId && (
+                        <Select
+                          label="Placement Direction"
+                          name="placement"
+                          value={formData.placement}
+                          onChange={handleInputChange}
+                          options={[
+                            { value: 'left', label: 'Left Organization' },
+                            { value: 'right', label: 'Right Organization' },
+                          ]}
+                        />
+                      )}
                     </div>
                   )}
 
                   {/* STEP 3: Security */}
                   {step === 3 && (
                     <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Set Password</label>
-                        <div className="relative">
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          <input type={showPassword ? "text" : "password"} required name="password" value={formData.password} onChange={handleInputChange} placeholder="Minimum 6 characters" className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 focus:outline-none">
-                            {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                      <Input
+                        label="Set Password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        placeholder="Minimum 6 characters"
+                        leftIcon={<Lock className="h-5 w-5" />}
+                        rightIcon={
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 text-slate-400 hover:text-slate-600 focus:outline-none">
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
-                        </div>
-                      </div>
+                        }
+                      />
 
-                      <div className="space-y-1.5">
-                        <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Confirm Password</label>
-                        <div className="relative">
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          <input type={showPassword ? "text" : "password"} required name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} placeholder="Repeat password" className="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] outline-none text-sm text-[#232F46]" />
-                        </div>
-                        {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                          <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
-                        )}
-                      </div>
+                      <Input
+                        label="Confirm Password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        placeholder="Repeat password"
+                        leftIcon={<Lock className="h-5 w-5" />}
+                        error={formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword ? "Passwords do not match" : undefined}
+                      />
                     </div>
                   )}
 
-                  {/* STEP 4: Agreement */}
+                  {/* STEP 4: Agreement & Review */}
                   {step === 4 && (
                     <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+                      
+                      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                        <h3 className="font-bold text-[#232F46] text-sm border-b border-slate-200 pb-2 mb-3">Review Your Information</h3>
+                        <div className="grid grid-cols-2 gap-y-2 text-xs">
+                          <span className="text-slate-500 font-medium">Full Name:</span>
+                          <span className="font-bold text-[#232F46]">{formData.fullName}</span>
+                          
+                          <span className="text-slate-500 font-medium">Mobile Number:</span>
+                          <span className="font-bold text-[#232F46]">{formData.mobileNumber}</span>
+                          
+                          <span className="text-slate-500 font-medium">City, State:</span>
+                          <span className="font-bold text-[#232F46]">{formData.city}, {formData.state}</span>
+                          
+                          <span className="text-slate-500 font-medium">Sponsor ID:</span>
+                          <span className="font-bold text-[#232F46]">{formData.sponsorId || 'None'}</span>
+                          
+                          <span className="text-slate-500 font-medium">Placement:</span>
+                          <span className="font-bold text-[#232F46] uppercase">{formData.sponsorId ? formData.placement : 'None'}</span>
+                        </div>
+                      </div>
+
                       <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
                         <label className="flex items-start gap-3 cursor-pointer group">
                           <div className="relative flex items-center justify-center w-5 h-5 shrink-0 mt-0.5">
@@ -372,13 +498,20 @@ export default function RegisterPage() {
                   {/* Form Navigation Actions */}
                   <div className="flex gap-3 mt-8">
                     {step > 1 && (
-                      <button type="button" onClick={prevStep} className="px-6 py-3.5 bg-white border border-slate-200 text-[#232F46] font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                      <Button type="button" variant="outline" size="lg" onClick={prevStep}>
                         Back
-                      </button>
+                      </Button>
                     )}
-                    <button type="submit" disabled={isSubmitting || (step === 4 && (!formData.agreeTnc || !formData.agreePrivacy))} className="flex-1 py-3.5 bg-[#ED8C32] hover:bg-[#D97A24] text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isSubmitting ? "Processing..." : step === 4 ? "Complete Registration" : "Next Step"}
-                    </button>
+                    <Button 
+                      type="submit" 
+                      variant="primary" 
+                      size="lg" 
+                      fullWidth 
+                      isLoading={isSubmitting} 
+                      disabled={isSubmitting || (step === 4 && (!formData.agreeTnc || !formData.agreePrivacy))}
+                    >
+                      {step === 4 ? "Complete Registration" : "Next Step"}
+                    </Button>
                   </div>
                 </form>
               </>

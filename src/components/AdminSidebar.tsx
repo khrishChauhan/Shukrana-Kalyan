@@ -25,6 +25,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',      path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Members',        path: '/admin/members',   icon: Users },
+  { label: 'Pending Payments',path: '/admin/payments', icon: Banknote },
   { label: 'Biz Settings',   path: '/admin/business/settings', icon: Settings },
   { label: 'Payouts',        path: '/admin/business/payouts',  icon: Banknote },
   { label: 'Biz Rules',      path: '/admin/business/rules',    icon: ShieldCheck },

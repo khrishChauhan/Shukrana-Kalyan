@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, User, Eye, EyeOff, Award, ArrowLeft, HeartHandshake, Users, ShieldCheck } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -23,34 +24,53 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Please enter both Member ID and Password.');
+      setErrorMsg('Please enter both Mobile Number and Password.');
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate server-side validation delay
-    setTimeout(() => {
-      // Mock validation for demo
-      if (username.trim() === 'demo' && password === '123') {
-        localStorage.setItem('shukrana_session', JSON.stringify({
-          authenticated: true,
-          role: 'Member',
-          username: 'demo',
-          time: new Date().toISOString(),
-        }));
-        setIsSubmitting(false);
-        navigate('/dashboard');
+    try {
+      const pseudoEmail = `${username.trim()}@sks.org`;
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: pseudoEmail,
+        password: password
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("No user returned");
+
+      const { data: memberData, error: memberError } = await supabase
+        .from('members')
+        .select('status, full_name, member_id')
+        .eq('id', authData.user.id)
+        .single();
+
+      if (memberError) throw memberError;
+
+      localStorage.setItem('shukrana_session', JSON.stringify({
+        authenticated: true,
+        role: 'Member',
+        username: memberData.full_name,
+        memberId: memberData.member_id,
+        time: new Date().toISOString(),
+      }));
+
+      if (memberData.status === 'PENDING') {
+        navigate('/payment-submission');
       } else {
-        setIsSubmitting(false);
-        setErrorMsg('Invalid credentials. Use demo / 123');
+        navigate('/dashboard');
       }
-    }, 1000);
+    } catch (error: any) {
+      setErrorMsg(error.message || 'Invalid credentials.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -141,7 +161,7 @@ export default function LoginPage() {
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               {/* Username Input */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Member ID or Mobile</label>
+                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Mobile Number</label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input

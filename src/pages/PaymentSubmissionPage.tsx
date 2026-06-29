@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Award, ArrowLeft, QrCode, UploadCloud, Copy, CheckCircle2, Clock, FileText, ChevronRight, Settings } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function PaymentSubmissionPage() {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ export default function PaymentSubmissionPage() {
   const [paymentStatus, setPaymentStatus] = useState<'Required' | 'Pending' | 'Approved' | 'Rejected'>('Required');
   
   const [utrNumber, setUtrNumber] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
+  const [joiningAmount, setJoiningAmount] = useState('2100');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
   
@@ -32,6 +35,15 @@ export default function PaymentSubmissionPage() {
       setIsDemoMode(true);
     }
 
+    // Load joining amount
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('app_config').select('value').eq('key', 'joining_amount').single();
+      if (data && !error) {
+        setJoiningAmount(data.value);
+      }
+    };
+    fetchConfig();
+
     // Load initial state
     const status = localStorage.getItem('shukrana_payment_status');
     if (status === 'Pending' || status === 'Approved' || status === 'Rejected') {
@@ -47,23 +59,58 @@ export default function PaymentSubmissionPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
       setFileName(e.target.files[0].name);
     }
   };
 
-  const handleSubmitPayment = (e: React.FormEvent) => {
+  const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!utrNumber || utrNumber.length < 12) {
       alert("Please enter a valid 12-digit UTR/Transaction ID");
       return;
     }
+    if (!file) {
+      alert("Please upload a payment screenshot");
+      return;
+    }
     
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // 1. Get current member id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // 2. Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from('payment-proofs')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('payment-proofs')
+        .getPublicUrl(filePath);
+
+      // 3. Insert payment record
+      const { error: dbError } = await supabase.from('payments').insert({
+        member_id: user.id,
+        amount: Number(joiningAmount),
+        utr_number: utrNumber,
+        screenshot_url: publicUrlData.publicUrl
+      });
+
+      if (dbError) throw dbError;
+
       setPaymentStatus('Pending');
       localStorage.setItem('shukrana_payment_status', 'Pending');
-    }, 1500);
+    } catch (error: any) {
+      alert(error.message || "Failed to submit payment");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Demo Actions
@@ -136,7 +183,7 @@ export default function PaymentSubmissionPage() {
                   <div className="flex-1 space-y-4 w-full">
                     <div>
                       <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Activation Fee</p>
-                      <p className="text-3xl font-bold text-[#232F46]">₹500<span className="text-sm text-slate-500 font-normal ml-1">/ lifetime</span></p>
+                      <p className="text-3xl font-bold text-[#232F46]">₹{joiningAmount}<span className="text-sm text-slate-500 font-normal ml-1">/ lifetime</span></p>
                     </div>
 
                     <div className="space-y-3 pt-3 border-t border-slate-200">
