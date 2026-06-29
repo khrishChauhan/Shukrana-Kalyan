@@ -40,18 +40,26 @@ export default function AdminPendingPaymentsPage() {
   const handleApprove = async (paymentId: string, memberId: string) => {
     if (!window.confirm("Are you sure you want to approve this payment?")) return;
     try {
-      const { error: pError } = await supabase.from('payments').update({ status: 'VERIFIED' }).eq('id', paymentId);
+      // 1. Mark payment as VERIFIED
+      const { error: pError } = await supabase
+        .from('payments')
+        .update({ status: 'VERIFIED', verified_at: new Date().toISOString() })
+        .eq('id', paymentId);
       if (pError) throw pError;
-      
-      const { error: mError } = await supabase.from('members').update({ status: 'ACTIVE' }).eq('id', memberId);
-      if (mError) throw mError;
-      
-      alert('Payment approved and member activated!');
+
+      // 2. Run the activate_member RPC — this executes BFS placement + status change atomically
+      const { error: rpcError } = await supabase.rpc('activate_member', {
+        p_member_uuid: memberId
+      });
+      if (rpcError) throw rpcError;
+
+      alert('Payment approved and member activated via placement engine!');
       fetchPendingPayments();
     } catch (error: any) {
-      alert(error.message);
+      alert(`Error: ${error.message}`);
     }
   };
+
 
   const handleReject = async (paymentId: string) => {
     if (!window.confirm("Are you sure you want to reject this payment?")) return;

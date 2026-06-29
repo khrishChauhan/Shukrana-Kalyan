@@ -122,23 +122,32 @@ export default function RegisterPage() {
         if (profileError) throw profileError;
 
         // 4. Fetch Sponsor UUID if provided
-        let sponsorUuid = null;
+        let sponsorUuid: string | null = null;
         if (formData.sponsorId.trim() !== '') {
-          const { data: sponsorData } = await supabase.from('members').select('id').eq('member_id', formData.sponsorId.trim().toUpperCase()).single();
-          sponsorUuid = sponsorData?.id;
+          const { data: sponsorData } = await supabase
+            .from('members')
+            .select('id')
+            .eq('member_id', formData.sponsorId.trim().toUpperCase())
+            .single();
+          sponsorUuid = sponsorData?.id ?? null;
         }
 
-        // 5. Insert Business (allow NULL sponsors)
+        // 5. Insert Business record
+        // NOTE (Phase 3.2): We no longer write placement_parent_uuid or placement_side here.
+        // The activate_member() RPC will resolve the final placement via BFS when an admin approves.
+        // We only store sponsor_member_uuid and requested_placement_side as the user's preference.
         const { error: bizError } = await supabase.from('member_business').insert({
           id: userId,
-          sponsor_member_uuid: sponsorUuid || null,
-          placement_parent_uuid: sponsorUuid || null,
-          placement_side: sponsorUuid ? formData.placement : null
+          sponsor_member_uuid:       sponsorUuid,
+          placement_parent_uuid:     null,                                    // resolved by activate_member()
+          placement_side:            null,                                    // resolved by activate_member()
+          requested_placement_side:  sponsorUuid ? formData.placement : null  // user's preference
         });
         if (bizError) throw bizError;
 
         // 6. Insert KYC (Empty placeholder)
         await supabase.from('member_kyc').insert({ id: userId });
+
 
         localStorage.setItem('shukrana_member_id', memberId);
         localStorage.setItem('shukrana_payment_status', 'Pending');
