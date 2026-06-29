@@ -47,7 +47,7 @@ export default function LoginPage() {
 
       const { data: memberData, error: memberError } = await supabase
         .from('members')
-        .select('status, full_name, member_id')
+        .select('status, member_id, member_profile(full_name)')
         .eq('id', authData.user.id)
         .single();
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
       localStorage.setItem('shukrana_session', JSON.stringify({
         authenticated: true,
         role: 'Member',
-        username: memberData.full_name,
+        username: memberData.member_profile?.[0]?.full_name || memberData.member_profile?.full_name || 'Member',
         memberId: memberData.member_id,
         time: new Date().toISOString(),
       }));

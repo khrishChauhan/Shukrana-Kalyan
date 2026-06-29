@@ -19,9 +19,11 @@ export default function AdminPendingPaymentsPage() {
           *,
           members (
             member_id,
-            full_name,
-            mobile_number,
-            status
+            status,
+            member_profile (
+              full_name,
+              phone_number
+            )
           )
         `)
         .eq('status', 'PENDING');
@@ -93,8 +95,8 @@ export default function AdminPendingPaymentsPage() {
                 payments.map(payment => (
                   <tr key={payment.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-[#232F46]">{payment.members?.full_name}</div>
-                      <div className="text-xs text-slate-500">{payment.members?.member_id} • {payment.members?.mobile_number}</div>
+                      <div className="font-semibold text-[#232F46]">{payment.members?.member_profile?.[0]?.full_name || payment.members?.member_profile?.full_name || 'Unknown'}</div>
+                      <div className="text-xs text-slate-500">{payment.members?.member_id} • {payment.members?.member_profile?.[0]?.phone_number || payment.members?.member_profile?.phone_number}</div>
                     </td>
                     <td className="px-6 py-4 font-mono">{payment.utr_number}</td>
                     <td className="px-6 py-4 font-semibold">₹{payment.amount}</td>
