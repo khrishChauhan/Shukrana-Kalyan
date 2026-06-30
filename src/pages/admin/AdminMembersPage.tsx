@@ -258,7 +258,7 @@ export default function AdminMembersPage() {
 
         {/* Pagination UI */}
         <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400 bg-gray-50/50">
-          <span>Showing {filtered.length} of {MOCK_MEMBERS.length} members</span>
+          <span>Showing {filtered.length} of {members.length} members</span>
           <div className="flex items-center gap-1">
             <button className="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none" disabled>
               Previous
