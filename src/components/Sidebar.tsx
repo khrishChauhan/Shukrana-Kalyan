@@ -54,6 +54,7 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.directReferrals', path: '/network/direct-referrals' },
       { nameKey: 'sidebar.verifiedMembers', path: '/network/verified-members' },
       { nameKey: 'sidebar.pendingApproval', path: '/network/pending-approval' },
+      { nameKey: 'sidebar.networkTree', path: '/network/network-tree' },
     ]
   },
   {
