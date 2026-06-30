@@ -186,6 +186,18 @@ export default function RegisterPage() {
         // 6. Insert KYC (Empty placeholder)
         await supabase.from('member_kyc').insert({ id: userId });
 
+        // 7. Auto-Submit Dummy Payment (Bypass for quick testing)
+        // Fetches joining_amount from system_settings, defaults to 2100
+        const { data: configData } = await supabase.from('system_settings').select('value').eq('key', 'joining_amount').single();
+        const joiningAmount = configData?.value ? Number(configData.value) : 2100;
+        
+        await supabase.from('payments').insert({
+          member_id: userId,
+          amount: joiningAmount,
+          utr_number: 'TEST-BYPASS',
+          screenshot_url: 'none'
+          // status defaults to 'PENDING' based on DB schema
+        });
 
         localStorage.setItem('shukrana_member_id', memberId);
         localStorage.setItem('shukrana_payment_status', 'Pending');
