@@ -29,14 +29,15 @@ export default function LoginPage() {
     setErrorMsg('');
 
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Please enter both Mobile Number and Password.');
+      setErrorMsg('Please enter both Member ID and Password.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const pseudoEmail = `${username.trim()}@sks.org`;
+      // Member ID login: pseudo-email is [member_id]@sks.org (uppercase)
+      const pseudoEmail = `${username.trim().toUpperCase()}@sks.org`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: pseudoEmail,
         password: password
@@ -161,7 +162,7 @@ export default function LoginPage() {
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               {/* Username Input */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Mobile Number</label>
+                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Member ID</label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
@@ -171,8 +172,8 @@ export default function LoginPage() {
                     name="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. SK000123"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors"
+                    placeholder="e.g. SK000001"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors uppercase"
                   />
                 </div>
               </div>

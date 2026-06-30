@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Award, ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, Bell, Eye, EyeOff, User, MapPin, Mail, Phone, Lock, FileText, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sponsorName, setSponsorName] = useState('');
+  const [sponsorLookupStatus, setSponsorLookupStatus] = useState<'idle' | 'loading' | 'found' | 'not_found'>('idle');
   const [generatedMemberId, setGeneratedMemberId] = useState('');
   
   // Form State
@@ -36,6 +37,29 @@ export default function RegisterPage() {
 
   const navigate = useNavigate();
 
+  // Real-time sponsor ID lookup
+  const lookupSponsor = useCallback(async (sponsorId: string) => {
+    if (!sponsorId.trim()) {
+      setSponsorName('');
+      setSponsorLookupStatus('idle');
+      return;
+    }
+    setSponsorLookupStatus('loading');
+    const { data, error } = await supabase
+      .from('members')
+      .select('id, member_profile(full_name)')
+      .eq('member_id', sponsorId.trim().toUpperCase())
+      .single();
+    if (error || !data) {
+      setSponsorLookupStatus('not_found');
+      setSponsorName('');
+    } else {
+      const profile = Array.isArray(data.member_profile) ? data.member_profile[0] : data.member_profile;
+      setSponsorLookupStatus('found');
+      setSponsorName(profile?.full_name || 'Verified Member');
+    }
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
@@ -43,6 +67,10 @@ export default function RegisterPage() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Trigger real-time sponsor lookup
+    if (name === 'sponsorId') {
+      lookupSponsor(value);
+    }
   };
 
   const nextStep = () => setStep(prev => Math.min(prev + 1, 4));
@@ -52,22 +80,18 @@ export default function RegisterPage() {
     e.preventDefault();
     if (step < 4) {
       if (step === 2) {
-        // Validate sponsor ID if provided
-        if (formData.sponsorId.trim() !== '') {
-          setIsSubmitting(true);
-          const { data, error } = await supabase
-            .from('members')
-            .select('id, member_profile(full_name)')
-            .eq('member_id', formData.sponsorId.trim().toUpperCase())
-            .single();
-          setIsSubmitting(false);
-          if (error || !data) {
-            alert('Invalid Sponsor ID');
-            return;
-          }
-          setSponsorName(data.member_profile?.full_name || 'Verified Sponsor');
-        } else {
-          setSponsorName('No Sponsor');
+        // Validate sponsor ID is provided and verified
+        if (!formData.sponsorId.trim()) {
+          alert('Sponsor ID is mandatory. Please enter your Sponsor Member ID.');
+          return;
+        }
+        if (sponsorLookupStatus === 'not_found') {
+          alert('Invalid Sponsor ID. Please check and try again.');
+          return;
+        }
+        if (sponsorLookupStatus === 'loading') {
+          alert('Please wait while we verify the Sponsor ID.');
+          return;
         }
       }
       nextStep();
@@ -87,6 +111,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
+      // Pseudo-email uses mobile number for now; will be updated to member_id after insert
       const pseudoEmail = `${formData.mobileNumber}@sks.org`;
       
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -109,6 +134,13 @@ export default function RegisterPage() {
         // 2. Fetch the generated member_id
         const { data: newMember } = await supabase.from('members').select('member_id').eq('id', userId).single();
         const memberId = newMember?.member_id || 'UNKNOWN';
+
+        // 2b. Update the auth user email from mobile@sks.org → memberId@sks.org
+        // This ensures the user can log in with their Member ID going forward.
+        await supabase.rpc('update_auth_email_to_member_id', {
+          p_user_id: userId,
+          p_member_id: memberId
+        });
 
         // 3. Insert Profile
         const { error: profileError } = await supabase.from('member_profile').insert({
@@ -369,46 +401,47 @@ export default function RegisterPage() {
                   {/* STEP 2: Sponsor Info */}
                   {step === 2 && (
                     <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mb-2 flex gap-3">
-                        <User className="text-blue-500 shrink-0 h-5 w-5" />
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl mb-2 flex gap-3">
+                        <User className="text-amber-600 shrink-0 h-5 w-5" />
                         <div>
-                          <p className="text-sm font-semibold text-blue-900">Sponsor Details (Optional)</p>
-                          <p className="text-xs text-blue-700 mt-1">Enter the Member ID of your sponsor to join their network. Leave blank to join directly.</p>
+                          <p className="text-sm font-semibold text-amber-900">Sponsor ID is Mandatory</p>
+                          <p className="text-xs text-amber-700 mt-1">Enter the Member ID of your sponsor (e.g. SK000001). You cannot register without a valid sponsor.</p>
                         </div>
                       </div>
 
-                      <Input
-                        label="Sponsor ID"
-                        name="sponsorId"
-                        value={formData.sponsorId}
-                        onChange={handleInputChange}
-                        placeholder="e.g. SK000001 (Optional)"
-                        className="uppercase"
-                        leftIcon={<User className="h-5 w-5" />}
-                      />
-
-                      {formData.sponsorId && (
+                      <div>
                         <Input
-                          label="Sponsor Name"
-                          readOnly
-                          value={sponsorName}
-                          placeholder="Auto-filled sponsor name"
-                          className="bg-slate-100 cursor-not-allowed"
-                        />
-                      )}
-
-                      {formData.sponsorId && (
-                        <Select
-                          label="Placement Direction"
-                          name="placement"
-                          value={formData.placement}
+                          label="Sponsor ID *"
+                          name="sponsorId"
+                          required
+                          value={formData.sponsorId}
                           onChange={handleInputChange}
-                          options={[
-                            { value: 'left', label: 'Left Organization' },
-                            { value: 'right', label: 'Right Organization' },
-                          ]}
+                          placeholder="e.g. SK000001"
+                          className="uppercase"
+                          leftIcon={<User className="h-5 w-5" />}
                         />
-                      )}
+                        {/* Real-time sponsor preview */}
+                        {sponsorLookupStatus === 'loading' && (
+                          <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1">⏳ Looking up sponsor...</p>
+                        )}
+                        {sponsorLookupStatus === 'found' && (
+                          <p className="mt-1.5 text-xs text-green-700 font-semibold flex items-center gap-1">✅ Sponsor Name: {sponsorName}</p>
+                        )}
+                        {sponsorLookupStatus === 'not_found' && formData.sponsorId && (
+                          <p className="mt-1.5 text-xs text-red-600 font-semibold flex items-center gap-1">❌ Invalid Sponsor ID. Please check and try again.</p>
+                        )}
+                      </div>
+
+                      <Select
+                        label="Placement Direction"
+                        name="placement"
+                        value={formData.placement}
+                        onChange={handleInputChange}
+                        options={[
+                          { value: 'left', label: 'Left Organization' },
+                          { value: 'right', label: 'Right Organization' },
+                        ]}
+                      />
                     </div>
                   )}
 
