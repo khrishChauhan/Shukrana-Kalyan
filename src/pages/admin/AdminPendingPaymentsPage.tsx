@@ -4,72 +4,51 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
 export default function AdminPendingPaymentsPage() {
-  const [payments, setPayments] = useState<any[]>([]);
+  const [pendingMembers, setPendingMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPendingPayments();
+    fetchPendingMembers();
   }, []);
 
-  const fetchPendingPayments = async () => {
+  const fetchPendingMembers = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('payments')
+        .from('members')
         .select(`
-          *,
-          members (
-            member_id,
-            status,
-            member_profile (
-              full_name,
-              phone_number
-            )
+          id,
+          member_id,
+          created_at,
+          member_profile (
+            full_name,
+            phone_number
           )
         `)
         .eq('status', 'PENDING');
 
       if (error) throw error;
-      setPayments(data || []);
+      setPendingMembers(data || []);
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      console.error('Error fetching pending members:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (paymentId: string, memberId: string) => {
-    if (!window.confirm("Are you sure you want to approve this payment?")) return;
+  const handleApprove = async (memberId: string) => {
+    if (!window.confirm("Are you sure you want to approve this member?")) return;
     try {
-      // 1. Mark payment as VERIFIED
-      const { error: pError } = await supabase
-        .from('payments')
-        .update({ status: 'VERIFIED', verified_at: new Date().toISOString() })
-        .eq('id', paymentId);
-      if (pError) throw pError;
-
-      // 2. Run the activate_member RPC — this executes BFS placement + status change atomically
       const { error: rpcError } = await supabase.rpc('activate_member', {
         p_member_uuid: memberId
       });
+      
       if (rpcError) throw rpcError;
 
-      alert('Payment approved and member activated via placement engine!');
-      fetchPendingPayments();
+      alert('Member successfully approved and activated via placement engine!');
+      fetchPendingMembers();
     } catch (error: any) {
       alert(`Error: ${error.message}`);
-    }
-  };
-
-
-  const handleReject = async (paymentId: string) => {
-    if (!window.confirm("Are you sure you want to reject this payment?")) return;
-    try {
-      const { error } = await supabase.from('payments').update({ status: 'REJECTED' }).eq('id', paymentId);
-      if (error) throw error;
-      alert('Payment rejected.');
-      fetchPendingPayments();
-    } catch (error: any) {
-      alert(error.message);
     }
   };
 
@@ -77,8 +56,8 @@ export default function AdminPendingPaymentsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-[#232F46]">Pending Payments</h1>
-          <p className="text-sm text-slate-500">Review and verify submitted payment proofs.</p>
+          <h1 className="text-2xl font-bold text-[#232F46]">Pending Approvals</h1>
+          <p className="text-sm text-slate-500">Review and activate pending member registrations.</p>
         </div>
       </div>
 
@@ -88,37 +67,33 @@ export default function AdminPendingPaymentsPage() {
             <thead className="bg-slate-50 text-slate-500 uppercase text-xs font-semibold border-b border-slate-200">
               <tr>
                 <th className="px-6 py-4">Member Details</th>
-                <th className="px-6 py-4">UTR Number</th>
-                <th className="px-6 py-4">Amount</th>
-                <th className="px-6 py-4">Screenshot</th>
+                <th className="px-6 py-4">Registered Date</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 bg-white">
               {loading ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">Loading...</td></tr>
-              ) : payments.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">No pending payments found.</td></tr>
+                <tr><td colSpan={3} className="px-6 py-4 text-center">Loading...</td></tr>
+              ) : pendingMembers.length === 0 ? (
+                <tr><td colSpan={3} className="px-6 py-4 text-center">No pending approvals found.</td></tr>
               ) : (
-                payments.map(payment => (
-                  <tr key={payment.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-[#232F46]">{payment.members?.member_profile?.[0]?.full_name || payment.members?.member_profile?.full_name || 'Unknown'}</div>
-                      <div className="text-xs text-slate-500">{payment.members?.member_id} • {payment.members?.member_profile?.[0]?.phone_number || payment.members?.member_profile?.phone_number}</div>
-                    </td>
-                    <td className="px-6 py-4 font-mono">{payment.utr_number}</td>
-                    <td className="px-6 py-4 font-semibold">₹{payment.amount}</td>
-                    <td className="px-6 py-4">
-                      <a href={payment.screenshot_url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                        View Proof
-                      </a>
-                    </td>
-                    <td className="px-6 py-4 space-x-2">
-                      <Button variant="primary" size="sm" onClick={() => handleApprove(payment.id, payment.member_id)}>Approve</Button>
-                      <Button variant="outline" size="sm" onClick={() => handleReject(payment.id)}>Reject</Button>
-                    </td>
-                  </tr>
-                ))
+                pendingMembers.map(member => {
+                  const profile = Array.isArray(member.member_profile) ? member.member_profile[0] : member.member_profile;
+                  return (
+                    <tr key={member.id} className="hover:bg-slate-50">
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-[#232F46]">{profile?.full_name || 'Unknown'}</div>
+                        <div className="text-xs text-slate-500">{member.member_id} • {profile?.phone_number}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Date(member.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Button variant="primary" size="sm" onClick={() => handleApprove(member.id)}>Approve</Button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
