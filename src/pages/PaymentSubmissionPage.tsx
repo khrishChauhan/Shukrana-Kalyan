@@ -37,18 +37,42 @@ export default function PaymentSubmissionPage() {
 
     // Load joining amount
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('app_config').select('value').eq('key', 'joining_amount').single();
+      const { data, error } = await supabase.from('system_settings').select('value').eq('key', 'joining_amount').single();
       if (data && !error) {
         setJoiningAmount(data.value);
       }
     };
     fetchConfig();
 
-    // Load initial state
-    const status = localStorage.getItem('shukrana_payment_status');
-    if (status === 'Pending' || status === 'Approved' || status === 'Rejected') {
-      setPaymentStatus(status as any);
-    }
+    // Check actual status from Supabase
+    const checkStatus = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Check member status
+        const { data: member } = await supabase.from('members').select('status').eq('id', user.id).single();
+        if (member?.status === 'ACTIVE') {
+           setPaymentStatus('Approved');
+           return;
+        }
+
+        // Check payment status
+        const { data: payments } = await supabase.from('payments').select('status').eq('member_id', user.id).order('created_at', { ascending: false }).limit(1);
+        if (payments && payments.length > 0) {
+           const pStatus = payments[0].status;
+           if (pStatus === 'PENDING') setPaymentStatus('Pending');
+           else if (pStatus === 'REJECTED') setPaymentStatus('Rejected');
+           else if (pStatus === 'VERIFIED') setPaymentStatus('Approved');
+        } else {
+           setPaymentStatus('Required');
+        }
+      } catch (err) {
+        console.error("Error fetching status", err);
+      }
+    };
+    
+    checkStatus();
   }, []);
 
   const handleCopyUpi = () => {
@@ -105,7 +129,6 @@ export default function PaymentSubmissionPage() {
       if (dbError) throw dbError;
 
       setPaymentStatus('Pending');
-      localStorage.setItem('shukrana_payment_status', 'Pending');
     } catch (error: any) {
       alert(error.message || "Failed to submit payment");
     } finally {
