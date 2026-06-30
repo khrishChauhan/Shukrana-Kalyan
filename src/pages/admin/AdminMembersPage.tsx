@@ -16,6 +16,7 @@ import { supabase } from '../../lib/supabase';
 // ── Mock Members Data ──────────────────────────────────────────────────────────
 interface Member {
   id: string;
+  uuid: string;
   name: string;
   mobile: string;
   joinDate: string;
@@ -32,51 +33,66 @@ export default function AdminMembersPage() {
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('members')
-          .select(`
-            member_id,
-            status,
-            created_at,
-            member_profile (
-              full_name,
-              phone_number
-            )
-          `)
-          .order('created_at', { ascending: false });
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('members')
+        .select(`
+          id,
+          member_id,
+          status,
+          created_at,
+          member_profile (
+            full_name,
+            phone_number
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        
-        if (data) {
-          const mappedMembers = data.map((m: any) => {
-             const profile = Array.isArray(m.member_profile) ? m.member_profile[0] : m.member_profile;
-             let statusText = 'Pending Approval';
-             if (m.status === 'ACTIVE') statusText = 'Active';
-             if (m.status === 'SUSPENDED') statusText = 'Suspended';
-             if (m.status === 'PENDING') statusText = 'Pending Approval';
+      if (error) throw error;
+      
+      if (data) {
+        const mappedMembers = data.map((m: any) => {
+           const profile = Array.isArray(m.member_profile) ? m.member_profile[0] : m.member_profile;
+           let statusText = 'Pending Approval';
+           if (m.status === 'ACTIVE') statusText = 'Active';
+           if (m.status === 'SUSPENDED') statusText = 'Suspended';
+           if (m.status === 'PENDING') statusText = 'Pending Approval';
 
-             return {
-               id: m.member_id || 'N/A',
-               name: profile?.full_name || 'Unknown',
-               mobile: profile?.phone_number || 'N/A',
-               joinDate: new Date(m.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-               status: statusText as StatusType
-             };
-          });
-          setMembers(mappedMembers);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+           return {
+             id: m.member_id || 'N/A',
+             uuid: m.id,
+             name: profile?.full_name || 'Unknown',
+             mobile: profile?.phone_number || 'N/A',
+             joinDate: new Date(m.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+             status: statusText as StatusType
+           };
+        });
+        setMembers(mappedMembers);
       }
-    };
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMembers();
   }, []);
+
+  const handleActivateMember = async (memberUuid: string) => {
+    if (!window.confirm("Are you sure you want to approve and activate this member?")) return;
+    try {
+      const { error } = await supabase.rpc('activate_member', { p_member_uuid: memberUuid });
+      if (error) throw error;
+      alert("User Activated Successfully");
+      fetchMembers();
+    } catch (error: any) {
+      alert(`Error activating member: ${error.message}`);
+    }
+  };
 
   const filtered = useMemo(() => {
     return members.filter(m => {
@@ -209,9 +225,15 @@ export default function AdminMembersPage() {
                             <button className="p-1.5 text-gray-400 hover:text-[#232F46] hover:bg-gray-100 rounded-md transition-colors" title="View Profile">
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button className="p-1.5 text-green-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors" title="Approve">
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
+                            {m.status === 'Pending Approval' && (
+                              <button 
+                                onClick={() => handleActivateMember(m.uuid)}
+                                className="p-1.5 text-green-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors" 
+                                title="Approve"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </button>
+                            )}
                             <button className="p-1.5 text-orange-400 hover:text-orange-500 hover:bg-orange-50 rounded-md transition-colors" title="Suspend">
                               <Ban className="w-4 h-4" />
                             </button>
@@ -244,7 +266,15 @@ export default function AdminMembersPage() {
                       <p className="text-xs text-gray-500">{m.mobile} · {m.joinDate}</p>
                       <div className="flex gap-1 border border-gray-100 rounded-lg p-0.5 bg-gray-50">
                          <button className="p-1.5 text-gray-400 hover:text-[#232F46]" title="View"><Eye className="w-4 h-4" /></button>
-                         <button className="p-1.5 text-green-500 hover:text-green-600" title="Approve"><CheckCircle className="w-4 h-4" /></button>
+                         {m.status === 'Pending Approval' && (
+                           <button 
+                             onClick={() => handleActivateMember(m.uuid)}
+                             className="p-1.5 text-green-500 hover:text-green-600" 
+                             title="Approve"
+                           >
+                             <CheckCircle className="w-4 h-4" />
+                           </button>
+                         )}
                          <button className="p-1.5 text-orange-400 hover:text-orange-500" title="Suspend"><Ban className="w-4 h-4" /></button>
                          <button className="p-1.5 text-red-400 hover:text-red-500" title="Reject"><XCircle className="w-4 h-4" /></button>
                       </div>
