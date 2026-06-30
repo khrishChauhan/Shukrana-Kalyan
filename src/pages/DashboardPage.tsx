@@ -26,25 +26,30 @@ export default function DashboardPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const sessionStr = localStorage.getItem('shukrana_session');
-    if (!sessionStr) {
-      navigate('/login');
-      return;
-    }
-    const user = JSON.parse(sessionStr);
-    setAdminUser(user);
-
     const fetchDashboardData = async () => {
       try {
         setLoadingData(true);
-        // 1. Fetch status
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate('/login');
+          return;
+        }
+
+        // 1. Fetch status and profile
         const { data: memberData } = await supabase
           .from('members')
-          .select('status')
+          .select('status, created_at, member_profile(full_name)')
           .eq('id', user.id)
           .single();
           
-        if (memberData) setMemberStatus(memberData.status);
+        if (memberData) {
+          setMemberStatus(memberData.status);
+          const profile = Array.isArray(memberData.member_profile) ? memberData.member_profile[0] : memberData.member_profile;
+          setAdminUser({
+            name: profile?.full_name || 'Member',
+            joinDate: new Date(memberData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          });
+        }
         
         // 2. Fetch business data
         const { data: bData } = await supabase
