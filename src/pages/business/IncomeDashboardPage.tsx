@@ -10,6 +10,7 @@ export default function IncomeDashboardPage() {
   const navigate = useNavigate();
   const [sponsorTotal, setSponsorTotal] = useState(0);
   const [matchingTotal, setMatchingTotal] = useState(0);
+  const [levelTotal, setLevelTotal] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,15 +39,26 @@ export default function IncomeDashboardPage() {
           setMatchingTotal(matchingData.reduce((sum, tx) => sum + Number(tx.income_generated), 0));
         }
 
-        // Build unified recent transaction feed (sponsor + matching, last 10)
-        const [{ data: sRecent }, { data: mRecent }] = await Promise.all([
+        // Fetch level income total
+        const { data: levelData } = await supabase
+          .from('level_income_transactions')
+          .select('income_generated')
+          .eq('sponsor_uuid', user.id);
+        if (levelData) {
+          setLevelTotal(levelData.reduce((sum, tx) => sum + Number(tx.income_generated), 0));
+        }
+
+        // Build unified recent transaction feed (sponsor + matching + level, last 10)
+        const [{ data: sRecent }, { data: mRecent }, { data: lRecent }] = await Promise.all([
           supabase.from('sponsor_income_transactions').select('id, income_generated, created_at').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }).limit(5),
           supabase.from('matching_transactions').select('id, income_generated, created_at, ratio_used').eq('member_uuid', user.id).order('created_at', { ascending: false }).limit(5),
+          supabase.from('level_income_transactions').select('id, income_generated, created_at, level_distance').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }).limit(5),
         ]);
 
         const combined = [
           ...(sRecent || []).map(tx => ({ ...tx, category: 'Sponsor Income', type: 'Credit' })),
           ...(mRecent || []).map(tx => ({ ...tx, category: `Binary Match (${tx.ratio_used})`, type: 'Credit' })),
+          ...(lRecent || []).map(tx => ({ ...tx, category: `Level ${tx.level_distance} Income`, type: 'Credit' })),
         ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 8);
         setRecentTransactions(combined);
       } catch (err) {
@@ -58,12 +70,12 @@ export default function IncomeDashboardPage() {
     fetchIncomeData();
   }, []);
 
-  const totalIncome = sponsorTotal + matchingTotal;
+  const totalIncome = sponsorTotal + matchingTotal + levelTotal;
 
   const incomeStreams = [
     { title: 'Binary Income', amount: matchingTotal, icon: TrendingUp, path: '/business/matching-income' },
     { title: 'Sponsor Income', amount: sponsorTotal, icon: Users, path: '/business/sponsor-income' },
-    { title: 'Level Income', amount: 0, icon: ArrowRight, path: '/business/level-income' },
+    { title: 'Level Income', amount: levelTotal, icon: ArrowRight, path: '/business/level-income' },
     { title: 'Royalty Income', amount: 0, icon: Award, path: '/business/royalty-income' },
   ];
 

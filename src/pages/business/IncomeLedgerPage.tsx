@@ -17,14 +17,16 @@ export default function IncomeLedgerPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const [{ data: sponsorTxns }, { data: matchingTxns }] = await Promise.all([
+        const [{ data: sponsorTxns }, { data: matchingTxns }, { data: levelTxns }] = await Promise.all([
           supabase.from('sponsor_income_transactions').select('id, income_generated, created_at, status').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }),
           supabase.from('matching_transactions').select('id, income_generated, created_at, ratio_used, match_number').eq('member_uuid', user.id).order('created_at', { ascending: false }),
+          supabase.from('level_income_transactions').select('id, income_generated, created_at, level_distance, status').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }),
         ]);
 
         const combined = [
           ...(sponsorTxns || []).map(tx => ({ ...tx, category: 'Sponsor Income', type: 'Credit', amount: Number(tx.income_generated) })),
           ...(matchingTxns || []).map(tx => ({ ...tx, category: `Binary Match #${tx.match_number} (${tx.ratio_used})`, type: 'Credit', amount: Number(tx.income_generated) })),
+          ...(levelTxns || []).map(tx => ({ ...tx, category: `Level ${tx.level_distance} Income`, type: 'Credit', amount: Number(tx.income_generated) })),
         ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
         setLedger(combined);
