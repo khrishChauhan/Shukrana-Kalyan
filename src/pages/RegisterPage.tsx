@@ -199,8 +199,6 @@ export default function RegisterPage() {
           // status defaults to 'PENDING' based on DB schema
         });
 
-        localStorage.setItem('shukrana_member_id', memberId);
-        localStorage.setItem('shukrana_payment_status', 'Pending');
         setGeneratedMemberId(memberId);
         setIsSuccess(true);
       }

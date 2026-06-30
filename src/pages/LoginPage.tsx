@@ -18,10 +18,11 @@ export default function LoginPage() {
 
   // Guard: if already logged in, skip to dashboard
   useEffect(() => {
-    const session = localStorage.getItem('shukrana_session');
-    if (session) {
-      navigate('/dashboard');
-    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
   }, [navigate]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -53,14 +54,6 @@ export default function LoginPage() {
         .single();
 
       if (memberError) throw memberError;
-
-      localStorage.setItem('shukrana_session', JSON.stringify({
-        authenticated: true,
-        role: 'Member',
-        username: memberData.member_profile?.[0]?.full_name || memberData.member_profile?.full_name || 'Member',
-        memberId: memberData.member_id,
-        time: new Date().toISOString(),
-      }));
 
       if (memberData.status === 'PENDING') {
         navigate('/payment-submission');

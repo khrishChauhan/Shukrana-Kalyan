@@ -21,19 +21,7 @@ export default function PaymentSubmissionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
   
-  // Demo Mode logic
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [showDemoControls, setShowDemoControls] = useState(false);
-
   useEffect(() => {
-    // Check Demo Mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasDemoParam = urlParams.get('demo') === 'true';
-    const hasEnvDemo = import.meta.env.VITE_DEMO_MODE === 'true';
-    
-    if (hasDemoParam || hasEnvDemo) {
-      setIsDemoMode(true);
-    }
 
     // Load joining amount
     const fetchConfig = async () => {
@@ -136,31 +124,7 @@ export default function PaymentSubmissionPage() {
     }
   };
 
-  // Demo Actions
-  const demoApprove = () => {
-    setPaymentStatus('Approved');
-    localStorage.setItem('shukrana_payment_status', 'Approved');
-    localStorage.setItem('shukrana_session', JSON.stringify({
-      authenticated: true,
-      role: 'Member',
-      username: 'demo',
-      time: new Date().toISOString(),
-    }));
-  };
 
-  const demoReject = () => {
-    setPaymentStatus('Rejected');
-    localStorage.setItem('shukrana_payment_status', 'Rejected');
-    setUtrNumber('');
-    setFileName('');
-  };
-  
-  const demoReset = () => {
-    setPaymentStatus('Required');
-    localStorage.setItem('shukrana_payment_status', 'Required');
-    setUtrNumber('');
-    setFileName('');
-  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8f9fa] selection:bg-[#ED8C32] selection:text-white font-sans p-4 py-12 relative pb-24">
@@ -326,58 +290,7 @@ export default function PaymentSubmissionPage() {
         </div>
       </div>
 
-      {/* Floating Demo Controls (Bottom Right) */}
-      {isDemoMode && (
-        <div className="fixed bottom-6 right-6 z-50">
-          {!showDemoControls ? (
-            <button 
-              onClick={() => setShowDemoControls(true)}
-              className="w-12 h-12 bg-slate-800 hover:bg-slate-900 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
-              title="Demo Controls"
-            >
-              <Settings className="w-5 h-5 animate-[spin_4s_linear_infinite]" />
-            </button>
-          ) : (
-            <div className="bg-slate-800 text-white rounded-xl shadow-2xl p-4 w-64 border border-slate-700 animate-in slide-in-from-bottom-5 duration-200">
-              <div className="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
-                <div className="flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-orange-400" />
-                  <h4 className="font-bold text-sm">Demo Controls</h4>
-                </div>
-                <button 
-                  onClick={() => setShowDemoControls(false)}
-                  className="text-slate-400 hover:text-white"
-                >
-                  &times;
-                </button>
-              </div>
-              <p className="text-xs text-slate-400 mb-3 leading-tight">
-                Simulate backend payment verification status changes.
-              </p>
-              <div className="space-y-2">
-                <button 
-                  onClick={demoApprove}
-                  className="w-full py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 text-xs font-bold rounded border border-green-500/30 transition-colors"
-                >
-                  Simulate Approve
-                </button>
-                <button 
-                  onClick={demoReject}
-                  className="w-full py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-bold rounded border border-red-500/30 transition-colors"
-                >
-                  Simulate Reject
-                </button>
-                <button 
-                  onClick={demoReset}
-                  className="w-full py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold rounded transition-colors mt-2"
-                >
-                  Reset State
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+
 
     </div>
   );
