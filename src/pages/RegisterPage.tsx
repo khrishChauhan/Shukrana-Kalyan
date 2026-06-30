@@ -80,6 +80,12 @@ export default function RegisterPage() {
     e.preventDefault();
     if (step < 4) {
       if (step === 2) {
+        // Bypass for Genesis Node creation
+        if (formData.sponsorId.trim().toUpperCase() === 'GENESIS') {
+          nextStep();
+          return;
+        }
+
         // Validate sponsor ID is provided and verified
         if (!formData.sponsorId.trim()) {
           alert('Sponsor ID is mandatory. Please enter your Sponsor Member ID.');
@@ -153,9 +159,9 @@ export default function RegisterPage() {
         });
         if (profileError) throw profileError;
 
-        // 4. Fetch Sponsor UUID if provided
+        // 4. Fetch Sponsor UUID if provided (skip for GENESIS bypass)
         let sponsorUuid: string | null = null;
-        if (formData.sponsorId.trim() !== '') {
+        if (formData.sponsorId.trim() !== '' && formData.sponsorId.trim().toUpperCase() !== 'GENESIS') {
           const { data: sponsorData } = await supabase
             .from('members')
             .select('id')
