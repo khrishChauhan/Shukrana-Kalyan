@@ -5,13 +5,49 @@ import { Card } from '../../components/ui/Card';
 import { mockBvDashboard } from '../../data/mockBusinessData';
 import { Network, CheckCircle, Clock } from 'lucide-react';
 
+import { supabase } from '../../lib/supabase';
+
 export default function PairMatchingPage() {
-  const binaryHistory = [
-    { date: '2023-10-25', leftBefore: 8, rightBefore: 5, pairType: '2:1', leftUsed: 2, rightUsed: 1, income: 200, carryLeft: 6, carryRight: 4 },
-    { date: '2023-10-25', leftBefore: 6, rightBefore: 4, pairType: '2:1', leftUsed: 2, rightUsed: 1, income: 200, carryLeft: 4, carryRight: 3 },
-    { date: '2023-10-25', leftBefore: 4, rightBefore: 3, pairType: '2:1', leftUsed: 2, rightUsed: 1, income: 200, carryLeft: 2, carryRight: 2 },
-    { date: '2023-10-25', leftBefore: 2, rightBefore: 2, pairType: '2:1', leftUsed: 2, rightUsed: 1, income: 200, carryLeft: 0, carryRight: 1 },
-  ];
+  const [binaryHistory, setBinaryHistory] = React.useState<any[]>([]);
+  const [businessData, setBusinessData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchMatchingData = async () => {
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Fetch Business Data
+        const { data: bData } = await supabase
+          .from('member_business')
+          .select('carry_forward_left, carry_forward_right, matched_bv')
+          .eq('id', user.id)
+          .single();
+        if (bData) setBusinessData(bData);
+
+        // Fetch Matching History
+        const { data: history } = await supabase
+          .from('matching_transactions')
+          .select('*')
+          .eq('member_uuid', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (history) setBinaryHistory(history);
+      } catch (err) {
+        console.error("Error fetching matching data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMatchingData();
+  }, []);
+
+  // Compute Total Income from history
+  const totalIncome = binaryHistory.reduce((sum, tx) => sum + Number(tx.income_generated), 0);
+  const matchesToday = binaryHistory.filter(tx => new Date(tx.created_at).toDateString() === new Date().toDateString()).length;
 
   return (
     <motion.div
@@ -29,24 +65,24 @@ export default function PairMatchingPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="p-4 bg-[#232F46] text-white flex flex-col justify-center items-center text-center">
           <p className="text-xs font-bold text-white/70 uppercase tracking-wider mb-2">Total Binary Income</p>
-          <p className="text-4xl font-black text-[#ED8C32]">₹{mockBvDashboard.matchedBv * 200}</p>
+          <p className="text-4xl font-black text-[#ED8C32]">₹{totalIncome}</p>
         </Card>
 
         <Card className="p-4 bg-gray-50 border border-gray-100 rounded-xl text-center flex flex-col justify-center items-center">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Daily Matches</p>
-          <p className="text-3xl font-black text-[#232F46]">4 <span className="text-sm font-bold text-gray-400">/ 10 Limit</span></p>
-          <p className="text-[10px] text-gray-400 mt-2">Remaining Matches Today: 6</p>
+          <p className="text-3xl font-black text-[#232F46]">{matchesToday} <span className="text-sm font-bold text-gray-400">/ 10 Limit</span></p>
+          <p className="text-[10px] text-gray-400 mt-2">Remaining Matches Today: {Math.max(0, 10 - matchesToday)}</p>
         </Card>
 
         <Card className="p-4 bg-gray-50 border border-gray-100 rounded-xl text-center flex flex-col justify-center items-center">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Carry Forward BV</p>
           <div className="flex gap-4 items-center">
             <div className="text-center">
-              <p className="text-xl font-bold text-[#ED8C32]">0</p>
+              <p className="text-xl font-bold text-[#ED8C32]">{businessData?.carry_forward_left || 0}</p>
               <p className="text-[10px] text-gray-400 font-bold uppercase">Left</p>
             </div>
             <div className="text-center">
-              <p className="text-xl font-bold text-[#ED8C32]">1</p>
+              <p className="text-xl font-bold text-[#ED8C32]">{businessData?.carry_forward_right || 0}</p>
               <p className="text-[10px] text-gray-400 font-bold uppercase">Right</p>
             </div>
           </div>
@@ -118,17 +154,33 @@ export default function PairMatchingPage() {
             <tbody className="divide-y divide-gray-100">
               {binaryHistory.map((h, i) => (
                 <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="p-3 text-xs font-medium text-[#232F46]">{h.date}</td>
-                  <td className="p-3 text-xs text-right text-gray-500">{h.leftBefore}</td>
-                  <td className="p-3 text-xs text-right text-gray-500">{h.rightBefore}</td>
-                  <td className="p-3 text-xs text-center font-bold text-[#232F46] bg-gray-50/50">{h.pairType}</td>
-                  <td className="p-3 text-xs text-center font-bold text-gray-700 bg-gray-50/50">-{h.leftUsed}</td>
-                  <td className="p-3 text-xs text-center font-bold text-gray-700 bg-gray-50/50">-{h.rightUsed}</td>
-                  <td className="p-3 text-xs text-right font-bold text-[#ED8C32] bg-gray-50/50">₹{h.income}</td>
-                  <td className="p-3 text-xs text-right font-bold text-[#232F46]">{h.carryLeft}</td>
-                  <td className="p-3 text-xs text-right font-bold text-[#232F46]">{h.carryRight}</td>
+                  <td className="p-3 text-xs font-medium text-[#232F46]">
+                    {new Date(h.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-xs text-right text-gray-500">--</td>
+                  <td className="p-3 text-xs text-right text-gray-500">--</td>
+                  <td className="p-3 text-xs text-center font-bold text-[#232F46] bg-gray-50/50">{h.ratio_used}</td>
+                  <td className="p-3 text-xs text-center font-bold text-gray-700 bg-gray-50/50">-{h.left_bv_consumed}</td>
+                  <td className="p-3 text-xs text-center font-bold text-gray-700 bg-gray-50/50">-{h.right_bv_consumed}</td>
+                  <td className="p-3 text-xs text-right font-bold text-[#ED8C32] bg-gray-50/50">₹{h.income_generated}</td>
+                  <td className="p-3 text-xs text-right font-bold text-[#232F46]">--</td>
+                  <td className="p-3 text-xs text-right font-bold text-[#232F46]">--</td>
                 </tr>
               ))}
+              {binaryHistory.length === 0 && !loading && (
+                <tr>
+                  <td colSpan={9} className="p-6 text-center text-sm text-gray-500">
+                    No matching transactions found yet.
+                  </td>
+                </tr>
+              )}
+              {loading && (
+                <tr>
+                  <td colSpan={9} className="p-6 text-center text-sm text-gray-500">
+                    Loading...
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
