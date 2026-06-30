@@ -13,11 +13,15 @@ import { BenefitJourney } from '../components/Dashboard/BenefitJourney';
 import { BenefitDetailModal } from '../components/Dashboard/BenefitDetailModal';
 import { benefitsData, CATEGORIES, getMemberDays, Benefit } from '../data/benefitsData';
 import { useTranslation } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState<any>(null);
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
+  const [businessData, setBusinessData] = useState<any>(null);
+  const [memberStatus, setMemberStatus] = useState<string>('PENDING');
+  const [loadingData, setLoadingData] = useState(true);
   const currentDays = getMemberDays();
   const { t } = useTranslation();
 
@@ -27,7 +31,37 @@ export default function DashboardPage() {
       navigate('/login');
       return;
     }
-    setAdminUser(JSON.parse(sessionStr));
+    const user = JSON.parse(sessionStr);
+    setAdminUser(user);
+
+    const fetchDashboardData = async () => {
+      try {
+        setLoadingData(true);
+        // 1. Fetch status
+        const { data: memberData } = await supabase
+          .from('members')
+          .select('status')
+          .eq('id', user.id)
+          .single();
+          
+        if (memberData) setMemberStatus(memberData.status);
+        
+        // 2. Fetch business data
+        const { data: bData } = await supabase
+          .from('member_business')
+          .select('carry_forward_left, carry_forward_right, total_left_bv, total_right_bv, matched_bv')
+          .eq('id', user.id)
+          .single();
+          
+        if (bData) setBusinessData(bData);
+      } catch (err) {
+        console.error('Error fetching dashboard data', err);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    
+    fetchDashboardData();
   }, [navigate]);
 
   if (!adminUser) return null;
@@ -52,7 +86,7 @@ export default function DashboardPage() {
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white/80">
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full">
-                <ShieldCheck className="w-4 h-4 text-[#ED8C32]" /> Active Member
+                <ShieldCheck className="w-4 h-4 text-[#ED8C32]" /> {memberStatus} Member
               </span>
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full cursor-pointer hover:bg-white/20 transition-colors" onClick={() => navigate('/account/kyc')}>
                 <UserCheck className="w-4 h-4 text-green-400" /> KYC: 60% Complete
@@ -66,33 +100,39 @@ export default function DashboardPage() {
       </Card>
       {/* ─── 1.5 BINARY ENGINE SNAPSHOT ─────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Left BV</p>
-          <p className="text-lg font-bold text-[#232F46]">0</p>
-        </Card>
-        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Right BV</p>
-          <p className="text-lg font-bold text-[#ED8C32]">1</p>
-        </Card>
-        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Today's Income</p>
-          <p className="text-lg font-bold text-[#232F46]">₹800</p>
-        </Card>
-        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Today's Matches</p>
-          <p className="text-lg font-bold text-[#ED8C32]">4 <span className="text-[10px] text-gray-400">/ 10</span></p>
-        </Card>
-        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Binary</p>
-          <p className="text-lg font-bold text-[#232F46]">₹4,200</p>
-        </Card>
-        <Card 
-          className="p-4 bg-[#ED8C32]/10 border border-[#ED8C32]/20 hover:bg-[#ED8C32]/20 transition-colors cursor-pointer flex flex-col justify-center items-center text-center"
-          onClick={() => navigate('/business/pair-matching')}
-        >
-          <p className="text-xs font-bold text-[#ED8C32] uppercase">Binary History</p>
-          <ChevronRight className="w-5 h-5 text-[#ED8C32] mt-1" />
-        </Card>
+        {loadingData ? (
+           <div className="col-span-full py-4 text-center text-gray-500 font-medium">Loading Business Data...</div>
+        ) : (
+           <>
+              <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Left BV</p>
+                <p className="text-lg font-bold text-[#232F46]">{businessData?.carry_forward_left || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Carry Right BV</p>
+                <p className="text-lg font-bold text-[#ED8C32]">{businessData?.carry_forward_right || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Matched Pairs</p>
+                <p className="text-lg font-bold text-[#232F46]">{businessData?.matched_bv || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Left BV</p>
+                <p className="text-lg font-bold text-[#ED8C32]">{businessData?.total_left_bv || 0}</p>
+              </Card>
+              <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Right BV</p>
+                <p className="text-lg font-bold text-[#232F46]">{businessData?.total_right_bv || 0}</p>
+              </Card>
+              <Card 
+                className="p-4 bg-[#ED8C32]/10 border border-[#ED8C32]/20 hover:bg-[#ED8C32]/20 transition-colors cursor-pointer flex flex-col justify-center items-center text-center"
+                onClick={() => navigate('/business/pair-matching')}
+              >
+                <p className="text-xs font-bold text-[#ED8C32] uppercase">Binary History</p>
+                <ChevronRight className="w-5 h-5 text-[#ED8C32] mt-1" />
+              </Card>
+           </>
+        )}
       </div>
 
       {/* ─── 2. MEMBERSHIP JOURNEY ─────────────────────────────────────── */}

@@ -11,6 +11,7 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Avatar } from '../../components/ui/Avatar';
 import { PageHeader } from '../../components/ui/PageHeader';
+import { supabase } from '../../lib/supabase';
 
 // ── Mock Members Data ──────────────────────────────────────────────────────────
 interface Member {
@@ -21,17 +22,6 @@ interface Member {
   status: StatusType;
 }
 
-const MOCK_MEMBERS: Member[] = [
-  { id: 'SK00001', name: 'Rajesh Kumar',      mobile: '9876543210', joinDate: '02 Jan 2026', status: 'Active' },
-  { id: 'SK00002', name: 'Neelam Sharma',     mobile: '9812345678', joinDate: '05 Jan 2026', status: 'Active' },
-  { id: 'SK00003', name: 'Amit Verma',        mobile: '9823456789', joinDate: '10 Jan 2026', status: 'Pending Approval' },
-  { id: 'SK00004', name: 'Sunita Devi',       mobile: '9834567890', joinDate: '14 Jan 2026', status: 'Active' },
-  { id: 'SK00005', name: 'Pramod Singh',      mobile: '9845678901', joinDate: '20 Jan 2026', status: 'Suspended' },
-  { id: 'SK00006', name: 'Kavita Gupta',      mobile: '9856789012', joinDate: '25 Jan 2026', status: 'Active' },
-  { id: 'SK00007', name: 'Ravi Shankar',      mobile: '9867890123', joinDate: '01 Feb 2026', status: 'Pending Approval' },
-  { id: 'SK00008', name: 'Anita Kumari',      mobile: '9878901234', joinDate: '07 Feb 2026', status: 'Active' },
-];
-
 type FilterStatus = 'All' | 'Active' | 'Pending' | 'Suspended';
 
 const FILTER_TABS: FilterStatus[] = ['All', 'Active', 'Pending', 'Suspended'];
@@ -40,15 +30,56 @@ export default function AdminMembersPage() {
   const [activeFilter, setActiveFilter] = useState<FilterStatus>('All');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    // Simulate loading for Skeleton showcase
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
+    const fetchMembers = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('members')
+          .select(`
+            member_id,
+            status,
+            created_at,
+            member_profile (
+              full_name,
+              phone_number
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        if (data) {
+          const mappedMembers = data.map((m: any) => {
+             const profile = Array.isArray(m.member_profile) ? m.member_profile[0] : m.member_profile;
+             let statusText = 'Pending Approval';
+             if (m.status === 'ACTIVE') statusText = 'Active';
+             if (m.status === 'SUSPENDED') statusText = 'Suspended';
+             if (m.status === 'PENDING') statusText = 'Pending Approval';
+
+             return {
+               id: m.member_id || 'N/A',
+               name: profile?.full_name || 'Unknown',
+               mobile: profile?.phone_number || 'N/A',
+               joinDate: new Date(m.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+               status: statusText as StatusType
+             };
+          });
+          setMembers(mappedMembers);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMembers();
   }, []);
 
   const filtered = useMemo(() => {
-    return MOCK_MEMBERS.filter(m => {
+    return members.filter(m => {
       const matchStatus =
         activeFilter === 'All' ||
         (activeFilter === 'Pending' && m.status === 'Pending Approval') ||
@@ -63,7 +94,7 @@ export default function AdminMembersPage() {
 
       return matchStatus && matchSearch;
     });
-  }, [activeFilter, search]);
+  }, [activeFilter, search, members]);
 
   return (
     <motion.div
@@ -101,10 +132,10 @@ export default function AdminMembersPage() {
                 {tab}
                 <span className={`ml-1.5 text-[10px] ${activeFilter === tab ? 'text-white/70' : 'text-gray-400'}`}>
                   {tab === 'All'
-                    ? MOCK_MEMBERS.length
+                    ? members.length
                     : tab === 'Pending'
-                    ? MOCK_MEMBERS.filter(m => m.status === 'Pending Approval').length
-                    : MOCK_MEMBERS.filter(m => m.status === tab).length}
+                    ? members.filter(m => m.status === 'Pending Approval').length
+                    : members.filter(m => m.status === tab).length}
                 </span>
               </button>
             ))}

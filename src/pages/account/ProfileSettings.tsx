@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Camera, CheckCircle2, Lock, Phone, Mail, MapPin } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
@@ -6,43 +6,98 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-
-const MEMBER = {
-  name: 'John Doe',
-  id: 'SKS-447036',
-  mobile: '+91 9876543210',
-  email: 'demo@shukrana.org',
-  address: '123, Green Colony, Mumbai, Maharashtra - 400001',
-  joined: '01 June 2026',
-  status: 'Active',
-};
+import { supabase } from '../../lib/supabase';
 
 export default function ProfileSettings() {
   const [form, setForm] = useState({
-    name: MEMBER.name,
-    mobile: MEMBER.mobile,
-    email: MEMBER.email,
-    address: MEMBER.address,
+    name: '',
+    mobile: '',
+    email: '',
+    address: '',
   });
+  const [initialForm, setInitialForm] = useState({
+    name: '',
+    mobile: '',
+    email: '',
+    address: '',
+  });
+  const [memberId, setMemberId] = useState('');
+  const [joinDate, setJoinDate] = useState('');
+  const [memberStatus, setMemberStatus] = useState<any>('PENDING');
+  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: memberData } = await supabase
+          .from('members')
+          .select('member_id, status, created_at, member_profile(*)')
+          .eq('id', user.id)
+          .single();
+
+        if (memberData) {
+          setMemberId(memberData.member_id);
+          setMemberStatus(memberData.status);
+          setJoinDate(new Date(memberData.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+          
+          if (memberData.member_profile) {
+             const profileData = Array.isArray(memberData.member_profile) ? memberData.member_profile[0] : memberData.member_profile;
+             if (profileData) {
+               const formData = {
+                 name: profileData.full_name || '',
+                 mobile: profileData.phone_number || '',
+                 email: profileData.email || '',
+                 address: profileData.address || ''
+               };
+               setForm(formData);
+               setInitialForm(formData);
+             }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { error } = await supabase
+        .from('member_profile')
+        .update({
+          full_name: form.name,
+          email: form.email,
+          address: form.address
+        })
+        .eq('id', user.id);
+        
+      if (error) throw error;
+      
+      setInitialForm(form);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      alert(`Error updating profile: ${err.message}`);
+    }
   };
 
   const handleCancel = () => {
-    setForm({
-      name: MEMBER.name,
-      mobile: MEMBER.mobile,
-      email: MEMBER.email,
-      address: MEMBER.address,
-    });
+    setForm(initialForm);
   };
 
   return (
@@ -86,8 +141,8 @@ export default function ProfileSettings() {
             </button>
           </div>
 
-          <p className="text-lg font-bold text-[#232F46] mb-2">{form.name || 'JOHN DOE'}</p>
-          <StatusBadge status={MEMBER.status as any} />
+          <p className="text-lg font-bold text-[#232F46] mb-2">{form.name || 'Member'}</p>
+          <StatusBadge status={memberStatus} />
         </Card>
 
         {/* [Right] FormsContainer */}
@@ -114,7 +169,7 @@ export default function ProfileSettings() {
                 <Input
                   label="Member ID"
                   type="text"
-                  value={MEMBER.id}
+                  value={memberId}
                   readOnly
                   disabled
                   rightIcon={<Lock size={14} />}
@@ -125,7 +180,7 @@ export default function ProfileSettings() {
                 <Input
                   label="Join Date"
                   type="text"
-                  value={MEMBER.joined}
+                  value={joinDate}
                   readOnly
                   disabled
                   rightIcon={<Lock size={14} />}
@@ -146,7 +201,8 @@ export default function ProfileSettings() {
                   type="tel"
                   name="mobile"
                   value={form.mobile}
-                  onChange={handleChange}
+                  readOnly
+                  disabled
                   leftIcon={<Phone size={14} className="text-gray-400" />}
                   required
                 />
