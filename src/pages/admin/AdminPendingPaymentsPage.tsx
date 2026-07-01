@@ -37,39 +37,37 @@ export default function AdminPendingPaymentsPage() {
     }
   };
 
-  const handleApprove = async (paymentId: string, memberId: string) => {
-    if (!window.confirm("Are you sure you want to approve this payment?")) return;
+  const handleApprove = async (paymentId: string) => {
+    if (!window.confirm("Are you sure you want to approve this payment? This will activate the member and execute BFS placement.")) return;
     try {
-      // 1. Mark payment as VERIFIED
-      const { error: pError } = await supabase
-        .from('payments')
-        .update({ status: 'VERIFIED', verified_at: new Date().toISOString() })
-        .eq('id', paymentId);
-      if (pError) throw pError;
+      setLoading(true);
+      const { error } = await supabase.rpc('admin_verify_payment', { p_payment_id: paymentId });
+      if (error) throw error;
 
-      // 2. Run the activate_member RPC — this executes BFS placement + status change atomically
-      const { error: rpcError } = await supabase.rpc('activate_member', {
-        p_member_uuid: memberId
-      });
-      if (rpcError) throw rpcError;
-
-      alert('Payment approved and member activated via placement engine!');
+      alert('Payment approved and member activated successfully!');
       fetchPendingPayments();
     } catch (error: any) {
       alert(`Error: ${error.message}`);
+      setLoading(false);
     }
   };
 
-
   const handleReject = async (paymentId: string) => {
-    if (!window.confirm("Are you sure you want to reject this payment?")) return;
+    const reason = window.prompt("Enter rejection reason:");
+    if (reason === null) return; // User cancelled
+    
     try {
-      const { error } = await supabase.from('payments').update({ status: 'REJECTED' }).eq('id', paymentId);
+      setLoading(true);
+      const { error } = await supabase.rpc('admin_reject_payment', { 
+        p_payment_id: paymentId,
+        p_reason: reason || 'Payment rejected by admin.'
+      });
       if (error) throw error;
       alert('Payment rejected.');
       fetchPendingPayments();
     } catch (error: any) {
-      alert(error.message);
+      alert(`Error: ${error.message}`);
+      setLoading(false);
     }
   };
 
@@ -114,7 +112,7 @@ export default function AdminPendingPaymentsPage() {
                       </a>
                     </td>
                     <td className="px-6 py-4 space-x-2">
-                      <Button variant="primary" size="sm" onClick={() => handleApprove(payment.id, payment.member_id)}>Approve</Button>
+                      <Button variant="primary" size="sm" onClick={() => handleApprove(payment.id)}>Approve</Button>
                       <Button variant="outline" size="sm" onClick={() => handleReject(payment.id)}>Reject</Button>
                     </td>
                   </tr>

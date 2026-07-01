@@ -68,6 +68,9 @@ import AdminGlobalSponsorTreePage from './pages/admin/AdminGlobalSponsorTreePage
 import AdminGlobalPlacementTreePage from './pages/admin/AdminGlobalPlacementTreePage';
 import AdminMemberProfilePage from './pages/admin/AdminMemberProfilePage';
 import AdminTreeOverridesPage from './pages/admin/AdminTreeOverridesPage';
+import AdminPayoutManagementPage from './pages/admin/AdminPayoutManagementPage';
+import AdminBusinessLedgerPage from './pages/admin/AdminBusinessLedgerPage';
+import AdminActivityMonitoringPage from './pages/admin/AdminActivityMonitoringPage';
 
 export default function App() {
   return (
@@ -90,10 +93,12 @@ export default function App() {
             <Route path="/admin/payments" element={<AdminPendingPaymentsPage />} />
             
             {/* Admin Business Ops */}
-            <Route path="/admin/business/settings" element={<AdminBusinessSettingsPage />} />
             <Route path="/admin/business/payouts" element={<AdminPayoutManagementPage />} />
-            <Route path="/admin/business/rules" element={<AdminBusinessRulesPage />} />
+            <Route path="/admin/business/ledger" element={<AdminBusinessLedgerPage />} />
+            <Route path="/admin/business/activity" element={<AdminActivityMonitoringPage />} />
+            <Route path="/admin/business/settings" element={<div className="p-10 text-center">Settings coming in Phase 4.6</div>} />
             <Route path="/admin/business/kyc" element={<AdminBusinessKYCPage />} />
+            <Route path="/admin/business/rules" element={<AdminBusinessRulesPage />} />
             <Route path="/admin/business/global-sponsor-tree" element={<AdminGlobalSponsorTreePage />} />
             <Route path="/admin/business/global-placement-tree" element={<AdminGlobalPlacementTreePage />} />
             <Route path="/admin/business/tree-overrides" element={<AdminTreeOverridesPage />} />
