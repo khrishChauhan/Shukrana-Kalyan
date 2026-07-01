@@ -66,6 +66,7 @@ import AdminBusinessRulesPage from './pages/admin/AdminBusinessRulesPage';
 import AdminBusinessKYCPage from './pages/admin/AdminBusinessKYCPage';
 import AdminGlobalSponsorTreePage from './pages/admin/AdminGlobalSponsorTreePage';
 import AdminGlobalPlacementTreePage from './pages/admin/AdminGlobalPlacementTreePage';
+import AdminMemberProfilePage from './pages/admin/AdminMemberProfilePage';
 import AdminTreeOverridesPage from './pages/admin/AdminTreeOverridesPage';
 
 export default function App() {
@@ -85,6 +86,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/members" element={<AdminMembersPage />} />
+            <Route path="/admin/members/:uuid" element={<AdminMemberProfilePage />} />
             <Route path="/admin/payments" element={<AdminPendingPaymentsPage />} />
             
             {/* Admin Business Ops */}
