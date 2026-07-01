@@ -12,7 +12,8 @@ import {
   Banknote,
   ShieldCheck,
   FileCheck,
-  Network
+  Network,
+  ShieldAlert
 } from 'lucide-react';
 
 interface NavItem {
@@ -36,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Global Placement', path: '/admin/business/global-placement-tree', icon: Network },
   { label: 'Tree Overrides', path: '/admin/business/tree-overrides', icon: Settings },
   { label: 'Notifications',  path: '/admin/notifications', icon: Bell },
+  { label: 'Security & Audit', path: '/admin/security', icon: ShieldAlert },
 ];
 
 export default function AdminSidebar() {
