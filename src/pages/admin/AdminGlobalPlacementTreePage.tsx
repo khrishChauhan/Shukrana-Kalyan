@@ -175,10 +175,9 @@ export default function AdminGlobalPlacementTreePage() {
       } else {
         // Find system root (oldest member, usually no parent)
         const { data: rootData, error: rootError } = await supabase
-          .from('members')
+          .from('member_business')
           .select('id')
           .is('placement_parent_uuid', null)
-          .order('created_at', { ascending: true })
           .limit(1)
           .single();
         

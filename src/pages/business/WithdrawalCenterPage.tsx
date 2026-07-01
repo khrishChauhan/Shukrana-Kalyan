@@ -20,7 +20,7 @@ export default function WithdrawalCenterPage() {
   const MIN_WITHDRAWAL = 500;
   const TDS_PCT = 5;
   const ADMIN_PCT = 5;
-  const DONATION_PCT = 2;
+  const DONATION_PCT = 10;
 
   const numAmount = Number(amount) || 0;
   const tds = parseFloat((numAmount * TDS_PCT / 100).toFixed(2));

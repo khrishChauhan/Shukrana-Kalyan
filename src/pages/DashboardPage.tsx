@@ -41,7 +41,7 @@ export default function DashboardPage() {
         // 1. Fetch status and profile
         const { data: memberData, error: memberError } = await supabase
           .from('members')
-          .select('status, created_at, sponsor_id, member_profile(full_name)')
+          .select('status, created_at, member_profile(full_name)')
           .eq('id', user.id)
           .single();
           
@@ -70,16 +70,16 @@ export default function DashboardPage() {
 
         // 3. Fetch real network stats (direct downline of this member)
         try {
-          const { data: downline } = await supabase
-            .from('members')
-            .select('id, status')
-            .eq('sponsor_id', user.id);
+          const { data: downlineBiz } = await supabase
+            .from('member_business')
+            .select('id, members(status)')
+            .eq('sponsor_member_uuid', user.id);
 
-          if (downline) {
+          if (downlineBiz) {
             setNetworkStats({
-              referrals: downline.length,
-              active: downline.filter(m => m.status === 'ACTIVE').length,
-              pending: downline.filter(m => m.status === 'PENDING').length,
+              referrals: downlineBiz.length,
+              active: downlineBiz.filter(m => (m.members as any)?.status === 'ACTIVE').length,
+              pending: downlineBiz.filter(m => (m.members as any)?.status === 'PENDING').length,
             });
           }
         } catch (e) {
@@ -210,13 +210,7 @@ export default function DashboardPage() {
                 <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">Total Right BV</p>
                 <p className="text-lg font-bold text-[#232F46]">{businessData?.total_right_bv || 0}</p>
               </Card>
-              <Card 
-                className="p-4 bg-[#ED8C32]/10 border border-[#ED8C32]/20 hover:bg-[#ED8C32]/20 transition-colors cursor-pointer flex flex-col justify-center items-center text-center"
-                onClick={() => navigate('/business/pair-matching')}
-              >
-                <p className="text-xs font-bold text-[#ED8C32] uppercase">Binary History</p>
-                <ChevronRight className="w-5 h-5 text-[#ED8C32] mt-1" />
-              </Card>
+
            </>
         )}
       </div>

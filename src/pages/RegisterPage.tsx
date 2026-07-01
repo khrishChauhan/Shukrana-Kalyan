@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Award, ArrowLeft, CheckCircle2, ShieldCheck, CreditCard, Bell, Eye, EyeOff, User, MapPin, Mail, Phone, Lock, FileText, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Input } from '../components/ui/Input';
-import { Select } from '../components/ui/Select';
+
 import { Button } from '../components/ui/Button';
 
 export default function RegisterPage() {
@@ -17,8 +17,23 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sponsorName, setSponsorName] = useState('');
+  const [sponsorMemberId, setSponsorMemberId] = useState('');
+  const [sponsorPreview, setSponsorPreview] = useState<{ leftCount: number; rightCount: number } | null>(null);
   const [sponsorLookupStatus, setSponsorLookupStatus] = useState<'idle' | 'loading' | 'found' | 'not_found'>('idle');
   const [generatedMemberId, setGeneratedMemberId] = useState('');
+  const [isGenesisMode, setIsGenesisMode] = useState(false);
+
+  // Check if system is empty (Genesis Mode) on mount
+  React.useEffect(() => {
+    async function checkGenesis() {
+      const { count, error } = await supabase.from('members').select('*', { count: 'exact', head: true });
+      if (!error && count === 0) {
+        setIsGenesisMode(true);
+        setFormData(prev => ({ ...prev, sponsorId: 'GENESIS' }));
+      }
+    }
+    checkGenesis();
+  }, []);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -37,26 +52,51 @@ export default function RegisterPage() {
 
   const navigate = useNavigate();
 
-  // Real-time sponsor ID lookup
+  // Real-time sponsor ID lookup with team preview
   const lookupSponsor = useCallback(async (sponsorId: string) => {
     if (!sponsorId.trim()) {
       setSponsorName('');
+      setSponsorMemberId('');
+      setSponsorPreview(null);
       setSponsorLookupStatus('idle');
       return;
     }
     setSponsorLookupStatus('loading');
+    setSponsorPreview(null);
+
     const { data, error } = await supabase
       .from('members')
-      .select('id, member_profile(full_name)')
+      .select('id, member_id, member_profile(full_name)')
       .eq('member_id', sponsorId.trim().toUpperCase())
       .single();
+
     if (error || !data) {
       setSponsorLookupStatus('not_found');
       setSponsorName('');
+      setSponsorMemberId('');
     } else {
       const profile = Array.isArray(data.member_profile) ? data.member_profile[0] : data.member_profile;
       setSponsorLookupStatus('found');
       setSponsorName(profile?.full_name || 'Verified Member');
+      setSponsorMemberId(data.member_id);
+
+      // Count left and right team members under this sponsor (BFS-visible count)
+      const { count: leftCount } = await supabase
+        .from('member_business')
+        .select('*', { count: 'exact', head: true })
+        .eq('sponsor_member_uuid', data.id)  // direct children count as proxy
+        .eq('requested_placement_side', 'left');
+
+      const { count: rightCount } = await supabase
+        .from('member_business')
+        .select('*', { count: 'exact', head: true })
+        .eq('sponsor_member_uuid', data.id)
+        .eq('requested_placement_side', 'right');
+
+      setSponsorPreview({
+        leftCount: leftCount ?? 0,
+        rightCount: rightCount ?? 0,
+      });
     }
   }, []);
 
@@ -417,47 +457,91 @@ export default function RegisterPage() {
                   {/* STEP 2: Sponsor Info */}
                   {step === 2 && (
                     <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl mb-2 flex gap-3">
-                        <User className="text-amber-600 shrink-0 h-5 w-5" />
-                        <div>
-                          <p className="text-sm font-semibold text-amber-900">Sponsor ID is Mandatory</p>
-                          <p className="text-xs text-amber-700 mt-1">Enter the Member ID of your sponsor (e.g. SK000001). You cannot register without a valid sponsor.</p>
+                      {isGenesisMode ? (
+                        <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex gap-3">
+                          <CheckCircle2 className="text-green-600 shrink-0 h-5 w-5" />
+                          <div>
+                            <p className="text-sm font-semibold text-green-900">Genesis Node Creation</p>
+                            <p className="text-xs text-green-700 mt-1">You are registering the root member of the platform. No sponsor is required.</p>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <>
+                          {/* Sponsor ID Input */}
+                          <div>
+                            <Input
+                              label="Sponsor ID *"
+                              name="sponsorId"
+                              required
+                              value={formData.sponsorId}
+                              onChange={handleInputChange}
+                              placeholder="e.g. SK000001"
+                              className="uppercase"
+                              leftIcon={<User className="h-5 w-5" />}
+                            />
+                            {sponsorLookupStatus === 'loading' && (
+                              <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1.5"><span className="inline-block w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> Looking up sponsor...</p>
+                            )}
+                            {sponsorLookupStatus === 'not_found' && formData.sponsorId && (
+                              <p className="mt-1.5 text-xs text-red-600 font-semibold">❌ Sponsor ID not found. Please check and try again.</p>
+                            )}
+                          </div>
 
-                      <div>
-                        <Input
-                          label="Sponsor ID *"
-                          name="sponsorId"
-                          required
-                          value={formData.sponsorId}
-                          onChange={handleInputChange}
-                          placeholder="e.g. SK000001"
-                          className="uppercase"
-                          leftIcon={<User className="h-5 w-5" />}
-                        />
-                        {/* Real-time sponsor preview */}
-                        {sponsorLookupStatus === 'loading' && (
-                          <p className="mt-1.5 text-xs text-slate-500 flex items-center gap-1">⏳ Looking up sponsor...</p>
-                        )}
-                        {sponsorLookupStatus === 'found' && (
-                          <p className="mt-1.5 text-xs text-green-700 font-semibold flex items-center gap-1">✅ Sponsor Name: {sponsorName}</p>
-                        )}
-                        {sponsorLookupStatus === 'not_found' && formData.sponsorId && (
-                          <p className="mt-1.5 text-xs text-red-600 font-semibold flex items-center gap-1">❌ Invalid Sponsor ID. Please check and try again.</p>
-                        )}
-                      </div>
+                          {/* Sponsor Preview Card */}
+                          {sponsorLookupStatus === 'found' && (
+                            <p className="mt-1.5 text-xs text-emerald-600 font-semibold flex items-center gap-1.5">
+                              <span className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">✓</span> 
+                              Sponsor Verified: {sponsorName}
+                            </p>
+                          )}
 
-                      <Select
-                        label="Placement Direction"
-                        name="placement"
-                        value={formData.placement}
-                        onChange={handleInputChange}
-                        options={[
-                          { value: 'left', label: 'Left Organization' },
-                          { value: 'right', label: 'Right Organization' },
-                        ]}
-                      />
+                          {/* Team Selection — only shown after sponsor is found */}
+                          {sponsorLookupStatus === 'found' && (
+                            <div>
+                              <p className="text-sm font-bold text-[#232F46] mb-3">Select Your Team *</p>
+                              <div className="grid grid-cols-2 gap-3">
+                                {(['left', 'right'] as const).map(side => (
+                                  <label
+                                    key={side}
+                                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                      formData.placement === side
+                                        ? side === 'left'
+                                          ? 'border-[#232F46] bg-[#232F46]/5'
+                                          : 'border-[#ED8C32] bg-[#ED8C32]/5'
+                                        : 'border-slate-200 bg-white hover:border-slate-300'
+                                    }`}
+                                  >
+                                    <input
+                                      type="radio"
+                                      name="placement"
+                                      value={side}
+                                      checked={formData.placement === side}
+                                      onChange={handleInputChange}
+                                      className="sr-only"
+                                    />
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-xs ${
+                                      side === 'left' ? 'bg-[#232F46]' : 'bg-[#ED8C32]'
+                                    }`}>
+                                      {side === 'left' ? 'L' : 'R'}
+                                    </div>
+                                    <span className="text-sm font-bold text-[#232F46]">
+                                      {side === 'left' ? 'Left Team' : 'Right Team'}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 text-center leading-tight">
+                                      BFS auto-assigns you to the first available slot
+                                    </span>
+                                    {formData.placement === side && (
+                                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${
+                                        side === 'left' ? 'bg-[#232F46]' : 'bg-[#ED8C32]'
+                                      }`}>Selected</span>
+                                    )}
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -513,8 +597,8 @@ export default function RegisterPage() {
                           <span className="text-slate-500 font-medium">Sponsor ID:</span>
                           <span className="font-bold text-[#232F46]">{formData.sponsorId || 'None'}</span>
                           
-                          <span className="text-slate-500 font-medium">Placement:</span>
-                          <span className="font-bold text-[#232F46] uppercase">{formData.sponsorId ? formData.placement : 'None'}</span>
+                          <span className="text-slate-500 font-medium">Team:</span>
+                          <span className="font-bold text-[#232F46]">{formData.sponsorId && formData.sponsorId !== 'GENESIS' ? (formData.placement === 'left' ? 'Left Team' : 'Right Team') : 'N/A (Genesis)'}</span>
                         </div>
                       </div>
 

@@ -61,7 +61,12 @@ export default function LoginPage() {
         navigate('/dashboard');
       }
     } catch (error: any) {
-      setErrorMsg(error.message || 'Invalid credentials.');
+      // Supabase auth errors can have message on .message, .error_description, or as JSON string
+      const msg = error?.message || error?.error_description || error?.msg
+        || (typeof error === 'string' ? error : null)
+        || 'Login failed. Please check your Member ID and password.';
+      setErrorMsg(msg);
+      console.error('Login error:', error);
     } finally {
       setIsSubmitting(false);
     }
