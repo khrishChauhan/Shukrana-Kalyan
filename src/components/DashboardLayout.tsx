@@ -8,23 +8,37 @@ import {
 import { Avatar } from './ui/Avatar';
 import { useTranslation } from '../context/LanguageContext';
 import { LanguageSwitcher } from './ui/LanguageSwitcher';
+import { supabase } from '../lib/supabase';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
 
-  const [adminUser, setAdminUser] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const sessionStr = localStorage.getItem('shukrana_session');
-    if (!sessionStr) {
-      navigate('/login');
-      return;
-    }
-    setAdminUser(JSON.parse(sessionStr));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/login');
+      } else {
+        setSession(session);
+      }
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate('/login');
+      } else {
+        setSession(session);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
@@ -41,12 +55,7 @@ export default function DashboardLayout() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSystemLogout = () => {
-    localStorage.removeItem('shukrana_session');
-    navigate('/login');
-  };
-
-  if (!adminUser) return null;
+  if (loading || !session) return null;
 
   const mobileNavItems = [
     { icon: <Home className="w-6 h-6" />, label: t('sidebar.dashboard'), path: '/dashboard' },
@@ -141,10 +150,10 @@ export default function DashboardLayout() {
 
             <div className="flex items-center gap-3">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-bold text-[#232F46] leading-none">Demo User</p>
-                <p className="text-[10px] text-gray-500 font-mono mt-1 uppercase tracking-widest">SK0001</p>
+                <p className="text-sm font-bold text-[#232F46] leading-none">Member</p>
+                <p className="text-[10px] text-gray-500 font-mono mt-1 uppercase tracking-widest">Active</p>
               </div>
-              <Avatar initials="DU" size="md" />
+              <Avatar initials="ME" size="md" />
             </div>
           </div>
         </header>

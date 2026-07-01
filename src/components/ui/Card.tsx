@@ -1,8 +1,9 @@
 import React from 'react';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+export interface CardProps {
+  children?: React.ReactNode;
   noPadding?: boolean;
+  [key: string]: any;
 }
 
 export function Card({ className = '', children, noPadding = false, ...props }: CardProps) {

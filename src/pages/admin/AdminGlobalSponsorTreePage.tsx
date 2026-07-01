@@ -52,7 +52,7 @@ export default function AdminGlobalSponsorTreePage() {
               <p className="text-xs text-gray-500 font-mono mt-1">{mockSponsorTree.id} • Level {mockSponsorTree.level}</p>
             </div>
             <span className="px-3 py-1 bg-[#ED8C32] text-white rounded-lg text-xs font-bold uppercase tracking-wider">
-              {mockSponsorTree.rank}
+              {(mockSponsorTree as any).rank || 'ROOT'}
             </span>
           </div>
         </div>

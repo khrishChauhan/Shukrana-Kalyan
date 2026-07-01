@@ -1,37 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { Wallet, Search, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { Wallet, IndianRupee } from 'lucide-react';
 
 export default function IncomeLedgerPage() {
-  const [ledger, setLedger] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchLedger = async () => {
       try {
-        setLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const [{ data: sponsorTxns }, { data: matchingTxns }, { data: levelTxns }] = await Promise.all([
-          supabase.from('sponsor_income_transactions').select('id, income_generated, created_at, status').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }),
-          supabase.from('matching_transactions').select('id, income_generated, created_at, ratio_used, match_number').eq('member_uuid', user.id).order('created_at', { ascending: false }),
-          supabase.from('level_income_transactions').select('id, income_generated, created_at, level_distance, status').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }),
+        // Fetch from all income engines
+        const [
+          { data: sponsorData },
+          { data: matchingData },
+          { data: levelData }
+        ] = await Promise.all([
+          supabase.from('sponsor_income_transactions').select('id, income_generated, created_at').eq('sponsor_uuid', user.id).order('created_at', { ascending: false }),
+          supabase.from('matching_transactions').select('id, income_generated, created_at, ratio_used').eq('member_uuid', user.id).order('created_at', { ascending: false }),
+          supabase.from('level_income_transactions').select('id, income_generated, created_at, level_distance').eq('sponsor_uuid', user.id).order('created_at', { ascending: false })
         ]);
 
         const combined = [
-          ...(sponsorTxns || []).map(tx => ({ ...tx, category: 'Sponsor Income', type: 'Credit', amount: Number(tx.income_generated) })),
-          ...(matchingTxns || []).map(tx => ({ ...tx, category: `Binary Match #${tx.match_number} (${tx.ratio_used})`, type: 'Credit', amount: Number(tx.income_generated) })),
-          ...(levelTxns || []).map(tx => ({ ...tx, category: `Level ${tx.level_distance} Income`, type: 'Credit', amount: Number(tx.income_generated) })),
+          ...(sponsorData || []).map(tx => ({ ...tx, category: 'Sponsor Income', type: 'Credit', amount: tx.income_generated })),
+          ...(matchingData || []).map(tx => ({ ...tx, category: `Binary Match (${tx.ratio_used})`, type: 'Credit', amount: tx.income_generated })),
+          ...(levelData || []).map(tx => ({ ...tx, category: `Level ${tx.level_distance} Income`, type: 'Credit', amount: tx.income_generated })),
         ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-        setLedger(combined);
+        setTransactions(combined);
       } catch (err) {
-        console.error('Error fetching ledger', err);
+        console.error('Error fetching income ledger', err);
       } finally {
         setLoading(false);
       }
@@ -39,13 +42,7 @@ export default function IncomeLedgerPage() {
     fetchLedger();
   }, []);
 
-  const filtered = ledger.filter(tx => tx.category.toLowerCase().includes(search.toLowerCase()));
-  let runningBalance = ledger.reduce((sum, tx) => sum + tx.amount, 0);
-  const ledgerWithBalance = filtered.map(tx => {
-    const row = { ...tx, balance: runningBalance };
-    runningBalance -= tx.amount;
-    return row;
-  });
+  const total = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
   return (
     <motion.div
@@ -56,66 +53,52 @@ export default function IncomeLedgerPage() {
     >
       <PageHeader
         title="Income Ledger"
-        description="Detailed transaction history of all credits and debits."
-        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard' }, { label: 'Ledger' }]}
+        description="Unified ledger of all your income transactions."
+        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Income Ledger' }]}
       />
 
-      <Card>
-        <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-[#ED8C32] text-sm"
-            />
+      <Card className="bg-[#232F46] text-white p-6">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="p-3 bg-white/10 rounded-lg">
+            <Wallet className="w-6 h-6 text-[#ED8C32]" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-bold text-[#232F46] transition-colors">
-            <Filter className="w-4 h-4" />
-            Filter
-          </button>
+          <div>
+            <p className="text-sm text-white/70 font-bold uppercase tracking-wider">Total Accumulated Income</p>
+            <p className="text-3xl font-black text-[#ED8C32]">₹{total.toLocaleString()}</p>
+          </div>
         </div>
+      </Card>
 
+      <Card>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Amount</th>
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Running Balance</th>
+              <tr className="border-b border-gray-100">
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Date</th>
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Category</th>
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Type</th>
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase text-right">Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading && (
-                <tr><td colSpan={5} className="p-6 text-center text-sm text-gray-400">Loading ledger...</td></tr>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={4} className="text-center py-8 text-gray-400">Loading...</td></tr>
+              ) : transactions.length === 0 ? (
+                <tr><td colSpan={4} className="text-center py-8 text-gray-400">No income transactions found.</td></tr>
+              ) : (
+                transactions.map((txn, idx) => (
+                  <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-4 px-4 text-sm font-medium text-gray-600">{new Date(txn.created_at).toLocaleDateString()}</td>
+                    <td className="py-4 px-4 text-sm font-bold text-[#232F46]">{txn.category}</td>
+                    <td className="py-4 px-4">
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-lg uppercase tracking-wider">{txn.type}</span>
+                    </td>
+                    <td className="py-4 px-4 text-sm font-bold text-emerald-600 text-right flex items-center justify-end gap-1">
+                      + <IndianRupee className="w-3 h-3" /> {Number(txn.amount).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
               )}
-              {!loading && ledgerWithBalance.length === 0 && (
-                <tr><td colSpan={5} className="p-6 text-center text-sm text-gray-400">No income transactions found.</td></tr>
-              )}
-              {ledgerWithBalance.map((txn) => (
-                <tr key={txn.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="p-4">
-                    <p className="font-bold text-[#232F46]">{new Date(txn.created_at).toLocaleDateString()}</p>
-                    <p className="text-xs font-mono text-gray-500">{txn.id.substring(0, 12)}...</p>
-                  </td>
-                  <td className="p-4 font-medium text-[#232F46]">{txn.category}</td>
-                  <td className="p-4">
-                    <span className="inline-flex px-2 py-1 text-[10px] font-bold uppercase rounded-full bg-[#ED8C32]/10 text-[#ED8C32]">
-                      {txn.type}
-                    </span>
-                  </td>
-                  <td className="p-4 text-right">
-                    <span className="font-bold text-[#ED8C32]">+₹{txn.amount.toLocaleString()}</span>
-                  </td>
-                  <td className="p-4 text-right font-bold text-[#232F46]">
-                    ₹{txn.balance.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>

@@ -29,19 +29,13 @@ import BankDetailsPage from './pages/account/BankDetailsPage';
 import ActivityTimelinePage from './pages/account/ActivityTimelinePage';
 
 import NetworkOverviewPage from './pages/network/NetworkOverviewPage';
-import DirectReferralsPage from './pages/network/DirectReferralsPage';
-import VerifiedMembersPage from './pages/network/VerifiedMembersPage';
-import PendingApprovalPage from './pages/network/PendingApprovalPage';
-import NetworkLevelsPage from './pages/network/NetworkLevelsPage';
+import MyDownlinePage from './pages/network/MyDownlinePage';
 import NetworkTreePage from './pages/network/NetworkTreePage';
 
 import NotificationsPage from './pages/NotificationsPage';
 
 // ── BUSINESS ─────────────────────────────────────────────────────────────────
-import BusinessDashboardPage from './pages/business/BusinessDashboardPage';
 import BusinessProfilePage from './pages/business/BusinessProfilePage';
-import SponsorTreePage from './pages/business/SponsorTreePage';
-import PlacementTreePage from './pages/business/PlacementTreePage';
 import BusinessCalculatorPage from './pages/business/BusinessCalculatorPage';
 import IncomeDashboardPage from './pages/business/IncomeDashboardPage';
 import SponsorIncomePage from './pages/business/SponsorIncomePage';
@@ -50,8 +44,6 @@ import LevelIncomePage from './pages/business/LevelIncomePage';
 import RoyaltyIncomePage from './pages/business/RoyaltyIncomePage';
 import IncomeLedgerPage from './pages/business/IncomeLedgerPage';
 import IncomeBreakdownPage from './pages/business/IncomeBreakdownPage';
-import BvDashboardPage from './pages/business/BvDashboardPage';
-import PairMatchingPage from './pages/business/PairMatchingPage';
 import ReportsPage from './pages/business/ReportsPage';
 import DownloadsPage from './pages/business/DownloadsPage';
 import BusinessTimelinePage from './pages/business/BusinessTimelinePage';
@@ -124,19 +116,13 @@ export default function App() {
             <Route path="/account/bank-details"      element={<BankDetailsPage />} />
             <Route path="/payments"                  element={<PaymentCenterPage />} />
 
-            {/* Member Network — all 6 kept */}
+            {/* Member Network — consolidated */}
             <Route path="/network/overview"         element={<NetworkOverviewPage />} />
-            <Route path="/network/direct-referrals" element={<DirectReferralsPage />} />
-            <Route path="/network/verified-members" element={<VerifiedMembersPage />} />
-            <Route path="/network/pending-approval" element={<PendingApprovalPage />} />
-            <Route path="/network/network-levels"   element={<NetworkLevelsPage />} />
+            <Route path="/network/my-downline"      element={<MyDownlinePage />} />
             <Route path="/network/network-tree"     element={<NetworkTreePage />} />
 
             {/* Business */}
-            <Route path="/business/dashboard"       element={<BusinessDashboardPage />} />
             <Route path="/business/profile"         element={<BusinessProfilePage />} />
-            <Route path="/business/sponsor-tree"    element={<SponsorTreePage />} />
-            <Route path="/business/placement-tree"  element={<PlacementTreePage />} />
             <Route path="/business/calculator"      element={<BusinessCalculatorPage />} />
             <Route path="/business/income-dashboard" element={<IncomeDashboardPage />} />
             <Route path="/business/sponsor-income"  element={<SponsorIncomePage />} />
@@ -145,8 +131,6 @@ export default function App() {
             <Route path="/business/royalty-income"  element={<RoyaltyIncomePage />} />
             <Route path="/business/income-ledger"   element={<IncomeLedgerPage />} />
             <Route path="/business/income-breakdown" element={<IncomeBreakdownPage />} />
-            <Route path="/business/bv-dashboard"    element={<BvDashboardPage />} />
-            <Route path="/business/pair-matching"   element={<PairMatchingPage />} />
             <Route path="/business/reports"         element={<ReportsPage />} />
             <Route path="/business/downloads"       element={<DownloadsPage />} />
             <Route path="/business/timeline"        element={<BusinessTimelinePage />} />

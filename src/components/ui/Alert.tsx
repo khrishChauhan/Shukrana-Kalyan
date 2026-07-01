@@ -1,10 +1,11 @@
 import React from 'react';
 import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react';
 
-export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AlertProps {
   variant?: 'info' | 'success' | 'warning' | 'danger';
   title?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  [key: string]: any;
 }
 
 export function Alert({ variant = 'info', title, children, className = '', ...props }: AlertProps) {

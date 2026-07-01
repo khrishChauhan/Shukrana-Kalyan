@@ -11,6 +11,7 @@ import {
   LogOut, ChevronLeft,
   ChevronRight, ChevronDown, Bell
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export interface SubmenuItem {
   nameKey: string;
@@ -49,32 +50,17 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
   {
     nameKey: 'sidebar.memberNetwork',
     icon: Users,
-    submenus: [
-      { nameKey: 'sidebar.overview', path: '/network/overview' },
-      { nameKey: 'sidebar.directReferrals', path: '/network/direct-referrals' },
-      { nameKey: 'sidebar.verifiedMembers', path: '/network/verified-members' },
-      { nameKey: 'sidebar.pendingApproval', path: '/network/pending-approval' },
-      { nameKey: 'sidebar.networkTree', path: '/network/network-tree' },
-    ]
+    path: '/network/network-tree',
   },
   {
     nameKey: 'sidebar.business',
     icon: Briefcase,
     submenus: [
-      { nameKey: 'sidebar.businessDashboard', path: '/business/dashboard' },
       { nameKey: 'sidebar.businessProfile', path: '/business/profile' },
       { nameKey: 'sidebar.walletCenter', path: '/wallet' },
       { nameKey: 'sidebar.walletLedger', path: '/wallet/ledger' },
       { nameKey: 'sidebar.withdrawalCenter', path: '/wallet/withdrawals' },
-      { nameKey: 'sidebar.sponsorTree', path: '/business/sponsor-tree' },
-      { nameKey: 'sidebar.placementTree', path: '/business/placement-tree' },
-      { nameKey: 'sidebar.businessCalculator', path: '/business/calculator' },
       { nameKey: 'sidebar.incomeDashboard', path: '/business/income-dashboard' },
-      { nameKey: 'sidebar.bvDashboard', path: '/business/bv-dashboard' },
-      { nameKey: 'sidebar.pairMatching', path: '/business/pair-matching' },
-      { nameKey: 'sidebar.reports', path: '/business/reports' },
-      { nameKey: 'sidebar.downloads', path: '/business/downloads' },
-      { nameKey: 'sidebar.businessTimeline', path: '/business/timeline' },
       { nameKey: 'sidebar.payoutHistory', path: '/wallet/payout-history' },
     ]
   },
@@ -115,10 +101,15 @@ export default function Sidebar({ isCollapsed, setIsCollapsed, onCloseMobile }: 
     setOpenSections(prev => ({ ...prev, [nameKey]: !prev[nameKey] }));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('shukrana_session');
-    navigate('/login');
-    if (onCloseMobile) onCloseMobile();
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('shukrana_session'); // Legacy cleanup just in case
+      navigate('/login');
+      if (onCloseMobile) onCloseMobile();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const isParentActive = (item: MenuItem): boolean => {
