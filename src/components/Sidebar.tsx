@@ -8,7 +8,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Award, LayoutDashboard, UserCheck, Users, Briefcase,
-  LogOut, ChevronLeft,
+  LogOut, ChevronLeft, Heart,
   ChevronRight, ChevronDown, Bell
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -38,29 +38,26 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.activityTimeline', path: '/account/activity-timeline' },
       { nameKey: 'sidebar.profileSettings', path: '/account/profile-settings' },
       { nameKey: 'sidebar.membershipStatus', path: '/account/membership-status' },
-      { nameKey: 'sidebar.membershipCard', path: '/account/membership-card' },
       { nameKey: 'sidebar.welcomeLetter', path: '/account/welcome-letter' },
       { nameKey: 'sidebar.consentLetter', path: '/account/consent-letter' },
       { nameKey: 'sidebar.changePassword', path: '/account/change-password' },
-      { nameKey: 'sidebar.paymentCenter', path: '/payments' },
       { nameKey: 'sidebar.kycCenter', path: '/account/kyc' },
       { nameKey: 'sidebar.bankDetails', path: '/account/bank-details' },
+      { nameKey: 'sidebar.paymentCenter', path: '/payments' },
     ]
-  },
-  {
-    nameKey: 'sidebar.memberNetwork',
-    icon: Users,
-    path: '/network/network-tree',
   },
   {
     nameKey: 'sidebar.business',
     icon: Briefcase,
     submenus: [
       { nameKey: 'sidebar.businessProfile', path: '/business/profile' },
+      { nameKey: 'sidebar.networkTree', path: '/network/network-tree' },
+      { nameKey: 'sidebar.sponsorIncome', path: '/business/sponsor-income' },
+      { nameKey: 'sidebar.matchingIncome', path: '/business/matching-income' },
+      { nameKey: 'sidebar.levelIncome', path: '/business/level-income' },
+      { nameKey: 'sidebar.royaltyIncome', path: '/business/royalty-income' },
       { nameKey: 'sidebar.walletCenter', path: '/wallet' },
-      { nameKey: 'sidebar.walletLedger', path: '/wallet/ledger' },
       { nameKey: 'sidebar.withdrawalCenter', path: '/wallet/withdrawals' },
-      { nameKey: 'sidebar.incomeDashboard', path: '/business/income-dashboard' },
       { nameKey: 'sidebar.payoutHistory', path: '/wallet/payout-history' },
     ]
   },
@@ -70,6 +67,7 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
     path: '/notifications'
   }
 ];
+
 
 import { useTranslation } from '../context/LanguageContext';
 

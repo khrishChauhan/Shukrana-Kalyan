@@ -22,6 +22,9 @@ export default function DashboardPage() {
   const [businessData, setBusinessData] = useState<any>(null);
   const [memberStatus, setMemberStatus] = useState<string>('PENDING');
   const [loadingData, setLoadingData] = useState(true);
+  const [networkStats, setNetworkStats] = useState({ referrals: 0, active: 0, pending: 0 });
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const currentDays = getMemberDays();
   const { t } = useTranslation();
 
@@ -36,9 +39,9 @@ export default function DashboardPage() {
         }
 
         // 1. Fetch status and profile
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('members')
-          .select('status, created_at, member_profile(full_name)')
+          .select('status, created_at, sponsor_id, member_profile(full_name)')
           .eq('id', user.id)
           .single();
           
@@ -47,18 +50,68 @@ export default function DashboardPage() {
           const profile = Array.isArray(memberData.member_profile) ? memberData.member_profile[0] : memberData.member_profile;
           setAdminUser({
             name: profile?.full_name || 'Member',
-            joinDate: new Date(memberData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+            joinDate: new Date(memberData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+            createdAt: memberData.created_at
           });
         }
         
         // 2. Fetch business data
-        const { data: bData } = await supabase
-          .from('member_business')
-          .select('carry_forward_left, carry_forward_right, total_left_bv, total_right_bv, matched_bv')
-          .eq('id', user.id)
-          .single();
-          
-        if (bData) setBusinessData(bData);
+        try {
+          const { data: bData } = await supabase
+            .from('member_business')
+            .select('carry_forward_left, carry_forward_right, total_left_bv, total_right_bv, matched_bv')
+            .eq('id', user.id)
+            .single();
+            
+          if (bData) setBusinessData(bData);
+        } catch (e) {
+          console.error('Failed to fetch business data:', e);
+        }
+
+        // 3. Fetch real network stats (direct downline of this member)
+        try {
+          const { data: downline } = await supabase
+            .from('members')
+            .select('id, status')
+            .eq('sponsor_id', user.id);
+
+          if (downline) {
+            setNetworkStats({
+              referrals: downline.length,
+              active: downline.filter(m => m.status === 'ACTIVE').length,
+              pending: downline.filter(m => m.status === 'PENDING').length,
+            });
+          }
+        } catch (e) {
+          console.error('Failed to fetch network stats:', e);
+        }
+
+        // 4. Fetch live announcements
+        try {
+          const { data: annData } = await supabase
+            .from('announcements')
+            .select('id, title, content, priority, created_at')
+            .eq('status', 'PUBLISHED')
+            .order('created_at', { ascending: false })
+            .limit(3);
+          setAnnouncements(annData || []);
+        } catch (e) {
+          console.error('Failed to fetch announcements:', e);
+        }
+
+        // 5. Fetch real activity logs for this member
+        try {
+          const { data: actData } = await supabase
+            .from('activity_logs')
+            .select('id, action, details, created_at')
+            .eq('member_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(5);
+          setRecentActivity(actData || []);
+        } catch (e) {
+          console.error('Failed to fetch activity logs:', e);
+        }
+
       } catch (err) {
         console.error('Error fetching dashboard data', err);
       } finally {
@@ -69,7 +122,35 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [navigate]);
 
-  if (!adminUser) return null;
+  if (loadingData) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#ED8C32] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!adminUser) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+          <ShieldCheck className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold text-[#232F46]">Member Profile Not Found</h2>
+        <p className="text-gray-500 text-center max-w-md">
+          We couldn't load your member profile. You might be logged in as an Administrator, or your account setup is incomplete.
+        </p>
+        <div className="flex gap-4 mt-4">
+          <Button onClick={() => navigate('/admin/dashboard')} className="bg-[#232F46] hover:bg-[#1a2333] text-white">
+            Go to Admin Portal
+          </Button>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry Loading
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const benefitsByCategory = (category: string) =>
     benefitsData.filter((b) => b.categoryKey === category);
@@ -141,7 +222,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ─── 2. MEMBERSHIP JOURNEY ─────────────────────────────────────── */}
-      <BenefitJourney currentDays={currentDays} />
+      <BenefitJourney createdAt={adminUser.createdAt} />
 
       {/* ─── 3. आपके 10 सदस्य लाभ ─────────────────────────────────────── */}
       <div>
@@ -177,57 +258,7 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* ─── 4. QUICK ACTIONS ──────────────────────────────────────────── */}
-      <div>
-        <h2 className="text-lg font-bold text-[#232F46] mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <Card 
-            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
-            onClick={() => navigate('/account/membership-card')}
-          >
-            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
-              <CreditCard className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
-            </div>
-            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Membership Card</span>
-          </Card>
-          <Card 
-            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
-            onClick={() => navigate('/account/welcome-letter')}
-          >
-            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
-              <Award className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
-            </div>
-            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Welcome Letter</span>
-          </Card>
-          <Card 
-            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
-            onClick={() => navigate('/account/consent-letter')}
-          >
-            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
-              <FileText className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
-            </div>
-            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Consent Letter</span>
-          </Card>
-          <Card 
-            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
-            onClick={() => navigate('/account/profile-settings')}
-          >
-            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
-              <UserCircle className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
-            </div>
-            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Edit Profile</span>
-          </Card>
-          <Card 
-            className="flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:border-[#ED8C32] hover:bg-orange-50/30 transition-colors group"
-            onClick={() => navigate('/notifications')}
-          >
-            <div className="p-3 bg-gray-50 rounded-full group-hover:bg-white transition-colors mb-3">
-              <Bell className="w-6 h-6 text-gray-500 group-hover:text-[#ED8C32]" />
-            </div>
-            <span className="text-xs font-bold text-gray-600 group-hover:text-[#232F46]">Notifications</span>
-          </Card>
-        </div>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* ─── 5. COMMUNITY OVERVIEW ─────────────────────────────────────── */}
@@ -237,19 +268,28 @@ export default function DashboardPage() {
               Community Overview
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+              <div
+                className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center cursor-pointer hover:bg-orange-50/40 hover:border-[#ED8C32]/30 transition-all"
+                onClick={() => navigate('/network/my-downline')}
+              >
                 <Users className="w-6 h-6 text-[#ED8C32] mb-2" />
-                <p className="text-2xl font-bold text-[#232F46]">12</p>
+                <p className="text-2xl font-bold text-[#232F46]">{networkStats.referrals}</p>
                 <p className="text-xs text-gray-500 mt-1">My Referrals</p>
               </div>
-              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+              <div
+                className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center cursor-pointer hover:bg-green-50/40 hover:border-green-200 transition-all"
+                onClick={() => navigate('/network/my-downline')}
+              >
                 <UserCheck className="w-6 h-6 text-green-600 mb-2" />
-                <p className="text-2xl font-bold text-[#232F46]">8</p>
-                <p className="text-xs text-gray-500 mt-1">Verified Members</p>
+                <p className="text-2xl font-bold text-[#232F46]">{networkStats.active}</p>
+                <p className="text-xs text-gray-500 mt-1">Active Members</p>
               </div>
-              <div className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center">
+              <div
+                className="p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col items-center text-center cursor-pointer hover:bg-blue-50/40 hover:border-blue-200 transition-all"
+                onClick={() => navigate('/network/my-downline')}
+              >
                 <UserPlus className="w-6 h-6 text-blue-600 mb-2" />
-                <p className="text-2xl font-bold text-[#232F46]">4</p>
+                <p className="text-2xl font-bold text-[#232F46]">{networkStats.pending}</p>
                 <p className="text-xs text-gray-500 mt-1">Pending Members</p>
               </div>
             </div>
@@ -279,35 +319,25 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="divide-y divide-gray-100">
-              {[
-                {
-                  title: t('timeline.paymentApproved'),
-                  time: `2 ${t('timeline.hoursAgo')}`,
-                  icon: <Heart className="w-4 h-4 text-green-500" />,
-                },
-                {
-                  title: t('timeline.newMember'),
-                  time: `1 ${t('timeline.dayAgo')}`,
-                  icon: <Users className="w-4 h-4 text-blue-500" />,
-                },
-                {
-                  title: t('timeline.welcomeLetter'),
-                  time: `2 ${t('timeline.daysAgo')}`,
-                  icon: <Award className="w-4 h-4 text-[#ED8C32]" />,
-                },
-              ].map((activity, i) => (
-                <div key={i} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                    {activity.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-bold text-[#232F46]">{activity.title}</h4>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                      <Clock className="w-3 h-3" /> {activity.time}
-                    </p>
-                  </div>
+              {recentActivity.length === 0 ? (
+                <div className="p-6 text-center text-sm text-gray-400">
+                  No recent activity yet. Actions like payments and activations will appear here.
                 </div>
-              ))}
+              ) : (
+                recentActivity.map((activity) => (
+                  <div key={activity.id} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                      <Activity className="w-4 h-4 text-[#ED8C32]" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold text-[#232F46]">{activity.action?.replace(/_/g, ' ') || 'Activity'}</h4>
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                        <Clock className="w-3 h-3" /> {new Date(activity.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </div>
@@ -322,24 +352,23 @@ export default function DashboardPage() {
               </h3>
             </div>
             <div className="p-5 space-y-4 bg-white">
-              <div className="border-l-2 border-[#ED8C32] pl-3">
-                <p className="text-xs text-gray-400 font-medium mb-1">June 20, 2026</p>
-                <h4 className="text-sm font-bold text-[#232F46] leading-tight mb-1">Upcoming Health Camp in Mumbai</h4>
-                <p className="text-xs text-gray-500 line-clamp-2">Join us for the free health checkup camp organized for all verified NGO members and their families.</p>
-              </div>
-              <div className="border-l-2 border-blue-500 pl-3">
-                <p className="text-xs text-gray-400 font-medium mb-1">June 15, 2026</p>
-                <h4 className="text-sm font-bold text-[#232F46] leading-tight mb-1">New Education Grants Available</h4>
-                <p className="text-xs text-gray-500 line-clamp-2">Applications for the newly introduced girl child education fund are now open for the current academic year.</p>
-              </div>
-              <div className="border-l-2 border-gray-200 pl-3">
-                <p className="text-xs text-gray-400 font-medium mb-1">June 01, 2026</p>
-                <h4 className="text-sm font-bold text-gray-600 leading-tight mb-1">Digital Literacy Program Wrap-up</h4>
-                <p className="text-xs text-gray-500 line-clamp-2">Over 500 members successfully completed the basic digital skills course this May.</p>
-              </div>
+              {announcements.length === 0 ? (
+                <p className="text-xs text-gray-400 text-center">No announcements at this time.</p>
+              ) : (
+                announcements.map((ann) => {
+                  const borderColor = ann.priority === 'CRITICAL' ? 'border-red-500' : ann.priority === 'WARNING' ? 'border-[#ED8C32]' : 'border-blue-500';
+                  return (
+                    <div key={ann.id} className={`border-l-2 ${borderColor} pl-3`}>
+                      <p className="text-xs text-gray-400 font-medium mb-1">{new Date(ann.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                      <h4 className="text-sm font-bold text-[#232F46] leading-tight mb-1">{ann.title}</h4>
+                      <p className="text-xs text-gray-500 line-clamp-2">{ann.content}</p>
+                    </div>
+                  );
+                })
+              )}
             </div>
             <div className="p-3 border-t border-gray-100 bg-gray-50 text-center">
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" onClick={() => navigate('/notifications')}>
                 View All Announcements
               </Button>
             </div>

@@ -2,10 +2,14 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { mockIncomeDashboard } from '../../data/mockBusinessData';
 import { PieChart, Download } from 'lucide-react';
 
 export default function IncomeBreakdownPage() {
+  const breakdownData = [
+    { period: 'October 2023', gross: 25000, tds: 1250, admin: 1250, donation: 500, net: 22000 },
+    { period: 'September 2023', gross: 22000, tds: 1100, admin: 1100, donation: 500, net: 19300 },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -20,7 +24,7 @@ export default function IncomeBreakdownPage() {
       />
 
       <div className="space-y-6">
-        {mockIncomeDashboard.breakdown.map((report, idx) => (
+        {breakdownData.map((report, idx) => (
           <Card key={idx} className="overflow-hidden p-0 border border-gray-100">
             <div className="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-100">
               <div className="flex items-center gap-3">
@@ -29,9 +33,7 @@ export default function IncomeBreakdownPage() {
                 </div>
                 <h3 className="font-bold text-[#232F46]">{report.period}</h3>
               </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors text-sm font-bold text-gray-600">
-                <Download className="w-4 h-4" /> Download Statement
-              </button>
+
             </div>
             
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -64,8 +66,8 @@ export default function IncomeBreakdownPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#232F46] text-white flex justify-between items-center">
-              <span className="font-bold uppercase tracking-wider text-sm text-white/80">Net Payable Amount</span>
+            <div className="p-4 bg-gray-50 flex justify-between items-center">
+              <span className="font-bold uppercase tracking-wider text-sm text-gray-500">Net Payable Amount</span>
               <span className="text-2xl font-black text-[#ED8C32]">₹{report.net.toLocaleString()}</span>
             </div>
           </Card>

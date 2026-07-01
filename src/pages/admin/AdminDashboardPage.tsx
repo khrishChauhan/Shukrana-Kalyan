@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
   Users, UserCheck, Clock, ShieldCheck, UserPlus,
-  Network, FileSearch, Bell, ChevronRight, Activity, Download,
+  Network, FileSearch, Bell, ChevronRight, Activity,
   Wallet, RefreshCw, AlertTriangle
 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
@@ -48,16 +48,39 @@ export default function AdminDashboardPage() {
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
-      // 1. Fetch KPIs
-      const { data: kpiData, error: kpiError } = await supabase.rpc('get_admin_dashboard_kpis');
-      if (kpiError) throw kpiError;
-      setKpis(kpiData as DashboardKPIs);
+      // 1. Fetch Members counts
+      const [{ count: total }, { count: active }, { count: pending }] = await Promise.all([
+        supabase.from('members').select('*', { count: 'exact', head: true }),
+        supabase.from('members').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
+        supabase.from('members').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
+      ]);
 
-      // 2. Fetch recent activity (limit 10)
-      const { data: activityData, error: activityError } = await supabase.rpc('get_system_activity_feed', { 
-        p_limit: 10, p_offset: 0 
+      // 2. Fetch BV
+      const { data: business } = await supabase.from('member_business').select('total_left_bv, total_right_bv');
+      const bv_generated = business?.reduce((sum, b) => sum + Number(b.total_left_bv || 0) + Number(b.total_right_bv || 0), 0) || 0;
+
+      // 3. Fetch Financials
+      const { data: ledger } = await supabase.from('unified_ledger').select('amount, direction, entry_type');
+      let total_revenue = 0;
+      let total_payouts = 0;
+      let total_liability = 0;
+
+      if (ledger) {
+        ledger.forEach(tx => {
+          if (tx.direction === 'CREDIT' && tx.entry_type !== 'ADMIN_CORRECTION_CREDIT') total_revenue += Number(tx.amount);
+          if (tx.direction === 'DEBIT' && tx.entry_type === 'WITHDRAWAL_DEBIT') total_payouts += Number(tx.amount);
+        });
+        total_liability = total_revenue - total_payouts; // Simplified liability calculation
+      }
+
+      setKpis({
+        members: { total: total || 0, active: active || 0, pending: pending || 0, suspended: 0, locked: 0 },
+        today_business: { activations: 0, bv_generated, matching_income: 0, sponsor_income: 0, level_income: 0 },
+        financials: { total_revenue, total_payouts, total_liability }
       });
-      if (activityError) throw activityError;
+
+      // 4. Fetch recent activity
+      const { data: activityData } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(10);
       setActivities(activityData || []);
 
     } catch (err: any) {
@@ -73,14 +96,14 @@ export default function AdminDashboardPage() {
 
   // ── Prepare KPI Cards ─────────────────────────────────────
   const kpiCards = kpis ? [
-    { label: 'Total Members', value: kpis.members.total.toLocaleString(), icon: Users, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Active Members', value: kpis.members.active.toLocaleString(), icon: UserCheck, color: 'bg-green-50 text-green-600' },
-    { label: 'Pending Registrations', value: kpis.members.pending.toLocaleString(), icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
-    { label: 'Today\'s Activations', value: kpis.today_business.activations.toLocaleString(), icon: UserPlus, color: 'bg-teal-50 text-teal-600' },
-    { label: 'Today\'s BV Generated', value: kpis.today_business.bv_generated.toLocaleString(), icon: Network, color: 'bg-indigo-50 text-indigo-600' },
-    { label: 'Total Platform Revenue', value: `₹${kpis.financials.total_revenue.toLocaleString()}`, icon: Wallet, color: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Total Payouts', value: `₹${kpis.financials.total_payouts.toLocaleString()}`, icon: Activity, color: 'bg-orange-50 text-[#ED8C32]' },
-    { label: 'System Liability (Wallets)', value: `₹${kpis.financials.total_liability.toLocaleString()}`, icon: Bell, color: 'bg-red-50 text-red-600' },
+    { label: 'Total Members', value: kpis.members.total.toLocaleString(), icon: Users, color: 'bg-blue-50 text-blue-600', path: '/admin/members' },
+    { label: 'Active Members', value: kpis.members.active.toLocaleString(), icon: UserCheck, color: 'bg-green-50 text-green-600', path: '/admin/members' },
+    { label: 'Pending Registrations', value: kpis.members.pending.toLocaleString(), icon: Clock, color: 'bg-yellow-50 text-yellow-600', path: '/admin/payments' },
+    { label: 'Today\'s Activations', value: kpis.today_business.activations.toLocaleString(), icon: UserPlus, color: 'bg-teal-50 text-teal-600', path: '/admin/members' },
+    { label: 'Today\'s BV Generated', value: kpis.today_business.bv_generated.toLocaleString(), icon: Network, color: 'bg-indigo-50 text-indigo-600', path: '/admin/business/ledger' },
+    { label: 'Total Platform Revenue', value: `₹${kpis.financials.total_revenue.toLocaleString()}`, icon: Wallet, color: 'bg-emerald-50 text-emerald-600', path: '/admin/business/ledger' },
+    { label: 'Total Payouts', value: `₹${kpis.financials.total_payouts.toLocaleString()}`, icon: Activity, color: 'bg-orange-50 text-[#ED8C32]', path: '/admin/business/payouts' },
+    { label: 'System Liability (Wallets)', value: `₹${kpis.financials.total_liability.toLocaleString()}`, icon: Bell, color: 'bg-red-50 text-red-600', path: '/admin/business/ledger' },
   ] : [];
 
   const getActivityIcon = (action: string) => {
@@ -105,9 +128,6 @@ export default function AdminDashboardPage() {
             <Button leftIcon={<RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />} variant="outline" onClick={fetchDashboardData}>
               Refresh
             </Button>
-            <Button leftIcon={<Download className="w-4 h-4" />}>
-              Export Report
-            </Button>
           </div>
         }
       />
@@ -125,14 +145,19 @@ export default function AdminDashboardPage() {
             </Card>
           ))
         ) : (
-          kpiCards.map(({ label, value, icon: Icon, color }) => (
-            <Card key={label} className="flex items-start gap-4 p-4 hover:shadow-md transition-shadow">
+          kpiCards.map(({ label, value, icon: Icon, color, path }) => (
+            <Card
+              key={label}
+              className={`flex items-start gap-4 p-4 transition-all ${path ? 'hover:shadow-md hover:scale-[1.02] cursor-pointer' : ''}`}
+              onClick={path ? () => navigate(path) : undefined}
+            >
               <div className={`p-3 rounded-xl shrink-0 ${color}`}>
                 <Icon className="w-6 h-6" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-500 mb-0.5 leading-tight">{label}</p>
                 <p className="text-2xl font-black text-[#232F46]">{value}</p>
+                <p className="text-[10px] text-[#ED8C32] font-bold mt-1">View Details →</p>
               </div>
             </Card>
           ))
@@ -202,40 +227,7 @@ export default function AdminDashboardPage() {
 
         {/* ── Right Column: Summary & Actions ──────────────────────── */}
         <div className="lg:col-span-1 space-y-6">
-          <Card className="bg-[#232F46] text-white border-0 shadow-sm p-5">
-            <h3 className="font-bold mb-4">Today's Performance</h3>
-            {loading || !kpis ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i}>
-                    <Skeleton className="w-24 h-3 bg-white/20 mb-2" />
-                    <Skeleton className="w-16 h-6 bg-white/30" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4 divide-y divide-white/10">
-                <div className="pt-2 flex justify-between items-end">
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Matching Income</p>
-                    <p className="text-xl font-black">₹{kpis.today_business.matching_income}</p>
-                  </div>
-                </div>
-                <div className="pt-4 flex justify-between items-end">
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Sponsor Income</p>
-                    <p className="text-xl font-black">₹{kpis.today_business.sponsor_income}</p>
-                  </div>
-                </div>
-                <div className="pt-4 flex justify-between items-end">
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Level Income</p>
-                    <p className="text-xl font-black">₹{kpis.today_business.level_income}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
+
           
           <Card>
             <h3 className="font-bold text-[#232F46] mb-4">Operations Center</h3>

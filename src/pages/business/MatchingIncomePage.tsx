@@ -43,12 +43,22 @@ export default function MatchingIncomePage() {
 
         // Fetch Matching Ledger
         const { data: txData } = await supabase
-          .from('matching_transactions')
-          .select('*')
+          .from('unified_ledger')
+          .select('id, amount, source_ref_id, remarks, created_at')
           .eq('member_uuid', user.id)
+          .eq('entry_type', 'MATCHING_INCOME')
           .order('created_at', { ascending: false });
 
-        if (txData) setTransactions(txData);
+        if (txData) {
+          setTransactions(txData.map(tx => ({
+            id: tx.id,
+            created_at: tx.created_at,
+            matched_bv: parseInt(tx.remarks?.split(' ')[0] || '0', 10) || 0, // Fallback parsing
+            income_generated: Number(tx.amount),
+            status: 'PAID', // Unified ledger means it's processed
+            remarks: tx.remarks
+          })));
+        }
 
       } catch (err) {
         console.error('Error fetching matching income data', err);

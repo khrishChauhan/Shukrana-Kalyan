@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
-  Search, Eye, CheckCircle, XCircle, Ban, Download,
+  Search, Eye, CheckCircle, XCircle, Ban,
   RefreshCw, Lock, LockOpen, ChevronLeft, ChevronRight, AlertTriangle
 } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
@@ -229,21 +229,6 @@ export default function AdminMembersPage() {
     setConfirmModal({ open: true, uuid, rpcName, title, description, actionLabel, actionColor });
   };
 
-  // ── CSV Export ───────────────────────────────────────────
-  const exportCsv = () => {
-    const rows = [
-      ['Member ID', 'Name', 'Phone', 'City', 'Status', 'KYC', 'Join Date'],
-      ...members.map(m => [m.member_id, m.full_name, m.phone_number, m.city || '', m.status, m.kyc_status, m.join_date]),
-    ];
-    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = `members_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -266,11 +251,6 @@ export default function AdminMembersPage() {
         title="Member Directory"
         description="Search, filter, and manage all NGO members with full lifecycle controls."
         breadcrumbs={[{ label: 'Admin Portal' }, { label: 'Members' }]}
-        action={
-          <Button leftIcon={<Download className="w-4 h-4" />} onClick={exportCsv}>
-            Export CSV
-          </Button>
-        }
       />
 
       <Card noPadding className="overflow-hidden">

@@ -2,12 +2,23 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { mockSponsorTree } from '../../data/mockBusinessData';
 import { Network, Search, UserPlus, ChevronRight } from 'lucide-react';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 
 export default function AdminGlobalSponsorTreePage() {
   const [search, setSearch] = useState('');
+
+  const sponsorTreeState = {
+    id: 'ROOT-001',
+    name: 'System Root',
+    level: 0,
+    rank: 'Admin',
+    children: [
+      { id: 'SK000124', name: 'Sneha Patel', rank: 'Distributor', active: true, joinDate: 'Oct 18, 2023', level: 1, teamSize: 5 },
+      { id: 'SK000125', name: 'Vikram Singh', rank: 'Silver Director', active: true, joinDate: 'Oct 19, 2023', level: 1, teamSize: 120 },
+      { id: 'SK000126', name: 'Amit Kumar', rank: 'Distributor', active: false, joinDate: 'Oct 20, 2023', level: 1, teamSize: 0 },
+    ]
+  };
 
   return (
     <motion.div
@@ -48,18 +59,18 @@ export default function AdminGlobalSponsorTreePage() {
           <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Root Member Node</h4>
           <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
             <div>
-              <h3 className="font-bold text-[#232F46] text-lg">{mockSponsorTree.name}</h3>
-              <p className="text-xs text-gray-500 font-mono mt-1">{mockSponsorTree.id} • Level {mockSponsorTree.level}</p>
+              <h3 className="font-bold text-[#232F46] text-lg">{sponsorTreeState.name}</h3>
+              <p className="text-xs text-gray-500 font-mono mt-1">{sponsorTreeState.id} • Level {sponsorTreeState.level}</p>
             </div>
             <span className="px-3 py-1 bg-[#ED8C32] text-white rounded-lg text-xs font-bold uppercase tracking-wider">
-              {(mockSponsorTree as any).rank || 'ROOT'}
+              {sponsorTreeState.rank || 'ROOT'}
             </span>
           </div>
         </div>
 
         {/* Children */}
         <div className="space-y-3 pl-0 sm:pl-6 border-l-2 border-gray-100 ml-2">
-          {mockSponsorTree.children.map((child) => (
+          {sponsorTreeState.children.map((child) => (
             <div key={child.id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-[#ED8C32] transition-colors relative">
               <div className="absolute top-1/2 -left-6 w-6 h-0.5 bg-gray-200 -z-10" />
               
@@ -82,7 +93,7 @@ export default function AdminGlobalSponsorTreePage() {
                   <p className="text-[10px] text-gray-400 font-bold uppercase">Team Size</p>
                   <p className="font-bold text-[#232F46]">{child.teamSize}</p>
                 </div>
-                <StatusBadge status={child.active ? 'Active' : 'Inactive'} />
+                <StatusBadge status={child.active ? 'Active' : 'Inactive' as any} />
                 <button className="text-gray-400 hover:text-[#ED8C32] transition-colors">
                   <ChevronRight className="w-5 h-5" />
                 </button>

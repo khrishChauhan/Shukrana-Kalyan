@@ -16,28 +16,20 @@ export default function LevelIncomePage() {
         if (!user) return;
 
         const { data } = await supabase
-          .from('level_income_transactions')
-          .select('id, income_generated, level_distance, source_member_uuid, created_at')
-          .eq('sponsor_uuid', user.id)
+          .from('unified_ledger')
+          .select('id, amount, source_ref_id, remarks, created_at')
+          .eq('member_uuid', user.id)
+          .eq('entry_type', 'LEVEL_INCOME')
           .order('created_at', { ascending: false });
         
         if (data) {
-          // fetch names
-          const sourceUuids = [...new Set(data.map(t => t.source_member_uuid))];
-          if (sourceUuids.length > 0) {
-            const { data: profiles } = await supabase
-              .from('member_profile')
-              .select('id, full_name')
-              .in('id', sourceUuids);
-            
-            const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
-            setTransactions(data.map(t => ({
-              ...t,
-              source_name: profileMap.get(t.source_member_uuid) || 'Unknown Member'
-            })));
-          } else {
-            setTransactions(data);
-          }
+          setTransactions(data.map(t => ({
+            id: t.id,
+            income_generated: Number(t.amount),
+            level_distance: t.remarks?.match(/Level (\d+)/)?.[1] || '?',
+            source_name: t.remarks?.replace(/Level \d+ from /, '') || 'Network Member',
+            created_at: t.created_at
+          })));
         }
       } catch (e) {
         console.error('Error fetching level income', e);
@@ -82,7 +74,7 @@ export default function LevelIncomePage() {
               <tr className="border-b border-gray-100">
                 <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Date</th>
                 <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Level</th>
-                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Source Member</th>
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Remarks</th>
                 <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase text-right">Amount</th>
               </tr>
             </thead>

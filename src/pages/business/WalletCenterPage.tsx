@@ -8,7 +8,7 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import { supabase } from '../../lib/supabase';
 import {
   Wallet, ArrowUpRight, Activity,
-  FileText, Landmark, Banknote, Download
+  FileText, Landmark, Banknote
 } from 'lucide-react';
 
 export default function WalletCenterPage() {
@@ -84,16 +84,15 @@ export default function WalletCenterPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 bg-[#232F46] text-white border-0 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl" />
+        <Card className="p-5 border border-gray-100 shadow-sm relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-4">
-              <p className="text-xs font-bold text-white/70 uppercase tracking-wider">Available Balance</p>
-              <div className="p-2 bg-white/10 rounded-lg"><Wallet className="w-5 h-5 text-white" /></div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Available Balance</p>
+              <div className="p-2 bg-[#ED8C32]/10 rounded-lg"><Wallet className="w-5 h-5 text-[#ED8C32]" /></div>
             </div>
             {loading ? <p className="text-3xl font-black text-[#ED8C32]/50 animate-pulse">₹---</p>
-              : <p className="text-3xl font-black text-white">₹{Number(walletData?.available_balance || 0).toLocaleString()}</p>}
-            <p className="text-xs text-white/50 mt-2">Ready for withdrawal</p>
+              : <p className="text-3xl font-black text-[#232F46]">₹{Number(walletData?.available_balance || 0).toLocaleString()}</p>}
+            <p className="text-xs text-gray-400 mt-2">Ready for withdrawal</p>
           </div>
         </Card>
 
@@ -180,12 +179,11 @@ export default function WalletCenterPage() {
               <Button variant="outline" className="w-full justify-start gap-3 h-12" onClick={() => navigate('/wallet/withdrawals')}><Banknote className="w-5 h-5 text-[#ED8C32]" /> Request Withdrawal</Button>
               <Button variant="outline" className="w-full justify-start gap-3 h-12" onClick={() => navigate('/account/bank-details')}><Landmark className="w-5 h-5 text-blue-500" /> Manage Bank Details</Button>
               <Button variant="outline" className="w-full justify-start gap-3 h-12" onClick={() => navigate('/wallet/ledger')}><FileText className="w-5 h-5 text-gray-500" /> View Detailed Ledger</Button>
-              <Button variant="outline" className="w-full justify-start gap-3 h-12" onClick={() => navigate('/downloads')}><Download className="w-5 h-5 text-gray-500" /> Download Statement</Button>
             </div>
           </Card>
 
-          <Card className="bg-[#232F46] text-white">
-            <h3 className="font-bold text-white mb-4">Income Distribution</h3>
+          <Card className="border border-gray-100">
+            <h3 className="font-bold text-[#232F46] mb-4">Income Distribution</h3>
             <div className="space-y-4">
               {[
                 { label: 'Binary Income', val: binaryIncome },
@@ -197,10 +195,10 @@ export default function WalletCenterPage() {
                 return (
                   <div key={label}>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-white/70">{label}</span>
-                      <span className="font-bold text-white">{pct}%</span>
+                      <span className="text-gray-500 font-medium">{label}</span>
+                      <span className="font-bold text-[#232F46]">{pct}%</span>
                     </div>
-                    <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="w-full bg-gray-100 rounded-full h-2">
                       <div className="bg-[#ED8C32] h-2 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>

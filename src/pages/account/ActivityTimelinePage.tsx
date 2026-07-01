@@ -1,72 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Input } from '../../components/ui/Input';
-import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { 
-  Activity, Search, ShieldCheck, UserCheck, Key, LogIn, LogOut, 
-  User, Award, Heart, Users, Clock, AlertCircle
+  Activity, Search, ShieldCheck, Clock, User, Award, Heart, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../context/LanguageContext';
+import { supabase } from '../../lib/supabase';
 
-interface TimelineEvent {
-  id: string;
-  category: 'Account' | 'Membership' | 'KYC' | 'Donations' | 'Network';
-  title: string;
-  description: string;
-  timestamp: string;
-  status: 'Completed' | 'Pending' | 'Failed';
-}
+// Map actions to generic categories
+const getCategory = (action: string) => {
+  if (action.includes('KYC')) return 'KYC';
+  if (action.includes('DONATION') || action.includes('WELFARE')) return 'Donations';
+  if (action.includes('MEMBER') || action.includes('NETWORK') || action.includes('SPONSOR')) return 'Network';
+  if (action.includes('WITHDRAWAL') || action.includes('PAYMENT')) return 'Membership';
+  return 'Account';
+};
 
-const mockActivities: TimelineEvent[] = [
-  {
-    id: '1',
-    category: 'Account',
-    title: 'Profile Updated',
-    description: 'Updated mobile number and email address.',
-    timestamp: 'Today • 11:45 AM',
-    status: 'Completed',
-  },
-  {
-    id: '2',
-    category: 'Membership',
-    title: 'Membership Approved',
-    description: 'Your membership application has been approved by admin.',
-    timestamp: '14 Jun 2026 • 09:32 AM',
-    status: 'Completed',
-  },
-  {
-    id: '3',
-    category: 'Donations',
-    title: 'Donation Submitted',
-    description: '₹500 donated to Welfare Fund via Razorpay.',
-    timestamp: '13 Jun 2026 • 06:12 PM',
-    status: 'Completed',
-  },
-  {
-    id: '4',
-    category: 'Network',
-    title: 'Referral Joined',
-    description: 'Amit Sharma joined your network using your referral link.',
-    timestamp: '12 Jun 2026 • 02:15 PM',
-    status: 'Completed',
-  },
-  {
-    id: '5',
-    category: 'KYC',
-    title: 'Aadhar Uploaded',
-    description: 'Aadhar card submitted for KYC verification.',
-    timestamp: '10 Jun 2026 • 10:05 AM',
-    status: 'Pending',
-  },
-];
-
-const categoryIcons = {
+const categoryIcons: any = {
   Account: <User className="w-5 h-5" />,
   Membership: <Award className="w-5 h-5" />,
   KYC: <ShieldCheck className="w-5 h-5" />,
@@ -74,7 +30,7 @@ const categoryIcons = {
   Network: <Users className="w-5 h-5" />
 };
 
-const categoryColors = {
+const categoryColors: any = {
   Account: 'bg-blue-50 text-blue-600',
   Membership: 'bg-purple-50 text-purple-600',
   KYC: 'bg-green-50 text-green-600',
@@ -85,13 +41,67 @@ const categoryColors = {
 export default function ActivityTimelinePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  const [activities, setActivities] = useState<any[]>([]);
+  const [profileData, setProfileData] = useState({ status: 'PENDING', kyc: 'PENDING', lastLogin: '—' });
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('All Activities');
   const [search, setSearch] = useState('');
 
-  const filteredActivities = mockActivities.filter(a => {
-    const matchCategory = filter === 'All Activities' || a.category === filter;
-    const matchSearch = a.title.toLowerCase().includes(search.toLowerCase()) || 
-                        a.description.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Fetch logs
+        const { data: logs } = await supabase
+          .from('activity_logs')
+          .select('*')
+          .eq('member_uuid', user.id)
+          .order('created_at', { ascending: false });
+
+        if (logs) {
+          setActivities(logs);
+          // Try to find last login if there is one logged, else use the most recent activity
+          const loginLog = logs.find(l => l.action.includes('LOGIN'));
+          const lastLog = loginLog || logs[0];
+          
+          let lastLoginDisplay = '—';
+          if (lastLog) {
+            lastLoginDisplay = new Date(lastLog.created_at).toLocaleString();
+          }
+
+          // Fetch member statuses
+          const [{ data: mem }, { data: kyc }] = await Promise.all([
+            supabase.from('members').select('status').eq('id', user.id).single(),
+            supabase.from('member_kyc').select('verification_status').eq('id', user.id).single()
+          ]);
+
+          setProfileData({
+            status: mem?.status || 'PENDING',
+            kyc: kyc?.verification_status || 'PENDING',
+            lastLogin: lastLoginDisplay
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredActivities = activities.filter(a => {
+    const cat = getCategory(a.action);
+    const matchCategory = filter === 'All Activities' || cat === filter;
+    
+    // search in action or details
+    const searchString = `${a.action} ${JSON.stringify(a.details)}`.toLowerCase();
+    const matchSearch = searchString.includes(search.toLowerCase());
+    
     return matchCategory && matchSearch;
   });
 
@@ -117,7 +127,7 @@ export default function ActivityTimelinePage() {
             </div>
           </div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.total')}</p>
-          <h3 className="text-2xl font-black text-[#232F46]">128</h3>
+          {loading ? <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" /> : <h3 className="text-2xl font-black text-[#232F46]">{activities.length}</h3>}
         </Card>
 
         <Card className="flex flex-col">
@@ -127,7 +137,7 @@ export default function ActivityTimelinePage() {
             </div>
           </div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.lastLogin')}</p>
-          <h3 className="text-sm font-bold text-[#232F46]">Today, 08:30 AM</h3>
+          {loading ? <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" /> : <h3 className="text-sm font-bold text-[#232F46]">{profileData.lastLogin}</h3>}
         </Card>
 
         <Card className="flex flex-col">
@@ -135,10 +145,10 @@ export default function ActivityTimelinePage() {
             <div className="p-2.5 bg-green-50 rounded-lg text-green-600">
               <Award className="w-5 h-5" />
             </div>
-            <StatusBadge status="Active" />
+            {!loading && <StatusBadge status={profileData.status === 'ACTIVE' ? 'Active' : profileData.status} />}
           </div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.memStatus')}</p>
-          <h3 className="text-sm font-bold text-[#232F46]">{t('dashboard.kpiVerified')}</h3>
+          {loading ? <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" /> : <h3 className="text-sm font-bold text-[#232F46]">{profileData.status}</h3>}
         </Card>
 
         <Card className="flex flex-col">
@@ -146,10 +156,10 @@ export default function ActivityTimelinePage() {
             <div className="p-2.5 bg-yellow-50 rounded-lg text-yellow-600">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <StatusBadge status="Pending Review" />
+            {!loading && <StatusBadge status={profileData.kyc === 'VERIFIED' ? 'Active' : 'Pending'} />}
           </div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{t('activity.kycStatus')}</p>
-          <h3 className="text-sm font-bold text-[#232F46]">{t('status.inProgress')}</h3>
+          {loading ? <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" /> : <h3 className="text-sm font-bold text-[#232F46]">{profileData.kyc}</h3>}
         </Card>
       </div>
 
@@ -172,17 +182,6 @@ export default function ActivityTimelinePage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-          <div className="w-full sm:w-40">
-            <Select 
-              options={[
-                { value: '7', label: t('activity.last7') },
-                { value: '30', label: t('activity.last30') },
-                { value: '90', label: t('activity.last90') },
-                { value: 'custom', label: t('activity.custom') },
-              ]}
-              className="text-sm bg-white"
-            />
-          </div>
           <div className="w-full sm:w-64">
             <Input 
               placeholder={t('activity.search')} 
@@ -197,34 +196,35 @@ export default function ActivityTimelinePage() {
 
       {/* Timeline Section */}
       <Card className="p-0 overflow-hidden">
-        {filteredActivities.length > 0 ? (
+        {loading ? (
+          <div className="p-12 text-center text-gray-400">Loading timeline...</div>
+        ) : filteredActivities.length > 0 ? (
           <div className="p-6">
             <div className="relative border-l-2 border-gray-100 ml-4 md:ml-8 space-y-8 py-4">
-              {filteredActivities.map((event) => (
-                <div key={event.id} className="relative pl-8 md:pl-12 group">
-                  {/* Timeline Dot / Icon */}
-                  <div className={`absolute -left-[21px] top-0 w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm transition-transform group-hover:scale-110 ${categoryColors[event.category]}`}>
-                    {categoryIcons[event.category]}
-                  </div>
+              {filteredActivities.map((event) => {
+                const cat = getCategory(event.action);
+                return (
+                  <div key={event.id} className="relative pl-8 md:pl-12 group">
+                    <div className={`absolute -left-[21px] top-0 w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm transition-transform group-hover:scale-110 ${categoryColors[cat]}`}>
+                      {categoryIcons[cat]}
+                    </div>
 
-                  <div className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-2">
-                      <div>
-                        <h4 className="text-base font-bold text-[#232F46]">{event.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{event.description}</p>
-                      </div>
-                      <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-2">
-                        <StatusBadge 
-                          status={event.status === 'Completed' ? 'Active' : event.status} 
-                        />
-                        <span className="text-[11px] font-mono text-gray-400 font-medium whitespace-nowrap">
-                          {event.timestamp}
-                        </span>
+                    <div className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-2">
+                        <div>
+                          <h4 className="text-base font-bold text-[#232F46] uppercase">{event.action.replace(/_/g, ' ')}</h4>
+                          <p className="text-sm text-gray-600 mt-1 font-mono break-all">{JSON.stringify(event.details)}</p>
+                        </div>
+                        <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-2">
+                          <span className="text-[11px] font-mono text-gray-400 font-medium whitespace-nowrap">
+                            {new Date(event.created_at).toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (

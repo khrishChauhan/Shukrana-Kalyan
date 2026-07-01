@@ -121,29 +121,8 @@ export default function ProfileSettings() {
         </div>
       )}
 
-      {/* ProfileGrid - 2 Columns on desktop, 1 on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 items-start">
-        
-        {/* [Left] IdentityCardContainer */}
-        <Card className="flex flex-col items-center text-center">
-          <div className="relative w-28 h-28 mb-5 mt-4">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80"
-              alt="Profile"
-              className="w-28 h-28 rounded-full object-cover border-2 border-[#ED8C32]"
-            />
-            <button 
-              type="button"
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#ED8C32] border-2 border-white flex items-center justify-center cursor-pointer hover:bg-[#D97A24] transition-colors shadow-sm"
-              title="Change Photo"
-            >
-              <Camera size={14} className="text-white" />
-            </button>
-          </div>
-
-          <p className="text-lg font-bold text-[#232F46] mb-2">{form.name || 'Member'}</p>
-          <StatusBadge status={memberStatus} />
-        </Card>
+      {/* Profile Forms */}
+      <div className="max-w-3xl mx-auto items-start">
 
         {/* [Right] FormsContainer */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">

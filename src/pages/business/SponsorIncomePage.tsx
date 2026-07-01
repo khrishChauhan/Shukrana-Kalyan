@@ -16,28 +16,19 @@ export default function SponsorIncomePage() {
         if (!user) return;
 
         const { data } = await supabase
-          .from('sponsor_income_transactions')
-          .select('id, income_generated, direct_member_uuid, created_at')
-          .eq('sponsor_uuid', user.id)
+          .from('unified_ledger')
+          .select('id, amount, source_ref_id, remarks, created_at')
+          .eq('member_uuid', user.id)
+          .eq('entry_type', 'SPONSOR_INCOME')
           .order('created_at', { ascending: false });
         
         if (data) {
-          // fetch names
-          const directUuids = [...new Set(data.map(t => t.direct_member_uuid))];
-          if (directUuids.length > 0) {
-            const { data: profiles } = await supabase
-              .from('member_profile')
-              .select('id, full_name')
-              .in('id', directUuids);
-            
-            const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
-            setTransactions(data.map(t => ({
-              ...t,
-              direct_name: profileMap.get(t.direct_member_uuid) || 'Unknown Member'
-            })));
-          } else {
-            setTransactions(data);
-          }
+          setTransactions(data.map(t => ({
+            id: t.id,
+            income_generated: Number(t.amount),
+            direct_name: t.remarks || 'Direct Member',
+            created_at: t.created_at
+          })));
         }
       } catch (e) {
         console.error('Error fetching sponsor income', e);
@@ -81,7 +72,7 @@ export default function SponsorIncomePage() {
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Date</th>
-                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Direct Member</th>
+                <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase">Remarks</th>
                 <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase text-right">Amount</th>
               </tr>
             </thead>

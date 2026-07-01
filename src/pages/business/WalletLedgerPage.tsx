@@ -53,10 +53,6 @@ export default function WalletLedgerPage() {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-6xl mx-auto pb-10 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <PageHeader title="Wallet Ledger" description="Detailed financial statement and transaction history." breadcrumbs={[{ label: 'Business' }, { label: 'Wallet Center' }, { label: 'Ledger' }]} />
-        <div className="flex gap-2">
-          <Button variant="outline" className="gap-2"><Download className="w-4 h-4" /> Export CSV</Button>
-          <Button variant="outline" className="gap-2"><FileText className="w-4 h-4" /> Export PDF</Button>
-        </div>
       </div>
 
       <Card className="p-0 overflow-hidden">

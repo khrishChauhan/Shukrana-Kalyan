@@ -4,12 +4,23 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { mockPaymentCenter } from '../../data/mockBusinessData';
 import { CreditCard, Upload, CheckCircle, ShieldCheck, AlertCircle } from 'lucide-react';
 
 export default function PaymentCenterPage() {
   const [utr, setUtr] = useState('');
   
+  const paymentState = {
+    membershipAmount: 500,
+    paymentStatus: 'Pending',
+    currentUtr: '',
+    verificationStatus: 'Awaiting Proof',
+    timeline: [
+      { step: 'Submit Payment Details', date: 'Pending', status: 'Pending' },
+      { step: 'Admin Verification', date: '-', status: 'Pending' },
+      { step: 'Account Activation', date: '-', status: 'Pending' },
+    ]
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -26,19 +37,19 @@ export default function PaymentCenterPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Membership Amount</p>
-          <p className="text-2xl font-black text-[#232F46]">₹{mockPaymentCenter.membershipAmount.toLocaleString()}</p>
+          <p className="text-2xl font-black text-[#232F46]">₹{paymentState.membershipAmount.toLocaleString()}</p>
         </Card>
         <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Payment Status</p>
-          <div className="mt-1"><StatusBadge status={mockPaymentCenter.paymentStatus} /></div>
+          <div className="mt-1"><StatusBadge status={paymentState.paymentStatus as any} /></div>
         </Card>
         <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Current UTR</p>
-          <p className="text-lg font-mono text-gray-700">{mockPaymentCenter.currentUtr || 'N/A'}</p>
+          <p className="text-lg font-mono text-gray-700">{paymentState.currentUtr || 'N/A'}</p>
         </Card>
         <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Verification</p>
-          <p className="text-sm font-bold text-[#ED8C32]">{mockPaymentCenter.verificationStatus}</p>
+          <p className="text-sm font-bold text-[#ED8C32]">{paymentState.verificationStatus}</p>
         </Card>
       </div>
 
@@ -90,7 +101,7 @@ export default function PaymentCenterPage() {
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex justify-end">
-            <Button className="bg-[#232F46] hover:bg-[#1a2333] text-white px-8">
+            <Button className="bg-[#232F46] hover:bg-[#1a2333] text-white px-8" onClick={() => alert('Payment submission pending API integration.')}>
               Submit for Verification
             </Button>
           </div>
@@ -103,7 +114,7 @@ export default function PaymentCenterPage() {
           </div>
 
           <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-white/20 before:via-white/20 before:to-transparent">
-            {mockPaymentCenter.timeline.map((step, i) => (
+            {paymentState.timeline.map((step, i) => (
               <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#232F46] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow ${
                   step.status === 'Completed' ? 'bg-green-500 text-white' : 

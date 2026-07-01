@@ -93,8 +93,8 @@ export default function WithdrawalCenterPage() {
       <PageHeader title="Withdrawal Center" description="Request payout withdrawals directly to your registered bank account." breadcrumbs={[{ label: 'Business' }, { label: 'Wallet Center' }, { label: 'Withdrawals' }]} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-[#232F46] text-white flex flex-col justify-center">
-          <p className="text-xs font-bold text-white/70 uppercase tracking-wider mb-1">Available Balance</p>
+        <Card className="p-4 bg-gray-50 border border-gray-100 flex flex-col justify-center">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Available Balance</p>
           {loading ? <p className="text-2xl font-black text-[#ED8C32]/50 animate-pulse">₹---</p>
             : <p className="text-2xl font-black text-[#ED8C32]">₹{walletBalance.toLocaleString()}</p>}
         </Card>

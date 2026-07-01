@@ -126,12 +126,6 @@ export default function WelcomeLetter() {
         >
           Print Letter
         </Button>
-        <Button
-          type="button"
-          leftIcon={<Download className="w-4 h-4" />}
-        >
-          Download PDF
-        </Button>
       </div>
     </motion.div>
   );

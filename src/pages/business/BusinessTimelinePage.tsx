@@ -2,10 +2,15 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { mockBusinessHealth } from '../../data/mockBusinessData';
 import { Clock } from 'lucide-react';
 
 export default function BusinessTimelinePage() {
+  const recentActivity = [
+    { id: '1', date: '2023-10-18', event: 'New Direct Sponsored', details: 'Sneha Patel joined' },
+    { id: '2', date: '2023-10-17', event: 'Matching Generated', details: '1000 BV Matched' },
+    { id: '3', date: '2023-10-16', event: 'Rank Achieved', details: 'Promoted to Silver Director' }
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -28,7 +33,7 @@ export default function BusinessTimelinePage() {
         </div>
 
         <div className="relative border-l-2 border-gray-100 ml-4 pl-8 space-y-8">
-          {mockBusinessHealth.recentActivity.map((activity, i) => (
+          {recentActivity.map((activity, i) => (
             <div key={activity.id} className="relative">
               <div className="absolute -left-[41px] top-1 w-5 h-5 rounded-full bg-white border-4 border-[#ED8C32]" />
               <div>

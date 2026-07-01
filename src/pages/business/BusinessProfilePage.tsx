@@ -50,10 +50,7 @@ export default function BusinessProfilePage() {
         let totalDirects = 0;
         let totalTeam = 0;
 
-        const { data: directsData } = await supabase.rpc('get_my_downline', {
-          p_root_uuid: user.id,
-          p_filter: 'DIRECT'
-        });
+        const { data: directsData } = await supabase.from('members').select('id').eq('sponsor_id', user.id);
         if (directsData) totalDirects = directsData.length;
 
         const { data: teamData } = await supabase.rpc('get_my_downline', {
@@ -157,27 +154,6 @@ export default function BusinessProfilePage() {
         </div>
       </Card>
 
-      <Card>
-        <h2 className="text-xl font-bold text-[#232F46] mb-6">Network Metrics</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-xl">
-            <p className="text-2xl font-black text-[#232F46] mb-1">{profile.totalDirectMembers}</p>
-            <p className="text-xs font-bold text-gray-500 uppercase">Directs</p>
-          </div>
-          <div className="text-center p-4 bg-gray-50 rounded-xl">
-            <p className="text-2xl font-black text-[#232F46] mb-1">{profile.totalTeamMembers}</p>
-            <p className="text-xs font-bold text-gray-500 uppercase">Team Size</p>
-          </div>
-          <div className="text-center p-4 bg-gray-50 rounded-xl">
-            <p className="text-2xl font-black text-[#ED8C32] mb-1">{Number(profile.leftBv).toLocaleString()}</p>
-            <p className="text-xs font-bold text-gray-500 uppercase">Left BV</p>
-          </div>
-          <div className="text-center p-4 bg-gray-50 rounded-xl">
-            <p className="text-2xl font-black text-[#ED8C32] mb-1">{Number(profile.rightBv).toLocaleString()}</p>
-            <p className="text-xs font-bold text-gray-500 uppercase">Right BV</p>
-          </div>
-        </div>
-      </Card>
     </motion.div>
   );
 }

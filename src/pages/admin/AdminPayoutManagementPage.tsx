@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Search, Download, Check, X, RefreshCw, FileText } from 'lucide-react';
+import { Search, Check, X, RefreshCw, FileText } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';

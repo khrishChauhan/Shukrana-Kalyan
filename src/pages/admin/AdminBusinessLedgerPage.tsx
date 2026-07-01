@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Search, Download, RefreshCw, Filter, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Search, RefreshCw, Filter, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -64,29 +64,6 @@ export default function AdminBusinessLedgerPage() {
     fetchLedger();
   }, [fetchLedger]);
 
-  const exportCsv = () => {
-    const rows = [
-      ['Date', 'Member ID', 'Member Name', 'Type', 'Direction', 'Amount', 'Balance After', 'Remarks'],
-      ...entries.map(e => [
-        new Date(e.created_at).toLocaleString(),
-        e.member_id,
-        e.member_name,
-        e.entry_type,
-        e.direction,
-        e.amount,
-        e.balance_after,
-        e.remarks || ''
-      ]),
-    ];
-    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ledger_export_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <motion.div
@@ -99,11 +76,6 @@ export default function AdminBusinessLedgerPage() {
         title="Unified Ledger Explorer"
         description="Search and audit all financial movements across the platform."
         breadcrumbs={[{ label: 'Operations' }, { label: 'Ledger' }]}
-        action={
-          <Button leftIcon={<Download className="w-4 h-4" />} onClick={exportCsv}>
-            Export CSV
-          </Button>
-        }
       />
 
       <Card noPadding className="overflow-hidden">

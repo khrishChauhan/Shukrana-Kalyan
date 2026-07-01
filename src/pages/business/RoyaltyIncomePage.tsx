@@ -15,15 +15,24 @@ export default function RoyaltyIncomePage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Note: Royalty Income table may not exist yet in early phases
         const { data, error } = await supabase
-          .from('royalty_income_transactions')
-          .select('id, amount, month, year, status, created_at')
+          .from('unified_ledger')
+          .select('id, amount, source_ref_id, remarks, created_at')
           .eq('member_uuid', user.id)
+          .eq('entry_type', 'ROYALTY_INCOME')
           .order('created_at', { ascending: false });
         
         if (error) throw error;
-        if (data) setTransactions(data);
+        if (data) {
+          setTransactions(data.map(t => ({
+            id: t.id,
+            amount: Number(t.amount),
+            month: new Date(t.created_at).toLocaleString('default', { month: 'long' }),
+            year: new Date(t.created_at).getFullYear(),
+            status: 'PAID',
+            created_at: t.created_at
+          })));
+        }
       } catch (e) {
         console.error('Error fetching royalty income (table may not exist yet):', e);
         setTransactions([]);
