@@ -212,22 +212,21 @@ export default function KycCenterPage() {
       />
 
       {/* Status Header Card */}
-      <Card className="bg-[#232F46] text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
+      <Card className="overflow-hidden relative">
         <div className="flex items-center gap-4 relative z-10">
           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
-            isVerified ? 'bg-emerald-500' : kycState.panStatus === 'REJECTED' ? 'bg-red-500/80' : 'bg-white/10'
+            isVerified ? 'bg-emerald-50' : kycState.panStatus === 'REJECTED' ? 'bg-red-50' : 'bg-gray-100'
           }`}>
             {isVerified
-              ? <ShieldCheck className="w-7 h-7 text-white" />
+              ? <ShieldCheck className="w-7 h-7 text-emerald-500" />
               : kycState.panStatus === 'REJECTED'
-              ? <XCircle className="w-7 h-7 text-white" />
-              : <CreditCard className="w-7 h-7 text-white/60" />
+              ? <XCircle className="w-7 h-7 text-red-500" />
+              : <CreditCard className="w-7 h-7 text-gray-400" />
             }
           </div>
           <div>
-            <p className="text-xs text-white/50 uppercase font-bold tracking-wider">PAN Verification</p>
-            <p className="text-lg font-black mt-0.5">
+            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">PAN Verification</p>
+            <p className="text-lg font-black text-[#232F46] mt-0.5">
               {isVerified ? 'Verified' : kycState.panStatus === 'REJECTED' ? 'Verification Failed' : 'Not Yet Verified'}
             </p>
             {kycState.panMasked && (
@@ -236,9 +235,9 @@ export default function KycCenterPage() {
           </div>
           <div className="ml-auto shrink-0">
             <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-              isVerified ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-              : kycState.panStatus === 'REJECTED' ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-              : 'bg-white/10 text-white/60 border border-white/10'
+              isVerified ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+              : kycState.panStatus === 'REJECTED' ? 'bg-red-50 text-red-600 border border-red-200'
+              : 'bg-gray-50 text-gray-500 border border-gray-200'
             }`}>
               {kycState.panStatus}
             </span>
