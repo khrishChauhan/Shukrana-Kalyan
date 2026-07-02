@@ -14,7 +14,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F3F4F6]">
+    <div className="flex h-screen w-full bg-[#F3F4F6] overflow-hidden">
       <AdminSidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <AdminHeader />
