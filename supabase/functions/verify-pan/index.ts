@@ -1,4 +1,4 @@
-﻿import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -131,10 +131,12 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          "@entity": "in.co.sandbox.kyc.pan.verify.request",
-          pan: panRaw,
-          name: fullName,
-          date_of_birth: dob,
+          "@entity": "in.co.sandbox.kyc.pan_verification.request",
+          "pan": panRaw,
+          "name_as_per_pan": fullName,
+          "date_of_birth": dob,
+          "consent": "y",
+          "reason": "For KYC Verification"
         }),
       });
 
