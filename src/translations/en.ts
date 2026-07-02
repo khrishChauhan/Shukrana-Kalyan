@@ -116,7 +116,7 @@ export const en = {
     nextUnlock: 'NEXT UNLOCK',
     daysLeft: 'Days Left',
     congrats: 'Congratulations! You are eligible for all benefits.',
-    benefitsTitle: 'Your 10 Member Benefits',
+    benefitsTitle: 'Member Benefits',
     benefitsSubtitle: 'Click on any scheme to view full details.',
     schemesCount: 'schemes',
   },

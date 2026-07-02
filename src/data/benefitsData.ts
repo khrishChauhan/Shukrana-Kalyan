@@ -32,9 +32,9 @@ export interface Benefit {
 
 export const CATEGORIES = [
   'categories.education',
-  'categories.health',
-  'categories.family',
-  'categories.economic',
+  // 'categories.health',
+  // 'categories.family',
+  // 'categories.economic',
 ] as const;
 
 export const benefitsData: Benefit[] = [

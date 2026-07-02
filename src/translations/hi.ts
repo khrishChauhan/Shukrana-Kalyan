@@ -116,7 +116,7 @@ export const hi = {
     nextUnlock: 'अगला अनलॉक',
     daysLeft: 'दिन शेष',
     congrats: 'बधाई हो! आप सभी लाभों के लिए पात्र हैं।',
-    benefitsTitle: 'आपके 10 सदस्य लाभ',
+    benefitsTitle: 'सदस्य लाभ',
     benefitsSubtitle: 'किसी भी योजना पर क्लिक करें और पूरी जानकारी देखें।',
     schemesCount: 'योजनाएं',
   },
