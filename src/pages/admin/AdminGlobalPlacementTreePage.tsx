@@ -68,7 +68,7 @@ const EmptySlot = ({ side }: { side: 'left' | 'right' }) => (
 );
 
 // ─── Binary Node ──────────────────────────────────────────────────────────────
-const BinaryNodeCard = ({ node, isRoot }: { node: TreeNode; isRoot: boolean }) => {
+const BinaryNodeCard = ({ node, isRoot, onClick }: { node: TreeNode; isRoot: boolean; onClick: (id: string) => void }) => {
   return (
     <div className="flex flex-col items-center relative">
       {node.placement_side && !isRoot && (
@@ -78,9 +78,12 @@ const BinaryNodeCard = ({ node, isRoot }: { node: TreeNode; isRoot: boolean }) =
           {node.placement_side.toUpperCase()}
         </span>
       )}
-      <div className={`w-48 bg-white rounded-xl shadow-sm p-3 flex flex-col items-center z-10 relative transition-colors ${
-        isRoot ? 'border-2 border-[#ED8C32]' : 'border border-[#232F46]/20'
-      }`}>
+      <div 
+        onClick={() => onClick(node.member_id)}
+        className={`w-48 bg-white rounded-xl shadow-sm p-3 flex flex-col items-center z-10 relative transition-all cursor-pointer hover:-translate-y-1 hover:shadow-md ${
+          isRoot ? 'border-2 border-[#ED8C32]' : 'border border-[#232F46]/20 hover:border-[#ED8C32]'
+        }`}
+      >
         <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 font-bold text-white text-sm ${
           isRoot ? 'bg-[#ED8C32]' : 'bg-[#232F46]'
         }`}>
@@ -107,7 +110,7 @@ const BinaryNodeCard = ({ node, isRoot }: { node: TreeNode; isRoot: boolean }) =
 const VLine = () => <div className="w-px h-8 bg-gray-300 mx-auto" />;
 
 // ─── Recursive Tree ───────────────────────────────────────────────────────────
-const BinarySubTree = ({ node, remainingDepth, side }: { node: TreeNode | null; remainingDepth: number; side: 'left' | 'right' }) => {
+const BinarySubTree = ({ node, remainingDepth, side, onNodeClick }: { node: TreeNode | null; remainingDepth: number; side: 'left' | 'right'; onNodeClick: (id: string) => void }) => {
   if (remainingDepth < 0) return null;
   if (!node) {
     return (
@@ -121,26 +124,26 @@ const BinarySubTree = ({ node, remainingDepth, side }: { node: TreeNode | null; 
   return (
     <div className="flex flex-col items-center relative w-1/2">
       <VLine />
-      <BinaryNodeCard node={node} isRoot={false} />
+      <BinaryNodeCard node={node} isRoot={false} onClick={onNodeClick} />
       {(node.left || node.right || remainingDepth > 0) && (
         <div className="flex mt-0 relative w-full justify-center">
           <div className="absolute top-[32px] left-[25%] right-[25%] h-px bg-gray-300 -z-10" />
-          <BinarySubTree node={node.left} remainingDepth={remainingDepth - 1} side="left" />
-          <BinarySubTree node={node.right} remainingDepth={remainingDepth - 1} side="right" />
+          <BinarySubTree node={node.left} remainingDepth={remainingDepth - 1} side="left" onNodeClick={onNodeClick} />
+          <BinarySubTree node={node.right} remainingDepth={remainingDepth - 1} side="right" onNodeClick={onNodeClick} />
         </div>
       )}
     </div>
   );
 };
 
-const BinaryTreeView = ({ root, maxDepth }: { root: TreeNode; maxDepth: number }) => (
+const BinaryTreeView = ({ root, maxDepth, onNodeClick }: { root: TreeNode; maxDepth: number; onNodeClick: (id: string) => void }) => (
   <div className="flex flex-col items-center select-none w-full">
-    <BinaryNodeCard node={root} isRoot={true} />
+    <BinaryNodeCard node={root} isRoot={true} onClick={onNodeClick} />
     {(root.left || root.right || maxDepth > 0) && (
       <div className="flex mt-0 relative w-[800px] justify-center">
         <div className="absolute top-[32px] left-[25%] right-[25%] h-px bg-gray-300 -z-10" />
-        <BinarySubTree node={root.left} remainingDepth={maxDepth - 1} side="left" />
-        <BinarySubTree node={root.right} remainingDepth={maxDepth - 1} side="right" />
+        <BinarySubTree node={root.left} remainingDepth={maxDepth - 1} side="left" onNodeClick={onNodeClick} />
+        <BinarySubTree node={root.right} remainingDepth={maxDepth - 1} side="right" onNodeClick={onNodeClick} />
       </div>
     )}
   </div>
@@ -150,6 +153,7 @@ const BinaryTreeView = ({ root, maxDepth }: { root: TreeNode; maxDepth: number }
 export default function AdminGlobalPlacementTreePage() {
   const [tree, setTree] = useState<TreeNode | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [parentMemberId, setParentMemberId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.9);
@@ -159,6 +163,7 @@ export default function AdminGlobalPlacementTreePage() {
     setError(null);
     try {
       let rootUuid = null;
+      let parentId = null;
 
       if (searchId) {
         // Find member by member_id
@@ -166,12 +171,30 @@ export default function AdminGlobalPlacementTreePage() {
           .from('members')
           .select('id')
           .eq('member_id', searchId.trim().toUpperCase())
-          .single();
+          .maybeSingle();
         
         if (memberError || !memberData) {
           throw new Error(`Member with ID ${searchId} not found.`);
         }
         rootUuid = memberData.id;
+
+        // Fetch parent member ID for "Go Up" functionality
+        const { data: bizData } = await supabase
+          .from('member_business')
+          .select('placement_parent_uuid')
+          .eq('id', rootUuid)
+          .maybeSingle();
+
+        if (bizData?.placement_parent_uuid) {
+          const { data: parentData } = await supabase
+            .from('members')
+            .select('member_id')
+            .eq('id', bizData.placement_parent_uuid)
+            .maybeSingle();
+          if (parentData) {
+            parentId = parentData.member_id;
+          }
+        }
       } else {
         // Find system root (oldest member, usually no parent)
         const { data: rootData, error: rootError } = await supabase
@@ -179,13 +202,18 @@ export default function AdminGlobalPlacementTreePage() {
           .select('id')
           .is('placement_parent_uuid', null)
           .limit(1)
-          .single();
+          .maybeSingle();
         
-        if (rootError || !rootData) {
-          throw new Error('Could not find system root.');
+        if (rootError) throw rootError;
+        if (!rootData) {
+            setTree(null);
+            setLoading(false);
+            return;
         }
         rootUuid = rootData.id;
       }
+
+      setParentMemberId(parentId);
 
       // Fetch network tree RPC
       const { data: rpcData, error: rpcError } = await supabase.rpc('get_network_tree', {
@@ -239,6 +267,11 @@ export default function AdminGlobalPlacementTreePage() {
     }
   };
 
+  const handleNodeClick = useCallback((memberId: string) => {
+    setSearchQuery(memberId);
+    fetchTree(memberId);
+  }, [fetchTree]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -268,6 +301,15 @@ export default function AdminGlobalPlacementTreePage() {
             <button type="submit" className="px-4 py-2 bg-[#232F46] text-white rounded-lg text-sm font-bold hover:bg-[#1a2333] transition-colors">
               Search
             </button>
+            {parentMemberId && (
+              <button 
+                type="button" 
+                onClick={() => handleNodeClick(parentMemberId)} 
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors flex items-center gap-1 whitespace-nowrap"
+              >
+                Go Up 1 Level
+              </button>
+            )}
           </div>
           <div className="flex gap-2 items-center">
             <button type="button" onClick={() => fetchTree(searchQuery)} className="p-2 border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors" title="Refresh">
@@ -313,7 +355,7 @@ export default function AdminGlobalPlacementTreePage() {
               className="min-w-[1000px] transform origin-top transition-transform duration-200 flex justify-center"
               style={{ transform: `scale(${zoom})` }}
             >
-              <BinaryTreeView root={tree} maxDepth={3} />
+              <BinaryTreeView root={tree} maxDepth={3} onNodeClick={handleNodeClick} />
             </div>
           )}
         </div>
