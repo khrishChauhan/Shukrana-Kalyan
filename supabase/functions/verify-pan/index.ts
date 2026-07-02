@@ -121,6 +121,17 @@ serve(async (req) => {
     let verificationSuccess = false;
     let failureReason: string | null = null;
 
+    // Convert "YYYY-MM-DD" or "DD-MM-YYYY" to "DD/MM/YYYY"
+    let formattedDob = dob;
+    if (dob.includes('-')) {
+      const parts = dob.split('-');
+      if (parts[0].length === 4) {
+        formattedDob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      } else {
+        formattedDob = `${parts[0]}/${parts[1]}/${parts[2]}`;
+      }
+    }
+
     try {
       const panRes = await fetch("https://api.sandbox.co.in/kyc/pan/verify", {
         method: "POST",
@@ -134,7 +145,7 @@ serve(async (req) => {
           "@entity": "in.co.sandbox.kyc.pan_verification.request",
           "pan": panRaw,
           "name_as_per_pan": fullName,
-          "date_of_birth": dob,
+          "date_of_birth": formattedDob,
           "consent": "y",
           "reason": "For KYC Verification"
         }),
