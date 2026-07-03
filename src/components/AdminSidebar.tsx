@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   FileCheck,
   Network,
-  ShieldAlert
+  ShieldAlert,
+  Trophy
 } from 'lucide-react';
 
 interface NavItem {
@@ -32,6 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Activity Monitor',path: '/admin/business/activity', icon: Bell },
   { label: 'Biz KYC',        path: '/admin/business/kyc',      icon: FileCheck },
   { label: 'Global Placement', path: '/admin/business/global-placement-tree', icon: Network },
+  { label: 'Royalty Mgmt',    path: '/admin/royalty', icon: Trophy },
   { label: 'Notifications',  path: '/admin/notifications', icon: Bell },
 ];
 

@@ -46,6 +46,7 @@ import IncomeBreakdownPage from './pages/business/IncomeBreakdownPage';
 import ReportsPage from './pages/business/ReportsPage';
 import BusinessTimelinePage from './pages/business/BusinessTimelinePage';
 import PayoutHistoryPage from './pages/business/PayoutHistoryPage';
+import RoyaltyApplicationsPage from './pages/business/RoyaltyApplicationsPage';
 import WalletCenterPage from './pages/business/WalletCenterPage';
 import WalletLedgerPage from './pages/business/WalletLedgerPage';
 import WithdrawalCenterPage from './pages/business/WithdrawalCenterPage';
@@ -78,6 +79,7 @@ import AdminBusinessLedgerPage from './pages/admin/AdminBusinessLedgerPage';
 import AdminActivityMonitoringPage from './pages/admin/AdminActivityMonitoringPage';
 import AdminCommunicationPage from './pages/admin/AdminCommunicationPage';
 import AdminSecurityDashboardPage from './pages/admin/AdminSecurityDashboardPage';
+import AdminRoyaltyManagementPage from './pages/admin/AdminRoyaltyManagementPage';
 
 export default function App() {
   return (
@@ -105,6 +107,7 @@ export default function App() {
             <Route path="/admin/business/activity" element={<AdminActivityMonitoringPage />} />
             <Route path="/admin/business/kyc" element={<AdminBusinessKYCPage />} />
             <Route path="/admin/notifications" element={<AdminCommunicationPage />} />
+            <Route path="/admin/royalty" element={<AdminRoyaltyManagementPage />} />
             <Route path="/admin/business/global-placement-tree" element={<AdminGlobalPlacementTreePage />} />
           </Route>
 
@@ -137,6 +140,7 @@ export default function App() {
             <Route path="/business/matching-income" element={<MatchingIncomePage />} />
             <Route path="/business/level-income"    element={<LevelIncomePage />} />
             <Route path="/business/royalty-income"  element={<RoyaltyIncomePage />} />
+            <Route path="/business/royalty-applications" element={<RoyaltyApplicationsPage />} />
             <Route path="/business/income-ledger"   element={<IncomeLedgerPage />} />
             <Route path="/business/income-breakdown" element={<IncomeBreakdownPage />} />
             <Route path="/business/reports"         element={<ReportsPage />} />

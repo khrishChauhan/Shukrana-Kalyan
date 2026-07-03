@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Camera, CheckCircle2, Lock, Phone, Mail, MapPin } from 'lucide-react';
+import { Camera, CheckCircle2, Lock, Phone, Mail, MapPin, Hash } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { StatusBadge } from '../../components/ui/StatusBadge';
 import { supabase } from '../../lib/supabase';
 
 export default function ProfileSettings() {
@@ -14,16 +13,17 @@ export default function ProfileSettings() {
     mobile: '',
     email: '',
     address: '',
+    pin_code: '',
   });
   const [initialForm, setInitialForm] = useState({
     name: '',
     mobile: '',
     email: '',
     address: '',
+    pin_code: '',
   });
   const [memberId, setMemberId] = useState('');
   const [joinDate, setJoinDate] = useState('');
-  const [memberStatus, setMemberStatus] = useState<any>('PENDING');
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -41,21 +41,21 @@ export default function ProfileSettings() {
 
         if (memberData) {
           setMemberId(memberData.member_id);
-          setMemberStatus(memberData.status);
           setJoinDate(new Date(memberData.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-          
+
           if (memberData.member_profile) {
-             const profileData = Array.isArray(memberData.member_profile) ? memberData.member_profile[0] : memberData.member_profile;
-             if (profileData) {
-               const formData = {
-                 name: profileData.full_name || '',
-                 mobile: profileData.phone_number || '',
-                 email: profileData.email || '',
-                 address: profileData.address || ''
-               };
-               setForm(formData);
-               setInitialForm(formData);
-             }
+            const profileData = Array.isArray(memberData.member_profile) ? memberData.member_profile[0] : memberData.member_profile;
+            if (profileData) {
+              const formData = {
+                name: profileData.full_name || '',
+                mobile: profileData.phone_number || '',
+                email: profileData.email || '',
+                address: profileData.address || '',
+                pin_code: profileData.pin_code || '',
+              };
+              setForm(formData);
+              setInitialForm(formData);
+            }
           }
         }
       } catch (err) {
@@ -73,21 +73,27 @@ export default function ProfileSettings() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate PIN code
+    if (form.pin_code && !/^\d{6}$/.test(form.pin_code)) {
+      alert('PIN Code must be exactly 6 digits.');
+      return;
+    }
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      
+
       const { error } = await supabase
         .from('member_profile')
         .update({
           full_name: form.name,
           email: form.email,
-          address: form.address
+          address: form.address,
+          pin_code: form.pin_code || null,
         })
         .eq('id', user.id);
-        
+
       if (error) throw error;
-      
+
       setInitialForm(form);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -123,10 +129,8 @@ export default function ProfileSettings() {
 
       {/* Profile Forms */}
       <div className="max-w-3xl mx-auto items-start">
-
-        {/* [Right] FormsContainer */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          
+
           {/* ProfileInfoCard */}
           <Card noPadding>
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
@@ -215,6 +219,21 @@ export default function ProfileSettings() {
                   />
                 </div>
               </div>
+
+              {/* PIN Code — new field */}
+              <div>
+                <Input
+                  label="PIN Code (for Royalty Territory)"
+                  type="text"
+                  name="pin_code"
+                  value={form.pin_code}
+                  onChange={handleChange}
+                  maxLength={6}
+                  placeholder="e.g. 411001"
+                  leftIcon={<Hash size={14} className="text-gray-400" />}
+                />
+                <p className="text-[11px] text-gray-400 mt-1">Required to apply for a Sevak Royalty position.</p>
+              </div>
             </div>
           </Card>
 
@@ -237,4 +256,3 @@ export default function ProfileSettings() {
     </motion.div>
   );
 }
-
