@@ -111,7 +111,7 @@ export default function BusinessCalculatorPage() {
           </div>
         </Card>
 
-        <Card className="bg-[#232F46] text-white space-y-6 flex flex-col justify-between">
+        <div className="bg-[#232F46] text-white space-y-6 flex flex-col justify-between rounded-2xl p-6 shadow-sm">
           <div>
             <h3 className="font-bold text-white mb-6 border-b border-white/10 pb-4">Estimated Results</h3>
             
@@ -130,13 +130,15 @@ export default function BusinessCalculatorPage() {
               </div>
             </div>
           </div>
-
-          <Card className="p-6 bg-[#232F46] text-white flex flex-col justify-center items-center text-center">
-            <p className="text-sm text-white/70 mb-1">Estimated Binary Income</p>
-            <p className="text-4xl font-black text-[#ED8C32]">₹{estimatedIncome.toLocaleString()}</p>
+          
+          <div className="pt-6 border-t border-white/10">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-white/70">Projected Matching Income</span>
+            </div>
+            <div className="text-4xl font-black text-[#ED8C32]">₹{estimatedIncome.toLocaleString()}</div>
             <p className="text-xs text-white/50 mt-2">*Calculation based on binary match engine (₹200 per match). Excludes TDS and other deductions.</p>
-          </Card>
-        </Card>
+          </div>
+        </div>
       </div>
     </motion.div>
   );

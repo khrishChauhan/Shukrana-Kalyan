@@ -54,7 +54,7 @@ export default function SponsorIncomePage() {
         breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Sponsor Income' }]}
       />
 
-      <Card className="bg-[#232F46] text-white p-6">
+      <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">
         <div className="flex items-center gap-4 mb-2">
           <div className="p-3 bg-white/10 rounded-lg">
             <Users className="w-6 h-6 text-[#ED8C32]" />
@@ -64,7 +64,7 @@ export default function SponsorIncomePage() {
             <p className="text-3xl font-black text-[#ED8C32]">₹{total.toLocaleString()}</p>
           </div>
         </div>
-      </Card>
+      </div>
 
       <Card>
         <div className="overflow-x-auto">

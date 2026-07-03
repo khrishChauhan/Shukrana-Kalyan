@@ -93,7 +93,7 @@ export default function IncomeDashboardPage() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-[#232F46] text-white p-6 md:col-span-3 lg:col-span-1 flex flex-col justify-center">
+        <div className="bg-[#232F46] text-white p-6 md:col-span-3 lg:col-span-1 flex flex-col justify-center rounded-2xl shadow-sm">
           <p className="text-sm text-white/70 font-bold uppercase tracking-wider mb-2">Total Accumulated Income</p>
           {loading ? (
             <p className="text-4xl font-black text-[#ED8C32]/50 mb-4 animate-pulse">₹---</p>
@@ -114,7 +114,7 @@ export default function IncomeDashboardPage() {
               Breakdown
             </button>
           </div>
-        </Card>
+        </div>
 
         <div className="md:col-span-3 lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {incomeStreams.map((stream, idx) => (

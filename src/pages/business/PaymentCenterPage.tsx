@@ -107,7 +107,7 @@ export default function PaymentCenterPage() {
           </div>
         </Card>
 
-        <Card className="bg-[#232F46] text-white">
+        <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
             <ShieldCheck className="w-5 h-5 text-[#ED8C32]" />
             <h3 className="font-bold text-white">Verification Timeline</h3>
@@ -139,7 +139,7 @@ export default function PaymentCenterPage() {
               Account activation usually takes 24-48 working hours after payment verification. Providing correct UTR ensures faster processing.
             </p>
           </div>
-        </Card>
+        </div>
       </div>
     </motion.div>
   );
