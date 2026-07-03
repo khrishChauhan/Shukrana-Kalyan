@@ -56,6 +56,7 @@ export const SIDEBAR_STRUCTURE: MenuItem[] = [
       { nameKey: 'sidebar.matchingIncome', path: '/business/matching-income' },
       { nameKey: 'sidebar.levelIncome', path: '/business/level-income' },
       { nameKey: 'sidebar.royaltyIncome', path: '/business/royalty-income' },
+      { nameKey: 'sidebar.royaltyApplications', path: '/business/royalty-applications' },
       { nameKey: 'sidebar.walletCenter', path: '/wallet' },
       { nameKey: 'sidebar.withdrawalCenter', path: '/wallet/withdrawals' },
       { nameKey: 'sidebar.payoutHistory', path: '/wallet/payout-history' },

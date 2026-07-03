@@ -27,6 +27,7 @@ export const hi = {
     matchingIncome: 'मैचिंग आय (Matching Income)',
     levelIncome: 'लेवल आय (Level Income)',
     royaltyIncome: 'रॉयल्टी आय (Royalty Income)',
+    royaltyApplications: 'रॉयल्टी आवेदन (Royalty Applications)',
     businessCalculator: 'व्यापार कैलकुलेटर',
     incomeDashboard: 'आय डैशबोर्ड',
     bvDashboard: 'बीवी डैशबोर्ड',

@@ -27,6 +27,7 @@ export const en = {
     matchingIncome: 'Matching Income',
     levelIncome: 'Level Income',
     royaltyIncome: 'Royalty Income',
+    royaltyApplications: 'Royalty Applications',
     businessCalculator: 'Business Calculator',
     incomeDashboard: 'Income Dashboard',
     bvDashboard: 'BV Dashboard',

@@ -58,14 +58,14 @@ export default function RoyaltyIncomePage() {
         breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Royalty Income' }]}
       />
 
-      <Card className="bg-[#232F46] text-white p-6">
+      <Card className="p-6">
         <div className="flex items-center gap-4 mb-2">
-          <div className="p-3 bg-white/10 rounded-lg">
+          <div className="p-3 bg-orange-50 rounded-lg">
             <Award className="w-6 h-6 text-[#ED8C32]" />
           </div>
           <div>
-            <p className="text-sm text-white/70 font-bold uppercase tracking-wider">Total Royalty Income</p>
-            <p className="text-3xl font-black text-[#ED8C32]">₹{total.toLocaleString()}</p>
+            <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Royalty Income</p>
+            <p className="text-3xl font-black text-[#232F46]">₹{total.toLocaleString()}</p>
           </div>
         </div>
       </Card>
