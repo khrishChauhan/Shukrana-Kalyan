@@ -86,7 +86,7 @@ export default function AdminRoyaltyManagementPage() {
       const adminUuid = getAdminUuid();
       const { data, error } = await supabase.rpc('approve_royalty_application', {
         p_application_id: app.id,
-        p_admin_uuid: adminUuid,
+        p_admin_uuid: adminUuid || null,
       });
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || 'Approval failed.');
@@ -108,7 +108,7 @@ export default function AdminRoyaltyManagementPage() {
       const adminUuid = getAdminUuid();
       const { data, error } = await supabase.rpc('reject_royalty_application', {
         p_application_id: app.id,
-        p_admin_uuid: adminUuid,
+        p_admin_uuid: adminUuid || null,
         p_reason: reason || 'Application rejected by administrator.',
       });
       if (error) throw error;
