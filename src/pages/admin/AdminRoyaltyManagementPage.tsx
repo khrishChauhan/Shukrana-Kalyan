@@ -51,55 +51,13 @@ export default function AdminRoyaltyManagementPage() {
   const fetchApplications = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('royalty_applications')
-        .select(`
-          id, member_uuid, position_type, pin_code, status, created_at,
-          members ( member_id ),
-          member_profile ( full_name )
-        `)
-        .eq('status', filter)
-        .order('created_at', { ascending: true });
+      const { data, error } = await supabase.rpc('get_admin_royalty_applications', {
+        p_status: filter,
+      });
 
       if (error) throw error;
 
-      // For each pending application, find who currently holds that territory
-      const enriched: Application[] = await Promise.all(
-        (data || []).map(async (app: any) => {
-          let holderName: string | null = null;
-          let holderId: string | null = null;
-
-          if (filter === 'PENDING') {
-            const { data: holder } = await supabase
-              .from('territory_positions')
-              .select('member_uuid, members(member_id), member_profile(full_name)')
-              .eq('position_type', app.position_type)
-              .eq('pin_code', app.pin_code)
-              .eq('status', 'ACTIVE')
-              .maybeSingle();
-
-            if (holder) {
-              holderName = (holder as any).member_profile?.full_name || null;
-              holderId = (holder as any).members?.member_id || null;
-            }
-          }
-
-          return {
-            id: app.id,
-            member_uuid: app.member_uuid,
-            member_id: app.members?.member_id || '—',
-            member_name: app.member_profile?.full_name || '—',
-            position_type: app.position_type,
-            pin_code: app.pin_code,
-            status: app.status,
-            created_at: app.created_at,
-            current_holder_name: holderName,
-            current_holder_id: holderId,
-          };
-        })
-      );
-
-      setApplications(enriched);
+      setApplications(data || []);
     } catch (e: any) {
       console.error('Error fetching royalty applications:', e.message);
     } finally {

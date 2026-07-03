@@ -248,7 +248,7 @@ export default function RoyaltyApplicationsPage() {
       )}
 
       {/* Level Status Banner */}
-      <Card className="bg-[#232F46] text-white">
+      <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-[#ED8C32]/20 flex items-center justify-center shrink-0">
             <Trophy className="w-7 h-7 text-[#ED8C32]" />
@@ -267,7 +267,7 @@ export default function RoyaltyApplicationsPage() {
             </div>
           )}
         </div>
-      </Card>
+      </div>
 
       {/* Position Cards */}
       {loading ? (
