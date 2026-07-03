@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { supabase } from '../../lib/supabase';
-import { Banknote, Clock, AlertCircle } from 'lucide-react';
+import { Banknote, Clock, AlertCircle, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function WithdrawalCenterPage() {
@@ -16,6 +17,7 @@ export default function WithdrawalCenterPage() {
   const [counts, setCounts] = useState({ pending: 0, completed: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [kycStatus, setKycStatus] = useState<string>('PENDING');
 
   const MIN_WITHDRAWAL = 500;
   const TDS_PCT = 5;
@@ -37,12 +39,15 @@ export default function WithdrawalCenterPage() {
 
         const [{ data: wallet }, { data: kyc }, { data: requests }] = await Promise.all([
           supabase.from('wallets').select('available_balance').eq('id', user.id).single(),
-          supabase.from('member_kyc').select('full_name, bank_name, bank_account_number, bank_ifsc').eq('id', user.id).single(),
+          supabase.from('member_kyc').select('full_name, bank_name, bank_account_number, bank_ifsc, pan_status').eq('id', user.id).single(),
           supabase.from('withdrawal_requests').select('id, requested_amount, tds_deduction, admin_deduction, donation_deduction, net_payable, status, utr_number, created_at, processed_at').eq('member_uuid', user.id).order('created_at', { ascending: false }),
         ]);
 
         if (wallet) setWalletBalance(Number(wallet.available_balance));
-        if (kyc) setBankDetails(kyc);
+        if (kyc) {
+          setBankDetails(kyc);
+          setKycStatus(kyc.pan_status || 'PENDING');
+        }
         if (requests) {
           setHistory(requests);
           setCounts({
@@ -118,41 +123,56 @@ export default function WithdrawalCenterPage() {
             <Banknote className="w-5 h-5 text-[#232F46]" />
             <h3 className="font-bold text-[#232F46]">New Withdrawal</h3>
           </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Requested Amount (₹)</label>
-              <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} placeholder={`Min ₹${MIN_WITHDRAWAL}`} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#ED8C32]" />
-              {amount && numAmount < MIN_WITHDRAWAL && <p className="text-xs text-red-500 mt-1">Minimum withdrawal is ₹{MIN_WITHDRAWAL}</p>}
-              {amount && numAmount > walletBalance && <p className="text-xs text-red-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Amount exceeds available balance.</p>}
+          {kycStatus !== 'VERIFIED' ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center px-4 bg-gray-50 rounded-xl border border-gray-200">
+              <ShieldAlert className="w-12 h-12 text-amber-500 mb-4" />
+              <h4 className="font-bold text-[#232F46] text-lg mb-2">KYC Verification Required</h4>
+              <p className="text-sm text-gray-500 mb-6">
+                You must complete your PAN Card verification before you can withdraw funds.
+              </p>
+              <Link to="/account/kyc">
+                <Button className="bg-[#232F46] text-white hover:bg-[#1a2333]">
+                  Go to KYC Center
+                </Button>
+              </Link>
             </div>
-
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Bank Details</h4>
-              {bankDetails ? (
-                <>
-                  <p className="text-sm font-bold text-[#232F46]">{bankDetails.full_name || 'Account Holder'}</p>
-                  <p className="text-sm text-gray-600">{bankDetails.bank_name || '—'} - {bankDetails.bank_account_number || '—'}</p>
-                  <p className="text-xs text-gray-500 mt-1">IFSC: {bankDetails.bank_ifsc || '—'}</p>
-                </>
-              ) : <p className="text-sm text-gray-400">No bank details found. Please update your KYC.</p>}
-            </div>
-
-            <div className="p-4 bg-orange-50/50 rounded-xl border border-orange-100 space-y-2">
-              <h4 className="text-xs font-bold text-[#ED8C32] uppercase mb-2">Preview</h4>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">Requested Amount</span><span className="font-bold text-[#232F46]">₹{numAmount || 0}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-red-500">TDS ({TDS_PCT}%)</span><span className="font-bold text-red-500">-₹{tds}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-red-500">Admin Charges ({ADMIN_PCT}%)</span><span className="font-bold text-red-500">-₹{adminCharges}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-blue-500">Donation ({DONATION_PCT}%)</span><span className="font-bold text-blue-500">-₹{donation}</span></div>
-              <div className="pt-2 mt-2 border-t border-orange-200 flex justify-between">
-                <span className="font-bold text-[#232F46]">Net Payable</span>
-                <span className="font-black text-green-600 text-lg">₹{netPayable > 0 ? netPayable : 0}</span>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Requested Amount (₹)</label>
+                <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} placeholder={`Min ₹${MIN_WITHDRAWAL}`} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#ED8C32]" />
+                {amount && numAmount < MIN_WITHDRAWAL && <p className="text-xs text-red-500 mt-1">Minimum withdrawal is ₹{MIN_WITHDRAWAL}</p>}
+                {amount && numAmount > walletBalance && <p className="text-xs text-red-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Amount exceeds available balance.</p>}
               </div>
-            </div>
 
-            <Button className="w-full bg-[#ED8C32] hover:bg-[#D97A24] text-white" onClick={handleSubmit} disabled={submitting || !amount || numAmount < MIN_WITHDRAWAL || numAmount > walletBalance}>
-              {submitting ? 'Submitting…' : 'Submit Request'}
-            </Button>
-          </div>
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Bank Details</h4>
+                {bankDetails ? (
+                  <>
+                    <p className="text-sm font-bold text-[#232F46]">{bankDetails.full_name || 'Account Holder'}</p>
+                    <p className="text-sm text-gray-600">{bankDetails.bank_name || '—'} - {bankDetails.bank_account_number || '—'}</p>
+                    <p className="text-xs text-gray-500 mt-1">IFSC: {bankDetails.bank_ifsc || '—'}</p>
+                  </>
+                ) : <p className="text-sm text-gray-400">No bank details found. Please update your KYC.</p>}
+              </div>
+
+              <div className="p-4 bg-orange-50/50 rounded-xl border border-orange-100 space-y-2">
+                <h4 className="text-xs font-bold text-[#ED8C32] uppercase mb-2">Preview</h4>
+                <div className="flex justify-between text-sm"><span className="text-gray-600">Requested Amount</span><span className="font-bold text-[#232F46]">₹{numAmount || 0}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-red-500">TDS ({TDS_PCT}%)</span><span className="font-bold text-red-500">-₹{tds}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-red-500">Admin Charges ({ADMIN_PCT}%)</span><span className="font-bold text-red-500">-₹{adminCharges}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-blue-500">Donation ({DONATION_PCT}%)</span><span className="font-bold text-blue-500">-₹{donation}</span></div>
+                <div className="pt-2 mt-2 border-t border-orange-200 flex justify-between">
+                  <span className="font-bold text-[#232F46]">Net Payable</span>
+                  <span className="font-black text-green-600 text-lg">₹{netPayable > 0 ? netPayable : 0}</span>
+                </div>
+              </div>
+
+              <Button className="w-full bg-[#ED8C32] hover:bg-[#D97A24] text-white" onClick={handleSubmit} disabled={submitting || !amount || numAmount < MIN_WITHDRAWAL || numAmount > walletBalance}>
+                {submitting ? 'Submitting…' : 'Submit Request'}
+              </Button>
+            </div>
+          )}
         </Card>
 
         <Card className="lg:col-span-2 overflow-hidden flex flex-col p-0">
