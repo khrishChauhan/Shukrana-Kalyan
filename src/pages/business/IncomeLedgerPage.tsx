@@ -54,7 +54,7 @@ export default function IncomeLedgerPage() {
       <PageHeader
         title="Income Ledger"
         description="Unified ledger of all your income transactions."
-        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Income Ledger' }]}
+        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', href: '/business/income-dashboard' }, { label: 'Income Ledger' }]}
       />
 
       <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">

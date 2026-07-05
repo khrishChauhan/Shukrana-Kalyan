@@ -52,7 +52,7 @@ export default function LevelIncomePage() {
       <PageHeader
         title="Level Income"
         description="Detailed ledger of your Level Income earnings."
-        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Level Income' }]}
+        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', href: '/business/income-dashboard' }, { label: 'Level Income' }]}
       />
 
       <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">

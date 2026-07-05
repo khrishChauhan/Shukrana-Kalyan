@@ -55,7 +55,7 @@ export default function RoyaltyIncomePage() {
       <PageHeader
         title="Royalty Income"
         description="Your company turnover sharing based on leadership rank."
-        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Royalty Income' }]}
+        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', href: '/business/income-dashboard' }, { label: 'Royalty Income' }]}
       />
 
       <Card className="p-6">

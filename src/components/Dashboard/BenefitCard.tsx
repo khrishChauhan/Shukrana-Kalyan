@@ -8,6 +8,7 @@ interface BenefitCardProps {
   benefit: Benefit;
   currentDays: number;
   onClick: (benefit: Benefit) => void;
+  key?: React.Key;
 }
 
 export function BenefitCard({ benefit, currentDays, onClick }: BenefitCardProps) {

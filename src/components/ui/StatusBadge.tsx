@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from './Badge';
 
-export type StatusType = 'Active' | 'Pending Approval' | 'Pending Verification' | 'Expired' | 'Suspended' | 'Inactive';
+export type StatusType = 'Active' | 'Pending' | 'PENDING' | 'Pending Review' | 'Pending Approval' | 'Pending Verification' | 'Expired' | 'Suspended' | 'Inactive' | string;
 
 export interface StatusBadgeProps {
   status: StatusType;
@@ -11,11 +11,12 @@ export interface StatusBadgeProps {
 export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
   let variant: 'success' | 'warning' | 'danger' | 'gray' = 'gray';
 
-  if (status === 'Active') {
+  const s = String(status).toLowerCase();
+  if (s === 'active' || s === 'approved' || s === 'verified') {
     variant = 'success';
-  } else if (status === 'Pending Approval' || status === 'Pending Verification') {
+  } else if (s.includes('pending')) {
     variant = 'warning';
-  } else if (status === 'Expired' || status === 'Suspended' || status === 'Inactive') {
+  } else if (s === 'expired' || s === 'suspended' || s === 'inactive' || s === 'rejected') {
     variant = 'danger';
   }
 

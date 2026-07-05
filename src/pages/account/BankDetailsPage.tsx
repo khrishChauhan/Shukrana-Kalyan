@@ -95,7 +95,7 @@ export default function BankDetailsPage() {
     { label: 'IFSC Code', key: 'ifsc', uppercase: true },
     { label: 'Branch Name', key: 'branch' },
     { label: 'UPI ID (Optional)', key: 'upi' },
-  ] as const;
+  ];
 
   return (
     <motion.div

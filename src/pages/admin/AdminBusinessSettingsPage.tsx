@@ -4,6 +4,7 @@ import { Settings, Save, AlertCircle, RefreshCw, Power, Server } from 'lucide-re
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { supabase } from '../../lib/supabase';
 

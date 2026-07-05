@@ -51,7 +51,7 @@ export default function SponsorIncomePage() {
       <PageHeader
         title="Sponsor Income"
         description="Earnings generated from your direct referrals' matching income."
-        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', path: '/business/income-dashboard' }, { label: 'Sponsor Income' }]}
+        breadcrumbs={[{ label: 'Business' }, { label: 'Income Dashboard', href: '/business/income-dashboard' }, { label: 'Sponsor Income' }]}
       />
 
       <div className="bg-[#232F46] text-white rounded-2xl p-6 shadow-sm">
