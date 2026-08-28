@@ -9,7 +9,7 @@ const walk = (dir, callback) => {
       walk(dirPath, callback) : callback(path.join(dir, f));
   });
 };
-
+// comment
 const map = {
   '#1B273F': '#232F46',
   '#0D1424': '#232F46',
