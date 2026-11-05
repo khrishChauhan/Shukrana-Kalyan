@@ -303,7 +303,7 @@ export default function AdminOrdersPage() {
                       <td className="py-4 px-4 align-top">
                         <p className="font-semibold text-[#232F46]">{order.product_name}</p>
                         <p className="font-black text-[#ED8C32] text-sm mt-0.5">
-                          {Number(order.total_amount).toFixed(2)}
+                          ₹{Number(order.total_amount).toLocaleString('en-IN')}
                         </p>
                         <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600">
                           {order.order_type}

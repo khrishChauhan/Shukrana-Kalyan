@@ -211,7 +211,7 @@ export default function LandingPage() {
         shipping_address: customerAddress.trim(),
         product_name: 'Complete 7-in-1 Mega Bundle',
         order_type: 'BUNDLE',
-        total_amount: 21.00,
+        total_amount: 2100,
         status: 'PENDING'
       };
 
@@ -283,7 +283,7 @@ export default function LandingPage() {
                   className="px-8 py-4 bg-[#ED8C32] text-[#232F46] font-bold rounded-2xl shadow-[0_8px_25px_rgba(237,140,50,0.35)] hover:shadow-[0_12px_32px_rgba(237,140,50,0.45)] hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 text-base cursor-pointer"
                 >
                   <Flame className="w-5 h-5 fill-current" />
-                  <span>Shop Mega Bundle (21.00)</span>
+                  <span>Shop Mega Bundle (₹2100)</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
@@ -292,7 +292,7 @@ export default function LandingPage() {
                   className="px-7 py-4 bg-white text-[#232F46] font-semibold rounded-2xl border border-gray-200 hover:border-[#232F46]/30 shadow-sm hover:shadow transition-all duration-300 flex items-center gap-2 text-base"
                 >
                   <ShoppingBag className="w-5 h-5 text-[#ED8C32]" />
-                  <span>Browse Individual Products</span>
+                  <span>Browse Individual Products (₹499)</span>
                 </a>
               </div>
 
@@ -331,8 +331,8 @@ export default function LandingPage() {
                     <h3 className="text-2xl font-bold mt-2">Shukrana 7-in-1 Kit</h3>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs line-through text-white/50 block">Regular 35.00</span>
-                    <span className="text-3xl font-black text-[#ED8C32]">21.00</span>
+                    <span className="text-xs line-through text-white/50 block">Regular ₹3,493</span>
+                    <span className="text-3xl font-black text-[#ED8C32]">₹2,100</span>
                   </div>
                 </div>
 
@@ -367,7 +367,7 @@ export default function LandingPage() {
                   className="w-full py-3.5 bg-[#ED8C32] hover:bg-[#d67a29] text-[#232F46] font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer text-sm"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>Grab Complete Pack for 21.00</span>
+                  <span>Grab Complete Pack for ₹2100</span>
                 </button>
               </div>
             </motion.div>
@@ -376,7 +376,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 3. The 8th Product — "Mega Bundle" Highlight Card (Price: 21.00) */}
+      {/* 3. The 8th Product — "Mega Bundle" Highlight Card (Price: ₹2100) */}
       <section id="mega-bundle" className="py-20 bg-gradient-to-b from-white to-[#FAF8F5] border-y border-gray-200/70">
         <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
           
@@ -458,11 +458,11 @@ export default function LandingPage() {
                 <div className="p-5 bg-white/5 border border-white/10 rounded-2xl flex items-baseline gap-4">
                   <div>
                     <span className="text-xs text-white/50 block font-medium uppercase tracking-wider">Bundle Offer Price</span>
-                    <span className="text-4xl sm:text-5xl font-black text-[#ED8C32]">21.00</span>
+                    <span className="text-4xl sm:text-5xl font-black text-[#ED8C32]">₹2,100</span>
                   </div>
                   <div className="border-l border-white/15 pl-4">
-                    <span className="text-sm line-through text-white/40 block">Regular: 35.00</span>
-                    <span className="text-sm font-bold text-emerald-400">Save More</span>
+                    <span className="text-sm line-through text-white/40 block">Regular: ₹3,493</span>
+                    <span className="text-sm font-bold text-emerald-400">Save ₹1,393</span>
                   </div>
                 </div>
 
@@ -493,7 +493,7 @@ export default function LandingPage() {
                     className="flex-1 py-4 px-8 bg-[#ED8C32] hover:bg-[#d67a29] text-[#232F46] font-bold text-base rounded-xl transition-all shadow-[0_4px_20px_rgba(237,140,50,0.4)] flex items-center justify-center gap-2.5 cursor-pointer transform hover:-translate-y-0.5"
                   >
                     <ShoppingBag className="w-5 h-5" />
-                    <span>Buy Bundle (21.00)</span>
+                    <span>Buy Bundle (₹2100)</span>
                   </button>
 
                   <Link
@@ -633,7 +633,10 @@ export default function LandingPage() {
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
                   <div>
                     <span className="text-[11px] text-gray-400 block uppercase font-bold tracking-wider">Item Price</span>
-                    <span className="text-xl font-black text-[#232F46]">4.99</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-black text-[#232F46]">₹{prod.price}</span>
+                      <span className="text-xs line-through text-gray-400">₹{prod.mrp}</span>
+                    </div>
                   </div>
 
                   <button
@@ -753,7 +756,7 @@ export default function LandingPage() {
               </h3>
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                We are currently not selling items individually. You can get all 7 signature items together in our discounted Mega Bundle for just <strong className="text-[#232F46] font-extrabold">21.00</strong>!
+                We are currently not selling items individually. You can get all 7 signature items together in our discounted Mega Bundle for just <strong className="text-[#232F46] font-extrabold">₹2,100</strong>!
               </p>
 
               <div className="mt-4 p-3.5 bg-[#FAF8F5] border border-gray-200 rounded-2xl flex items-center gap-3 text-left">
@@ -769,7 +772,7 @@ export default function LandingPage() {
                   className="w-full py-3.5 bg-[#ED8C32] hover:bg-[#d67a29] text-[#232F46] font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>Get Complete Bundle (21.00)</span>
+                  <span>Get Complete Bundle (₹2100)</span>
                 </button>
 
                 <button
@@ -785,7 +788,7 @@ export default function LandingPage() {
       </AnimatePresence>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* 8. THE MEGA BUNDLE CHECKOUT MODAL (21.00) — 4 Essential Fields     */}
+      {/* 8. THE MEGA BUNDLE CHECKOUT MODAL (₹2100) — 4 Essential Fields    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {bundleModalOpen && (
@@ -837,7 +840,7 @@ export default function LandingPage() {
                       </div>
                       <div className="flex items-center justify-between border-t border-gray-200 pt-2">
                         <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Total:</span>
-                        <span className="font-black text-2xl text-[#ED8C32]">21.00</span>
+                        <span className="font-black text-2xl text-[#ED8C32]">₹2,100</span>
                       </div>
                       <p className="text-[11px] text-emerald-600 font-semibold pt-1">
                         ✓ Free Doorstep Express Shipping included
@@ -921,7 +924,7 @@ export default function LandingPage() {
                           <span>Placing Order...</span>
                         ) : (
                           <>
-                            <span>Place Order (21.00)</span>
+                            <span>Place Order (₹2100)</span>
                             <ArrowRight className="w-4 h-4" />
                           </>
                         )}
@@ -961,7 +964,7 @@ export default function LandingPage() {
                       </div>
                       <div className="flex justify-between border-t border-gray-200 pt-1.5">
                         <span className="text-gray-500 font-bold">Total Amount:</span>
-                        <span className="font-black text-base text-[#ED8C32]">21.00</span>
+                        <span className="font-black text-base text-[#ED8C32]">₹2,100</span>
                       </div>
                     </div>
 

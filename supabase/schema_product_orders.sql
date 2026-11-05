@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS product_orders (
   shipping_address TEXT NOT NULL,
   product_name TEXT NOT NULL DEFAULT 'Complete 7-in-1 Mega Bundle',
   order_type TEXT NOT NULL DEFAULT 'BUNDLE',
-  total_amount NUMERIC(10, 2) NOT NULL DEFAULT 21.00,
+  total_amount NUMERIC(10, 2) NOT NULL DEFAULT 2100.00,
   status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONTACTED', 'DISPATCHED', 'COMPLETED', 'CANCELLED')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
