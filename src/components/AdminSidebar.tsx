@@ -14,7 +14,8 @@ import {
   FileCheck,
   Network,
   ShieldAlert,
-  Trophy
+  Trophy,
+  Package
 } from 'lucide-react';
 
 interface NavItem {
@@ -26,6 +27,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',      path: '/admin/dashboard', icon: LayoutDashboard },
+  { label: 'Orders',         path: '/admin/orders',    icon: Package },
   { label: 'Members',        path: '/admin/members',   icon: Users },
   { label: 'Pending Payments',path: '/admin/payments', icon: Banknote },
   { label: 'Payouts',        path: '/admin/business/payouts',  icon: Banknote },

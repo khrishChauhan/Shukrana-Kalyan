@@ -80,6 +80,7 @@ import AdminActivityMonitoringPage from './pages/admin/AdminActivityMonitoringPa
 import AdminCommunicationPage from './pages/admin/AdminCommunicationPage';
 import AdminSecurityDashboardPage from './pages/admin/AdminSecurityDashboardPage';
 import AdminRoyaltyManagementPage from './pages/admin/AdminRoyaltyManagementPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 
 export default function App() {
   return (
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/admin" element={<AdminLoginPage />} />
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
             <Route path="/admin/members" element={<AdminMembersPage />} />
             <Route path="/admin/members/:uuid" element={<AdminMemberProfilePage />} />
             <Route path="/admin/payments" element={<AdminPendingPaymentsPage />} />
