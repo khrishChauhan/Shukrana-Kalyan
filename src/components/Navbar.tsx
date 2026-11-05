@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Heart, Award } from 'lucide-react';
+import { Menu, X, ShoppingBag, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NavbarProps {
-  onOpenDonateModal: () => void;
+  onOpenCart?: () => void;
 }
 
-export default function Navbar({ onOpenDonateModal }: NavbarProps) {
+export default function Navbar({ onOpenCart }: NavbarProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -22,9 +22,9 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
 
   const navLinks = [
     { name: 'Home', path: '#home' },
-    { name: 'About', path: '#about' },
-    { name: 'Programs', path: '#programs' },
-    { name: 'Gallery', path: '#gallery' },
+    { name: 'Mega Bundle', path: '#mega-bundle' },
+    { name: 'Products', path: '#products' },
+    { name: 'Quality Promise', path: '#quality' },
     { name: 'Contact', path: '#contact' },
   ];
 
@@ -44,12 +44,12 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
     <>
       <header
         id="main-navbar"
-        className={`fixed top-5 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex justify-center w-full px-4 sm:px-6 pointer-events-none`}
+        className="fixed top-5 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex justify-center w-full px-4 sm:px-6 pointer-events-none"
       >
         <div
-          className={`w-full max-w-[1180px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-auto rounded-2xl border bg-white/80 backdrop-blur-xl ${
+          className={`w-full max-w-[1180px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-auto rounded-2xl border bg-white/90 backdrop-blur-xl ${
             isScrolled
-              ? 'py-3 px-6 border-[#232F46]/[0.08] shadow-[0_8px_30px_rgba(35,47,70,0.10)] bg-white/90'
+              ? 'py-3 px-6 border-[#232F46]/[0.08] shadow-[0_8px_30px_rgba(35,47,70,0.10)] bg-white/95'
               : 'py-4 px-6 border-white/60 shadow-[0_4px_24px_rgba(35,47,70,0.05)]'
           }`}
         >
@@ -68,12 +68,12 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-9">
+            <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <button
                   key={link.name}
                   onClick={() => handleLinkClick(link.path)}
-                  className="relative group font-medium text-[14px] text-[#232F46]/65 hover:text-[#232F46] transition-colors duration-300 cursor-pointer py-1"
+                  className="relative group font-medium text-[14px] text-[#232F46]/70 hover:text-[#232F46] transition-colors duration-300 cursor-pointer py-1"
                 >
                   <span className="relative z-10 tracking-[-0.01em]">{link.name}</span>
                   <span className="absolute inset-x-0 -bottom-1 h-[2px] bg-[#ED8C32] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-left rounded-full" />
@@ -81,38 +81,31 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
               ))}
             </nav>
 
-            {/* Action Buttons */}
-            <div className="hidden md:flex items-center gap-2">
+            {/* Action Buttons - Login only as requested */}
+            <div className="hidden md:flex items-center gap-3">
               <Link
                 to="/login"
                 id="btn-nav-login"
-                className="px-5 py-2.5 font-medium text-[14px] text-[#232F46]/65 hover:text-[#232F46] rounded-xl hover:bg-[#232F46]/[0.04] transition-all duration-300"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#232F46] text-white hover:bg-[#1a2334] rounded-xl font-semibold text-[14px] shadow-[0_4px_14px_rgba(35,47,70,0.2)] hover:shadow-[0_8px_20px_rgba(35,47,70,0.3)] transform hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer"
               >
-                Login
+                <span>Login</span>
+                <ArrowRight className="w-4 h-4 text-[#ED8C32]" />
               </Link>
-              <button
-                id="btn-nav-donate"
-                onClick={onOpenDonateModal}
-                className="relative flex items-center gap-2 px-6 py-2.5 bg-[#ED8C32] text-[#232F46] rounded-xl font-semibold text-[14px] shadow-[0_4px_14px_rgba(237,140,50,0.28)] hover:shadow-[0_8px_22px_rgba(237,140,50,0.38)] transform hover:-translate-y-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer group"
-              >
-                <Heart className="h-4 w-4 fill-[#232F46] stroke-none group-hover:scale-110 transition-transform duration-300" />
-                <span className="tracking-[-0.01em]">Donate Now</span>
-              </button>
             </div>
 
             {/* Mobile Hamburger toggle */}
             <div className="flex md:hidden items-center gap-2">
-              <button
-                onClick={onOpenDonateModal}
-                className="p-2.5 text-[#232F46] bg-[#ED8C32]/15 hover:bg-[#ED8C32]/25 rounded-xl transition-colors duration-300"
-                aria-label="Quick Donate"
+              <Link
+                to="/login"
+                className="px-3 py-1.5 text-xs font-semibold text-white bg-[#232F46] rounded-lg"
               >
-                <Heart className="h-5 w-5 fill-[#232F46] stroke-none" />
-              </button>
+                Login
+              </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2.5 text-[#232F46] hover:bg-[#232F46]/[0.06] rounded-xl transition-colors duration-300"
                 id="mobile-menu-toggle"
+                aria-label="Toggle Navigation Menu"
               >
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -132,7 +125,7 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              className="md:hidden absolute top-full mt-2 left-4 right-4 rounded-2xl border border-[#232F46]/[0.08] bg-white/95 backdrop-blur-xl shadow-[0_16px_48px_rgba(35,47,70,0.14)] overflow-hidden pointer-events-auto"
+              className="md:hidden absolute top-full mt-2 left-4 right-4 rounded-2xl border border-[#232F46]/[0.08] bg-white/98 backdrop-blur-xl shadow-[0_16px_48px_rgba(35,47,70,0.14)] overflow-hidden pointer-events-auto"
             >
               <div className="px-3 pt-3 pb-5 space-y-1">
                 {navLinks.map((link) => (
@@ -144,24 +137,15 @@ export default function Navbar({ onOpenDonateModal }: NavbarProps) {
                     {link.name}
                   </button>
                 ))}
-                <div className="pt-4 mt-2 border-t border-[#232F46]/[0.08] flex flex-col gap-3 px-1">
+                <div className="pt-4 mt-2 border-t border-[#232F46]/[0.08] flex flex-col gap-2 px-1">
                   <Link
                     to="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex justify-center items-center py-3 font-medium text-[14px] text-[#232F46] border border-[#232F46]/12 rounded-xl hover:bg-[#232F46]/[0.04] transition-colors duration-300"
+                    className="flex justify-center items-center gap-2 py-3 bg-[#232F46] text-white rounded-xl font-semibold text-[14px] shadow-[0_4px_14px_rgba(35,47,70,0.2)] transition-all duration-300 cursor-pointer"
                   >
-                    Admin Login
+                    <span>Member Login</span>
+                    <ArrowRight className="w-4 h-4 text-[#ED8C32]" />
                   </Link>
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      onOpenDonateModal();
-                    }}
-                    className="flex justify-center items-center gap-2 py-3 bg-[#ED8C32] text-[#232F46] rounded-xl font-semibold text-[14px] shadow-[0_4px_14px_rgba(237,140,50,0.28)] transition-all duration-300 cursor-pointer"
-                  >
-                    <Heart className="h-4 w-4 fill-[#232F46] stroke-none" />
-                    <span>Donate Now</span>
-                  </button>
                 </div>
               </div>
             </motion.div>
