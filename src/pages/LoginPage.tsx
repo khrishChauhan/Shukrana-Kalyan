@@ -30,32 +30,49 @@ export default function LoginPage() {
     setErrorMsg('');
 
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Please enter both Member ID and Password.');
+      setErrorMsg('Please enter both Member ID / Email and Password.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Member ID login: pseudo-email is [member_id]@sks.org (uppercase)
-      const pseudoEmail = `${username.trim().toUpperCase()}@sks.org`;
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: pseudoEmail,
-        password: password
+      const inputId = username.trim();
+      const inputPass = password.trim();
+
+      // Support login with either Email (e.g. bundle buyer's Gmail) or Member ID (SK000001)
+      const isEmail = inputId.includes('@');
+      const loginEmail = isEmail ? inputId.toLowerCase() : `${inputId.toUpperCase()}@sks.org`;
+
+      // 1. First attempt login with entered password
+      let { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: inputPass
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("No user returned");
+      // 2. If login failed and user entered a 4-digit password (last 4 digits of phone),
+      // retry with standard SKS prefix fallback:
+      if (authError && /^\d{4}$/.test(inputPass)) {
+        const retryResult = await supabase.auth.signInWithPassword({
+          email: loginEmail,
+          password: `SKS${inputPass}`
+        });
+        if (!retryResult.error && retryResult.data.user) {
+          authData = retryResult.data;
+          authError = null;
+        }
+      }
 
-      const { data: memberData, error: memberError } = await supabase
+      if (authError) throw authError;
+      if (!authData?.user) throw new Error("No user returned");
+
+      const { data: memberData } = await supabase
         .from('members')
         .select('status, member_id, member_profile(full_name)')
         .eq('id', authData.user.id)
-        .single();
+        .maybeSingle();
 
-      if (memberError) throw memberError;
-
-      if (memberData.status === 'PENDING') {
+      if (memberData && memberData.status === 'PENDING') {
         navigate('/payment-submission');
       } else {
         navigate('/dashboard');
@@ -64,7 +81,7 @@ export default function LoginPage() {
       // Supabase auth errors can have message on .message, .error_description, or as JSON string
       const msg = error?.message || error?.error_description || error?.msg
         || (typeof error === 'string' ? error : null)
-        || 'Login failed. Please check your Member ID and password.';
+        || 'Login failed. Please check your Member ID / Email and password.';
       setErrorMsg(msg);
       console.error('Login error:', error);
     } finally {
@@ -158,9 +175,11 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleLoginSubmit} className="space-y-5">
-              {/* Username Input */}
+              {/* Username / Email Input */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Member ID</label>
+                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">
+                  Member ID or Email
+                </label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
@@ -170,15 +189,18 @@ export default function LoginPage() {
                     name="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. SK000001"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors uppercase"
+                    placeholder="e.g. SK000001 or name@gmail.com"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 focus:bg-white border border-slate-200 rounded-lg text-[#232F46] text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8C32] focus:border-[#ED8C32] transition-colors"
                   />
                 </div>
               </div>
 
               {/* Password Input */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Password</label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-[#232F46] uppercase tracking-wide">Password</label>
+                  <span className="text-[11px] text-slate-500 font-medium">Bundle buyers: phone's last 4 digits</span>
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
