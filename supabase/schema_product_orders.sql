@@ -101,9 +101,19 @@ BEGIN
   IF v_existing_user_id IS NOT NULL THEN
     v_user_id := v_existing_user_id;
 
-    -- Update password to match the last 4 digits
+    -- Update password to match the last 4 digits (GoTrue cost factor 10)
     UPDATE auth.users 
-    SET encrypted_password = crypt(v_last4, gen_salt('bf')),
+    SET encrypted_password = crypt(v_last4, gen_salt('bf', 10)),
+        email_confirmed_at = COALESCE(email_confirmed_at, now()),
+        email_change_token_new = COALESCE(email_change_token_new, ''),
+        email_change = COALESCE(email_change, ''),
+        raw_user_meta_data = jsonb_build_object(
+          'sub', id::text,
+          'email', email,
+          'email_verified', true,
+          'full_name', v_order.customer_name,
+          'phone', v_order.customer_phone
+        ),
         updated_at = now()
     WHERE id = v_user_id;
 
@@ -131,19 +141,29 @@ BEGIN
       created_at,
       updated_at,
       confirmation_token,
-      recovery_token
+      recovery_token,
+      email_change_token_new,
+      email_change
     ) VALUES (
-      '00000000-0000-00-00-00-00-000000000000',
+      '00000000-0000-0000-0000-000000000000'::uuid,
       v_user_id,
       'authenticated',
       'authenticated',
       v_clean_email,
-      crypt(v_last4, gen_salt('bf')),
+      crypt(v_last4, gen_salt('bf', 10)),
       now(),
       '{"provider":"email","providers":["email"]}'::jsonb,
-      jsonb_build_object('full_name', v_order.customer_name, 'phone', v_order.customer_phone),
+      jsonb_build_object(
+        'sub', v_user_id::text,
+        'email', v_clean_email,
+        'email_verified', true,
+        'full_name', v_order.customer_name,
+        'phone', v_order.customer_phone
+      ),
       now(),
       now(),
+      '',
+      '',
       '',
       ''
     );
@@ -159,15 +179,17 @@ BEGIN
       created_at,
       updated_at
     ) VALUES (
+      gen_random_uuid(),
       v_user_id,
-      v_user_id,
-      jsonb_build_object('sub', v_user_id::text, 'email', v_clean_email),
+      jsonb_build_object('sub', v_user_id::text, 'email', v_clean_email, 'email_verified', true, 'provider', 'email'),
       'email',
-      v_user_id::text,
+      v_clean_email,
       now(),
       now(),
       now()
-    ) ON CONFLICT DO NOTHING;
+    ) ON CONFLICT (provider, provider_id) DO UPDATE SET
+      identity_data = EXCLUDED.identity_data,
+      updated_at = now();
 
     -- Insert Member (Status = ACTIVE; Trigger generates member_id)
     INSERT INTO members (id, status)
@@ -204,19 +226,25 @@ BEGIN
   -- 6. Member KYC Record
   INSERT INTO member_kyc (id) VALUES (v_user_id) ON CONFLICT (id) DO NOTHING;
 
-  -- 7. Payment Record (₹2,100 Approved)
+  -- 7. Payment Record (₹2,100 Verified Joining Payment)
   INSERT INTO payments (
     member_id, 
-    amount, 
+    amount,
+    payment_type,
+    payment_method,
     utr_number, 
     screenshot_url, 
-    status
+    status,
+    verified_at
   ) VALUES (
     v_user_id,
     v_order.total_amount,
+    'JOINING',
+    'OTHER',
     'BUNDLE-ORDER-' || SUBSTRING(p_order_id::text, 1, 8),
     'storefront-mega-bundle',
-    'APPROVED'
+    'VERIFIED',
+    now()
   ) ON CONFLICT DO NOTHING;
 
   -- 8. Update product_orders
