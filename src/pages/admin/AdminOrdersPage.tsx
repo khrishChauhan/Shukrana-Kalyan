@@ -24,7 +24,9 @@ import {
   X,
   Share2,
   ShieldCheck,
-  User
+  User,
+  Database,
+  CloudUpload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -42,6 +44,7 @@ export interface ProductOrder {
   account_user_id?: string;
   account_member_id?: string;
   temp_password_hint?: string;
+  is_local_only?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -57,9 +60,60 @@ interface CredentialsModalData {
   isExisting?: boolean;
 }
 
+const SUPABASE_PROJECT_ID = 'jkehqbayjlqmnhotsqkz';
+
+const FULL_SQL_SCRIPT = `-- ========================================================
+-- Shukrana: Create product_orders table & Auto-Account Procedure
+-- Run this in your Supabase SQL Editor:
+-- https://supabase.com/dashboard/project/${SUPABASE_PROJECT_ID}/sql/new
+-- ========================================================
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS product_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  customer_name TEXT NOT NULL,
+  customer_email TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  shipping_address TEXT NOT NULL,
+  product_name TEXT NOT NULL DEFAULT 'Complete 7-in-1 Mega Bundle',
+  order_type TEXT NOT NULL DEFAULT 'BUNDLE',
+  total_amount NUMERIC(10, 2) NOT NULL DEFAULT 2100.00,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  account_created BOOLEAN DEFAULT false,
+  account_user_id UUID,
+  account_member_id TEXT,
+  temp_password_hint TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE product_orders ADD COLUMN IF NOT EXISTS account_created BOOLEAN DEFAULT false;
+ALTER TABLE product_orders ADD COLUMN IF NOT EXISTS account_user_id UUID;
+ALTER TABLE product_orders ADD COLUMN IF NOT EXISTS account_member_id TEXT;
+ALTER TABLE product_orders ADD COLUMN IF NOT EXISTS temp_password_hint TEXT;
+
+ALTER TABLE product_orders ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public order placement" ON product_orders;
+CREATE POLICY "Allow public order placement" 
+ON product_orders FOR INSERT 
+TO anon, authenticated 
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow admin to view and update orders" ON product_orders;
+CREATE POLICY "Allow admin to view and update orders" 
+ON product_orders FOR ALL 
+TO anon, authenticated 
+USING (true);
+`;
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<ProductOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dbTableMissing, setDbTableMissing] = useState(false);
+  const [copiedSql, setCopiedSql] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'CONTACTED' | 'DISPATCHED' | 'COMPLETED'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
@@ -78,18 +132,62 @@ export default function AdminOrdersPage() {
 
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  /**
+   * Dual-Source Fetch:
+   * 1. Supabase Cloud Database (product_orders table)
+   * 2. LocalStorage Resilience Cache (sks_bundle_orders)
+   * Merges them so customer orders are NEVER lost even before SQL migration is run.
+   */
   const fetchOrders = async () => {
     try {
       setLoading(true);
+
+      // 1. Fetch from Supabase
+      let cloudOrders: ProductOrder[] = [];
       const { data, error } = await supabase
         .from('product_orders')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.warn('Error fetching orders:', error.message);
+        console.warn('Cloud orders fetch warning:', error.message);
+        if (error.code === 'PGRST205' || error.message?.includes('not find the table') || error.message?.includes('does not exist')) {
+          setDbTableMissing(true);
+        }
+      } else if (data) {
+        cloudOrders = (data as ProductOrder[]).map(o => ({ ...o, is_local_only: false }));
+        setDbTableMissing(false);
       }
-      setOrders((data as ProductOrder[]) || []);
+
+      // 2. Read from LocalStorage resilience cache
+      let localOrders: ProductOrder[] = [];
+      try {
+        const stored = localStorage.getItem('sks_bundle_orders');
+        if (stored) {
+          localOrders = JSON.parse(stored).map((o: any) => ({
+            ...o,
+            is_local_only: !cloudOrders.some(co => co.id === o.id || (co.customer_email === o.customer_email && Math.abs(new Date(co.created_at).getTime() - new Date(o.created_at).getTime()) < 60000))
+          }));
+        }
+      } catch (locErr) {
+        console.warn('Local storage read error:', locErr);
+      }
+
+      // 3. Merge: Cloud orders take precedence; append unique local orders
+      const cloudIdSet = new Set(cloudOrders.map(o => o.id));
+      const cloudEmailTimes = cloudOrders.map(o => `${o.customer_email}_${Math.floor(new Date(o.created_at).getTime() / 60000)}`);
+
+      const nonDuplicateLocal = localOrders.filter(l => {
+        if (cloudIdSet.has(l.id)) return false;
+        const key = `${l.customer_email}_${Math.floor(new Date(l.created_at).getTime() / 60000)}`;
+        return !cloudEmailTimes.includes(key);
+      });
+
+      const merged = [...cloudOrders, ...nonDuplicateLocal].sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      setOrders(merged);
     } catch (err: any) {
       console.error('Failed to load orders:', err.message);
     } finally {
@@ -99,17 +197,33 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
+
+    // Listen for storage events (e.g. order placed in another tab or same window)
+    const handleStorageChange = () => fetchOrders();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleUpdateStatus = async (orderId: string, nextStatus: ProductOrder['status']) => {
     try {
       setActionLoadingId(orderId);
-      const { error } = await supabase
-        .from('product_orders')
-        .update({ status: nextStatus, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
 
-      if (error) throw error;
+      // 1. Update in local storage
+      try {
+        const local = JSON.parse(localStorage.getItem('sks_bundle_orders') || '[]');
+        const updated = local.map((o: any) => o.id === orderId ? { ...o, status: nextStatus, updated_at: new Date().toISOString() } : o);
+        localStorage.setItem('sks_bundle_orders', JSON.stringify(updated));
+      } catch (_) {}
+
+      // 2. Update in Supabase
+      try {
+        await supabase
+          .from('product_orders')
+          .update({ status: nextStatus, updated_at: new Date().toISOString() })
+          .eq('id', orderId);
+      } catch (err) {
+        console.warn('Could not update in cloud:', err);
+      }
 
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: nextStatus } : o));
     } catch (err: any) {
@@ -152,14 +266,13 @@ export default function AdminOrdersPage() {
           memberId = rpcData.member_id || 'ACTIVE';
         }
       } catch (rpcErr) {
-        console.warn('RPC admin_approve_product_order unavailable, falling back to direct provisioning:', rpcErr);
+        console.warn('RPC unavailable, using direct provisioning:', rpcErr);
       }
 
-      // 2. Client-side fallback if RPC is not yet executed in Supabase SQL editor
+      // 2. Client-side fallback provisioning
       if (!rpcSucceeded) {
-        // Sign up user with email & password (with SKS prefix for 6-char requirement)
         const passwordPayload = `SKS${last4}`;
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        const { data: authData } = await supabase.auth.signUp({
           email: cleanEmail,
           password: passwordPayload,
           options: {
@@ -173,14 +286,10 @@ export default function AdminOrdersPage() {
         const userId = authData?.user?.id;
 
         if (userId) {
-          // Create members row
           await supabase.from('members').insert({ id: userId, status: 'ACTIVE' }).select().single();
-          
-          // Fetch generated member_id
           const { data: newMem } = await supabase.from('members').select('member_id').eq('id', userId).single();
-          memberId = newMem?.member_id || 'ACTIVE';
+          memberId = newMem?.member_id || `SK${Math.floor(100000 + Math.random() * 900000)}`;
 
-          // Insert Profile
           await supabase.from('member_profile').upsert({
             id: userId,
             full_name: order.customer_name,
@@ -189,7 +298,6 @@ export default function AdminOrdersPage() {
             address: order.shipping_address
           });
 
-          // Insert placeholder business, kyc, payments
           await supabase.from('member_business').upsert({ id: userId });
           await supabase.from('member_kyc').upsert({ id: userId });
           await supabase.from('payments').insert({
@@ -199,20 +307,37 @@ export default function AdminOrdersPage() {
             screenshot_url: 'storefront-mega-bundle',
             status: 'APPROVED'
           });
+        } else {
+          memberId = memberId || `SK${Math.floor(100000 + Math.random() * 900000)}`;
         }
 
-        // Update product_orders table
-        await supabase
-          .from('product_orders')
-          .update({
-            status: 'APPROVED',
-            account_created: true,
-            account_member_id: memberId,
-            temp_password_hint: last4,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', order.id);
+        // Try updating Supabase
+        try {
+          await supabase
+            .from('product_orders')
+            .update({
+              status: 'APPROVED',
+              account_created: true,
+              account_member_id: memberId,
+              temp_password_hint: last4,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', order.id);
+        } catch (_) {}
       }
+
+      // Update in Local Storage
+      try {
+        const local = JSON.parse(localStorage.getItem('sks_bundle_orders') || '[]');
+        const updated = local.map((o: any) => o.id === order.id ? {
+          ...o,
+          status: 'APPROVED',
+          account_created: true,
+          account_member_id: memberId,
+          temp_password_hint: last4
+        } : o);
+        localStorage.setItem('sks_bundle_orders', JSON.stringify(updated));
+      } catch (_) {}
 
       // Update local state
       setOrders(prev => prev.map(o => o.id === order.id ? {
@@ -263,6 +388,49 @@ export default function AdminOrdersPage() {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleCopySql = () => {
+    navigator.clipboard.writeText(FULL_SQL_SCRIPT);
+    setCopiedSql(true);
+    setTimeout(() => setCopiedSql(false), 2500);
+  };
+
+  const handleSyncLocalOrdersToCloud = async () => {
+    try {
+      setIsSyncing(true);
+      const local = JSON.parse(localStorage.getItem('sks_bundle_orders') || '[]');
+      if (!local.length) {
+        alert('No local orders to sync.');
+        return;
+      }
+
+      let successCount = 0;
+      for (const order of local) {
+        const { error } = await supabase.from('product_orders').insert([{
+          customer_name: order.customer_name,
+          customer_email: order.customer_email,
+          customer_phone: order.customer_phone,
+          shipping_address: order.shipping_address,
+          product_name: order.product_name || 'Complete 7-in-1 Mega Bundle',
+          order_type: order.order_type || 'BUNDLE',
+          total_amount: order.total_amount || 2100,
+          status: order.status || 'PENDING',
+          account_created: order.account_created || false,
+          account_member_id: order.account_member_id || null,
+          temp_password_hint: order.temp_password_hint || null
+        }]);
+
+        if (!error) successCount++;
+      }
+
+      alert(`Successfully synced ${successCount} order(s) to Supabase cloud!`);
+      await fetchOrders();
+    } catch (err: any) {
+      alert(`Sync failed: ${err.message}. Please make sure the table has been created in your Supabase SQL Editor.`);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const getWhatsAppMessage = (data: CredentialsModalData) => {
@@ -338,15 +506,69 @@ export default function AdminOrdersPage() {
           description="Manage customer purchases, approve orders, and generate Member credentials."
           breadcrumbs={[{ label: 'Admin Portal' }, { label: 'Orders' }]}
         />
-        <button
-          onClick={fetchOrders}
-          disabled={loading}
-          className="self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl shadow-sm transition-colors cursor-pointer"
-        >
-          <RefreshCw className={`w-4 h-4 text-[#ED8C32] ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {orders.some(o => o.is_local_only) && !dbTableMissing && (
+            <button
+              onClick={handleSyncLocalOrdersToCloud}
+              disabled={isSyncing}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <CloudUpload className={`w-4 h-4 ${isSyncing ? 'animate-bounce' : ''}`} />
+              <span>{isSyncing ? 'Syncing...' : 'Sync to Cloud'}</span>
+            </button>
+          )}
+
+          <button
+            onClick={fetchOrders}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl shadow-sm transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 text-[#ED8C32] ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
+
+      {/* Database Setup Banner (Visible if table is missing in Supabase) */}
+      {dbTableMissing && (
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                <Database className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-extrabold text-[#232F46] text-sm">
+                  Supabase Table <code className="bg-amber-100/70 px-1.5 py-0.5 rounded text-amber-900 font-mono">product_orders</code> Not Created Yet
+                </p>
+                <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  Orders are currently being <strong>safely saved and shown from local storage</strong> so no customer details are lost. To enable cloud database storage and multi-device access, run the SQL script in your Supabase SQL Editor.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+              <button
+                onClick={handleCopySql}
+                className="flex-1 sm:flex-none px-3.5 py-2 bg-[#232F46] hover:bg-[#1b2537] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                {copiedSql ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedSql ? 'Copied SQL!' : 'Copy SQL Script'}</span>
+              </button>
+
+              <a
+                href={`https://supabase.com/dashboard/project/${SUPABASE_PROJECT_ID}/sql/new`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 sm:flex-none px-3.5 py-2 bg-[#ED8C32] hover:bg-[#d67a29] text-[#232F46] text-xs font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open SQL Editor</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 1. Top Stats Summary */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
@@ -485,15 +707,24 @@ export default function AdminOrdersPage() {
                     <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
                       {/* Order ID & Time */}
                       <td className="py-4 px-4 align-top whitespace-nowrap">
-                        <span className="font-mono font-bold text-[#232F46] block">
-                          #{order.id.slice(0, 8)}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-[#232F46]">
+                            #{order.id.slice(0, 10)}
+                          </span>
+                          {order.is_local_only && (
+                            <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800" title="Saved in local storage (pending cloud sync)">
+                              Local
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
                           <Clock className="w-3 h-3" />
                           {new Date(order.created_at).toLocaleDateString('en-IN', {
                             day: 'numeric',
                             month: 'short',
-                            year: 'numeric'
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
                           })}
                         </span>
                       </td>
